@@ -586,14 +586,6 @@ button,input{font:inherit;color:inherit}
   .in-cta-text{flex-direction:column;gap:2px;text-align:center}
 }
 
-/* 제한구역 노이즈 (D45) */
-.noise-over{position:fixed;inset:0;z-index:70;pointer-events:none;animation:noiseFade .75s ease-out forwards}
-.noise-cv{width:100%;height:100%;image-rendering:pixelated;opacity:.55;mix-blend-mode:screen}
-.noise-bar{position:absolute;left:0;right:0;height:14vh;top:30%;background:rgba(46,230,214,.18);animation:noiseBar .75s steps(6) forwards}
-@keyframes noiseFade{0%{opacity:1}70%{opacity:.9}100%{opacity:0}}
-@keyframes noiseBar{0%{top:10%}20%{top:62%}40%{top:24%}60%{top:78%}80%{top:40%}100%{top:90%}}
-.noise-shake{animation:noiseShake .75s steps(2) 1}
-@keyframes noiseShake{0%{transform:translate(0);filter:none}20%{transform:translate(-6px,2px);filter:hue-rotate(60deg) contrast(1.4)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,1px);filter:invert(.15)}80%{transform:translate(2px,0)}100%{transform:none;filter:none}}
 
 /* 심문: 다음 직원 안내, 나이·직책 줄, 질문/대답 구분 (D44) */
 .emp.next{border-color:var(--neon);box-shadow:0 0 12px rgba(46,230,214,.25)}

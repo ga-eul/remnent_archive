@@ -129,32 +129,6 @@ window.R01 = window.R01 || {};
     return h('div', { class: 'desk' }, h('div', { class: 'desk-over' }, overlay));
   };
 
-  /* ---------- 제한구역에 들어갈 때 화면 전체 노이즈 (D45) ---------- */
-  P.noiseBurst = function (done) {
-    if (document.body.classList.contains('reduced')) { done(); return; }   // 연출 줄이기
-    const cv = h('canvas', { class: 'noise-cv' });
-    const over = h('div', { class: 'noise-over', 'aria-hidden': 'true' }, cv, h('span', { class: 'noise-bar' }));
-    document.body.append(over);
-    document.getElementById('app').classList.add('noise-shake');
-    const ctx = cv.getContext('2d');
-    cv.width = 320; cv.height = 180;                       // 작게 그려 크게 늘이면 거친 노이즈
-    const img = ctx.createImageData(cv.width, cv.height);
-    const t0 = performance.now();
-    (function frame(now) {
-      for (let i = 0; i < img.data.length; i += 4) {
-        const v = Math.random() * 255;
-        img.data[i] = v * 0.7; img.data[i + 1] = v; img.data[i + 2] = v * 0.95; img.data[i + 3] = 255;
-      }
-      ctx.putImageData(img, 0, 0);
-      if (now - t0 < 750) requestAnimationFrame(frame);
-      else {
-        over.remove();
-        document.getElementById('app').classList.remove('noise-shake');
-        done();
-      }
-    })(t0);
-  };
-
   /* ---------- 래미 조사 중 대사 (dialogue.md 3절, 각각 한 번) ---------- */
   /* 장면별 래미 표정: ‘다른 선택을 하시네요’ = 의미심장, 제한구역 = 깨달음, 그 밖 = 기본 */
   const RAMI_FACE = { observe: 'ramiMeaningful', warn: 'ramiRealize' };
@@ -247,7 +221,7 @@ window.R01 = window.R01 || {};
           const open = L.placeOpen(s, pl.id);
           const n = foundIn(s, pl.id);
           return h('button', { type: 'button', class: 'map-room ' + pl.id + (open ? '' : ' closed'), disabled: !open,
-            onClick: () => { const go = () => { curPlace = pl.id; R.app.render(); }; if (pl.id === 'restricted') P.noiseBurst(go); else go(); } },
+            onClick: () => { curPlace = pl.id; R.app.render(); } },
           h('span', { class: 'map-name' }, pl.name),
           open ? h('span', { class: 'map-got' }, '확보 ' + n) : h('span', { class: 'map-lock' }, '출입 통제'),
           open && placeDone(s, pl.id) ? doneBadge() : null);
