@@ -1,5 +1,5 @@
 /* 자료(단서) 목록 — 기준: case 01/case01-logic.md 5절
-   화면에 보이는 것은 name(표시명)뿐이다. 자료 본문·에셋은 미정(decisions.md 4절 7번)이라 넣지 않는다.
+   화면에 보이는 것은 name(표시명)과 자료 에셋이다. 에셋 경로는 assets/assets.js의 CLUE_ASSETS (D54).
    key: 상태값 이름에 쓰는 짧은 ID (clue_<key>_found)
    type: doc = [문서] 탭, cctv = [CCTV] 탭 (7절)
    place: archive 기록보관실 / control 관제실 / living 생활공간 / lab 업무실험실 / restricted 제한구역
@@ -30,7 +30,7 @@ R01.BUNDLES = { '05-B': '복구된 기록 자료' };
 /* 수색 화면의 조사 지점과 자료 창 요약 — [초안]
    spot: 장소 화면에서 누르는 조사 지점 이름 (자료 표시명이 아니라 물건·장비 이름, R-32)
    summary: 자료 창의 기록 요약 — 어떤 기록인지만 한 줄로 (내용·단서는 넣지 않는다. 실제 내용은 자료 에셋으로).
-   자료 본문·이미지 에셋은 미정 (decisions.md 4절 7번)이라 지금은 요약과 임시 화면만 쓴다 */
+   에셋이 아직 없는 자료는 자료 창에 임시 화면이 나온다 (D54) */
 R01.SPOTS = {
   '03A': { spot: '직원 명부 서가', summary: ['공식 직원 명부와 업무 기록.'] },
   '03B': { spot: 'CCTV 모니터', summary: ['관제실 CCTV에 남은 녹화 기록.'] },

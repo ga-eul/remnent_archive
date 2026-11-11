@@ -193,14 +193,102 @@ window.R01 = window.R01 || {};
   }
   const doneBadge = () => h('span', { class: 'done-badge mono' }, '수색완료');
 
+  /* ---------- 자료 에셋 (D54): assets.js의 CLUE_ASSETS. 목록에 없으면 임시 화면 ---------- */
+  const isReduced = () => document.body.classList.contains('reduced');
+  const tempPhoto = (x, text) => h('div', { class: 'evi-photo' }, h('span', { class: 'mono' }, x.id),
+    h('span', null, text || '[임시 화면] 자료 이미지는 에셋이 정해지면 들어갑니다'));
+
+  /* HTML 문서 창. 로컬 서버(같은 출처)로 열면 문서 높이에 맞춰 늘어나고,
+     파일을 바로 열면(file://) 정해진 높이 안에서 스크롤한다 */
+  function docFrame(src, cls, title, fallback) {
+    const f = h('iframe', { class: cls, src, title });
+    const fit = () => {
+      try {
+        const d = f.contentDocument;
+        if (!d || !d.body) return;
+        if (fallback && !d.querySelector('.ra-document')) {           // 문서를 못 읽으면 대체 이미지
+          f.replaceWith(h('img', { class: 'clue-fallback', src: fallback, alt: title }));
+          return;
+        }
+        if (cls === 'clue-frame') f.style.height = d.documentElement.scrollHeight + 'px';  // 겹치기 창은 이미지 크기 고정
+      } catch (e) { /* 다른 출처(file://): 기본 높이 유지 */ }
+    };
+    f.addEventListener('load', () => { fit(); setTimeout(fit, 400); });  // 글꼴이 늦게 붙는 경우 한 번 더
+    return f;
+  }
+
+  /* 문서 이미지 + 이미지 안 글자를 설정에 맞게 덮는 HTML 글자 (03-A) */
+  function imageView(a, x) {
+    return h('figure', { class: 'clue-img', style: 'aspect-ratio:' + a.ratio },
+      h('img', { src: a.img, alt: x.name }),
+      (a.patches || []).map((p) => h('div', { class: 'clue-patch', 'aria-hidden': 'true',
+        style: 'left:' + p.box[0] + '%;top:' + p.box[1] + '%;width:' + p.box[2] + '%;height:' + p.box[3] + '%;background:' + p.bg },
+      p.lines.map((t, i) => h('span', { class: i ? 'sub' : '' }, t)))));
+  }
+
+  /* CCTV: 정지 화면은 시각이 16:39 → 16:40 → 16:41로 넘어가고, [영상 재생]을 누르면 영상 재생 위치에 맞춰 시각이 바뀐다 (03-B) */
+  const toSec = (t) => t.split(':').reduce((n, v) => n * 60 + Number(v), 0);
+  const fromSec = (n) => [Math.floor(n / 3600), Math.floor(n / 60) % 60, Math.floor(n) % 60].map((v) => String(v).padStart(2, '0')).join(':');
+  function cctvView(a, x) {
+    const clock = h('span', { class: 'cctv-clock mono' });
+    const setClock = (t) => { clock.textContent = a.date + '  ' + t; };
+    const img = h('img', { class: 'cctv-still', src: a.img, alt: x.name });
+    const vid = h('video', { class: 'cctv-video', src: a.video, playsinline: true, preload: 'metadata', hidden: true });
+    const play = button('▶ 영상 재생', () => {
+      img.hidden = true; vid.hidden = false; vid.currentTime = 0; vid.play();
+      play.textContent = '↻ 다시 재생';
+    }, { small: true });
+    const box = h('figure', { class: 'cctv', style: 'aspect-ratio:' + a.ratio },
+      img, vid,
+      h('div', { class: 'cctv-hud', 'aria-hidden': 'true' },
+        h('span', { class: 'cctv-rec mono' }, h('i'), 'REC'), h('span', { class: 'cctv-cam mono' }, a.cam), clock),
+      h('i', { class: 'cctv-scan', 'aria-hidden': 'true' }));
+    // 정지 화면: 3장면 시각을 번갈아 표시 (연출 줄이기면 16:40 하나로 고정)
+    let i = 0;
+    setClock(a.still[isReduced() ? 1 : 0]);
+    const timer = setInterval(() => {
+      if (!box.isConnected) { clearInterval(timer); return; }
+      if (!vid.hidden || isReduced()) return;
+      i = (i + 1) % a.still.length; setClock(a.still[i]);
+    }, 1400);
+    vid.addEventListener('timeupdate', () => {
+      const p = vid.duration ? vid.currentTime / vid.duration : 0;
+      setClock(fromSec(toSec(a.from) + p * (toSec(a.to) - toSec(a.from))));
+    });
+    return h('div', { class: 'clue-cctv' }, box, h('div', { class: 'clue-tools' }, play));
+  }
+
+  /* 실물 이미지 위에 HTML 본문 (03-C). [본문 숨기기]로 아래 이미지만 볼 수 있다 */
+  function overlayView(a, x) {
+    const frame = docFrame(a.html, 'clue-over-frame', x.name);
+    const box = h('figure', { class: 'clue-over', style: 'background-image:url(' + a.img + ')' }, frame);
+    const toggle = button('본문 숨기기', () => {
+      const off = box.classList.toggle('bare');
+      toggle.textContent = off ? '본문 보기' : '본문 숨기기';
+    }, { small: true });
+    return h('div', null, box, h('div', { class: 'clue-tools' }, toggle));
+  }
+
+  function clueView(x) {
+    const a = R.CLUE_ASSETS && R.CLUE_ASSETS[x.key];
+    if (!a) return tempPhoto(x);
+    if (a.kind === 'pending') return tempPhoto(x, '[에셋 준비 중]');
+    if (a.kind === 'doc') return h('div', { class: 'clue-doc' }, docFrame(a.html, 'clue-frame', x.name, a.fallback));
+    if (a.kind === 'image') return imageView(a, x);
+    if (a.kind === 'cctv') return cctvView(a, x);
+    if (a.kind === 'overlay') return overlayView(a, x);
+    return tempPhoto(x);
+  }
+
   /* 자료 창 (단서 노출). [닫기]를 누르면 그 장소 화면으로 돌아간다 */
   function showEvidence(c, opts) {
     const group = c.bundle ? R.CLUES.filter((x) => x.bundle === c.bundle) : [c];
+    const wide = group.some((x) => R.CLUE_ASSETS && R.CLUE_ASSETS[x.key] && R.CLUE_ASSETS[x.key].kind !== 'pending');
     const over = h('div', { class: 'evi-over', role: 'dialog', 'aria-modal': 'true' });
     const close = () => { over.remove(); document.removeEventListener('keydown', esc); R.app.render(); };
     const esc = (e) => { if (e.key === 'Escape') close(); };
     const closeBtn = button('닫기', close, { small: true });
-    over.append(h('div', { class: 'evi' },
+    over.append(h('div', { class: 'evi' + (wide ? ' wide' : '') },
       h('div', { class: 'evi-head' },
         h('span', { class: 'mono evi-label' }, 'EVIDENCE · ' + (c.bundle ? c.bundle : c.id), h('span', { class: 'muted' }, ' · ' + group.map(typeLabel).join(' / '))),
         closeBtn),
@@ -210,7 +298,7 @@ window.R01 = window.R01 || {};
         h('div', null, h('span', null, '상태'), h('strong', null, 'My Archive 저장'))),
       group.map((x) => h('section', { class: 'evi-item' },
         h('h2', null, x.name),
-        h('div', { class: 'evi-photo' }, h('span', { class: 'mono' }, x.id), h('span', null, '[임시 화면] 자료 이미지는 에셋이 정해지면 들어갑니다')),
+        clueView(x),
         h('div', { class: 'evi-note' }, h('p', { class: 'mono evi-label' }, 'RECORD · 기록 요약'),
           (R.SPOTS[x.key] ? R.SPOTS[x.key].summary : []).map((t) => h('p', null, t)))))));
     over.addEventListener('click', (e) => { if (e.target === over) close(); });

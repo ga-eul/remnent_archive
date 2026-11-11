@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>보안 시스템 예외 접근 기록</title>
+  <link rel="stylesheet" href="clue-document.css">
+  <style>
+    .security-log { overflow-x: auto; }
+    .security-log code { white-space: nowrap; }
+  </style>
+</head>
+<body style="margin: 0; padding: clamp(12px, 3vw, 38px); background: #090f11;">
+  <article class="ra-document" aria-labelledby="document-title">
+    <header>
+      <div class="ra-brand"><span class="ra-mark" aria-hidden="true"></span><span>REMNANT<br>ARCHIVE</span></div>
+      <div class="ra-heading">
+        <h1 class="ra-title" id="document-title"><span class="ra-title-en" lang="en">SECURITY ACCESS LOG</span><span class="ra-title-ko">보안 시스템 예외 접근 기록</span></h1>
+        <div class="ra-meta">05-E<span class="ra-status">내부 열람</span></div>
+      </div>
+    </header>
+    <section aria-labelledby="access-log">
+      <h2 id="access-log">예외 접근 로그</h2>
+      <p>보안관리팀 계정 <code>SEC-17</code></p>
+      <div class="security-log">
+        <table aria-labelledby="access-log">
+          <thead>
+            <tr><th scope="col">접근 시각</th><th scope="col">대상<small lang="en">TARGET</small></th><th scope="col">접근 유형<small lang="en">ACCESS</small></th><th scope="col">결과<small lang="en">RESULT</small></th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>4XXX.04.12 09:00</code></td><td><code>H-03</code></td><td><code>OVERRIDE</code></td><td><code>PARTIAL</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section aria-labelledby="connection-route">
+      <h2 id="connection-route">계정 연결 경로</h2>
+      <table aria-labelledby="connection-route">
+        <thead><tr><th scope="col">사원번호</th><th scope="col">기록된 연결 경로</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>DA-A</code></th><td>인트라넷 세션 → 사내 접속 게이트웨이 → 계정 관리 서버</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <footer class="ra-footer">관제실 · 보안 시스템 단말</footer>
+  </article>
+</body>
+</html>

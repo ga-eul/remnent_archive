@@ -247,6 +247,30 @@ button,input{font:inherit;color:inherit}
 .evi-photo .mono{font-size:20px;color:#d5dde5;letter-spacing:.1em}
 .evi-note{display:flex;flex-direction:column;gap:6px;padding:16px 20px;background:#ece6da;color:#2a2620;border-top:3px solid var(--neon);font-size:14px;line-height:1.7}
 .evi-note .evi-label{color:#1d6b5c}
+/* 자료 에셋 (D54) */
+.evi.wide{width:min(1080px,100%)}
+.clue-tools{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.clue-doc{background:#090f11;border:1px solid #2c3746;border-radius:4px;overflow:hidden}
+.clue-frame{display:block;width:100%;height:auto;aspect-ratio:16/11;border:0;background:#090f11}
+.clue-fallback{display:block;width:100%;height:auto}
+.clue-img{position:relative;margin:0;container-type:inline-size;border:1px solid #2c3746;border-radius:4px;overflow:hidden;background:#0a1113}
+.clue-img img{display:block;width:100%;height:100%;object-fit:contain}
+.clue-patch{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1em;font-family:'Noto Sans KR',sans-serif;line-height:1.15;color:#e9eff1;font-size:1.75cqw;white-space:nowrap}
+.clue-patch .sub{font-size:1.32cqw;color:#a8b8bd}
+.cctv{position:relative;margin:0;container-type:inline-size;overflow:hidden;background:#000;border:1px solid #2c3746;border-radius:4px}
+.cctv-still,.cctv-video{display:block;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(.8)}
+.cctv-still[hidden],.cctv-video[hidden]{display:none}
+.cctv-hud{position:absolute;inset:0;pointer-events:none;padding:2.2cqw 2.6cqw;color:#f2f5f2;font-size:1.7cqw;letter-spacing:.08em;text-shadow:0 0 4px #000,0 0 1px #000}
+.cctv-rec{position:absolute;left:2.6cqw;top:2.2cqw;display:flex;align-items:center;gap:.5em;color:#ff5a52}
+.cctv-rec i{width:.75em;height:.75em;border-radius:50%;background:#ff3b30;animation:cctvBlink 1s steps(2) infinite}
+.cctv-cam{position:absolute;right:2.6cqw;top:2.2cqw}
+.cctv-clock{position:absolute;right:2.6cqw;bottom:2.2cqw;white-space:pre}
+.cctv-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);box-shadow:inset 0 0 12cqw rgba(0,0,0,.55)}
+@keyframes cctvBlink{50%{opacity:0}}
+.clue-over{position:relative;margin:0;aspect-ratio:1536/1024;background:#050d14 center/cover no-repeat;border:1px solid #2c3746;border-radius:4px;overflow:hidden}
+.clue-over-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;color-scheme:dark;transition:opacity .25s}
+.clue-over.bare .clue-over-frame{opacity:0;pointer-events:none}
+@media (max-width:700px){.clue-over{aspect-ratio:auto;height:78vh}}
 @media (max-width:560px){.evi-meta{grid-template-columns:1fr}.evi-meta div{border-right:0;border-bottom:1px solid #2c3746}}
 
 /* 심문 */

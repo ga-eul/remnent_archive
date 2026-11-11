@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>생활공간 일기</title>
+  <style>
+    :root { color-scheme: dark; background: #050d14; }
+    body { margin: 0; padding: clamp(8px, 2vw, 28px); }
+    .diary-view {
+      --mint: #a9ead4;
+      --rule: #a9ead44d;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      width: min(100%, 1050px);
+      height: min(90dvh, 690px);
+      margin: auto;
+      padding: 0 5px;
+      border: 1px solid var(--mint);
+      border-radius: 17px;
+      background: #08131b;
+      box-shadow: inset 0 0 0 3px #08131b, inset 0 0 0 4px #a9ead477;
+      color: #dbe8e7;
+      font: 15px/1.65 system-ui, "Malgun Gothic", sans-serif;
+      word-break: keep-all;
+    }
+    .diary-view header, .diary-view footer {
+      padding: 12px clamp(14px, 3vw, 28px);
+      color: var(--mint);
+    }
+    .diary-view header { border-bottom: 1px solid var(--rule); }
+    .diary-view footer { border-top: 1px solid var(--rule); font-size: 13px; }
+    .diary-view h1 { margin: 0; font-size: 21px; letter-spacing: .04em; }
+    .diary-body { overflow: auto; padding: 20px clamp(14px, 3vw, 28px); }
+    .diary-body:focus-visible { outline: 1px solid var(--mint); outline-offset: -2px; }
+    .diary-spread {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: clamp(18px, 3vw, 32px);
+      row-gap: 16px;
+    }
+    .diary-volume { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+    .diary-entry { border-top: 1px solid var(--rule); padding-top: 12px; }
+    .diary-spread h2 { margin: 0; font-size: 16px; color: var(--mint); }
+    .diary-entry h3 { margin: 0 0 9px; color: #b5c7c6; font-size: 14px; }
+    .diary-entry p { margin: 0 0 8px; }
+    @media (max-width: 660px) {
+      .diary-spread { grid-template-columns: 1fr; }
+      .diary-volume { grid-row: auto; grid-template-rows: none; gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="diary-view" aria-labelledby="diary-title">
+    <header><h1 id="diary-title">생활공간 일기</h1></header>
+    <div class="diary-body" role="region" aria-label="일기 본문" tabindex="0">
+      <div class="diary-spread">
+        <section class="diary-volume">
+          <h2>버건디 수첩</h2>
+          <article class="diary-entry">
+            <h3>2월 둘째 주 화요일, 퇴근 무렵. 날씨 흐림.</h3>
+            <p>퇴근하려는데 서랍에서 지난주 인수인계표가 나왔다. 벌써 정리한 줄 알았는데, 마지막 칸에 내 서명이 없었다.</p>
+            <p>그날 펜이 안 나와서 옆자리에서 빌렸던 것까지 기억난다. 뭘 쓰려고 빌렸더라. 한참 생각하다가 서명은 그대로 비워 뒀다. 오늘 날짜로 확인했다고 적어 두면 되겠지.</p>
+            <p>빌린 펜은 아직 내 책상에 있다. 내일 돌려줘야겠다.</p>
+          </article>
+          <article class="diary-entry">
+            <h3>2월 셋째 주 목요일 저녁, 비가 내림.</h3>
+            <p>퇴근 전에 물을 올렸다. 주전자가 꺼지자마자 누가 문을 세 번 두드렸다.</p>
+            <p>내가 문을 열었다. 복도에는 아무도 없었다. 돌아서는데 피터가 문 옆에 서 있었다. 언제 들어왔는지는 잘 모르겠다.</p>
+            <p>나중에 피터는 내가 문을 연 적이 없다고 했다. 당직일지에도 별일 없었다고 적혀 있었다. 내가 손잡이만 잡고 열었다고 생각한 모양이다.</p>
+            <p>그래도 복도 불이 켜져 있던 건 기억난다.</p>
+          </article>
+          <article class="diary-entry">
+            <h3>2월 셋째 주 금요일 늦은 오후.</h3>
+            <p>비가 그쳐 창을 조금 열었다.</p>
+            <p>오늘은 물이 끓는 동안 주전자 앞에 서 있었다. 평소엔 켜 놓고 책상으로 돌아오는데, 오늘따라 그 짧은 시간에 굳이 앉았다 일어나기가 싫었다.</p>
+            <p>피터가 들어오길래 차를 한 잔 더 탔다. 한 모금 마시고는 뜨겁다고 했다. 늘 조금 식혀서 주는데 오늘은 깜빡했다.</p>
+            <p>내일은 물을 조금 일찍 올려야겠다.</p>
+          </article>
+        </section>
+        <section class="diary-volume">
+          <h2>검은 수첩</h2>
+          <article class="diary-entry">
+            <h3>2월 둘째 주 화요일 · 퇴근 무렵 · 흐림</h3>
+            <p>퇴근길에 생활공간 문이 반쯤 열려 있었다. 손을 놓으니 닫히다가 끝에서 멈췄다.</p>
+            <p>문턱에 접힌 종이 한 장이 끼어 있었다. 빼고 다시 닫았다. 이번에는 걸쇠 소리가 났다.</p>
+            <p>종이는 버렸다. 뒷면에 장 볼 게 적혀 있었다. 우유, 달걀. 달걀은 나도 사야 한다.</p>
+          </article>
+          <article class="diary-entry">
+            <h3>2월 셋째 주 목요일 · 저녁 · 비</h3>
+            <p>주전자가 꺼졌다. 노크 세 번.</p>
+            <p>마거릿이 손잡이를 잡았다. 문은 안 열렸다. 나는 그때부터 문 옆에 있었다.</p>
+            <p>나중에 마거릿이 복도 불이 켜져 있었다고 했다. 복도는 나도 못 봤다.</p>
+            <p>당직일지에는 특이사항 없음으로 적었다. 다시 두드리지는 않았다.</p>
+          </article>
+          <article class="diary-entry">
+            <h3>2월 셋째 주 금요일 · 늦은 오후 · 비 그침</h3>
+            <p>생활공간 창이 조금 열려 있었다. 컵을 내려놓으니 손등에 찬 바람이 닿았다.</p>
+            <p>마거릿이 차를 줬다. 뜨거워서 식을 때까지 기다렸다. 그동안 마거릿은 서랍에서 종이를 몇 장 꺼냈다가 다시 넣었다. 내가 다 마실 때까지 둘 다 별말 없었다.</p>
+            <p>컵은 씻어서 엎어 뒀다. 손잡이가 깨진 건 내 것.</p>
+          </article>
+        </section>
+      </div>
+    </div>
+    <footer>발견 위치 · 생활공간 책상 서랍</footer>
+  </main>
+</body>
+</html>
+

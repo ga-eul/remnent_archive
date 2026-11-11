@@ -1,0 +1,90 @@
+.ra-document {
+  --ink: #e8f0f1;
+  --muted: #b1c5ca;
+  --rule: #71878b;
+  --accent: #7df5c9;
+  --frame: polygon(2.2% 0, 97.8% 0, 100% 4.2%, 100% 95.8%, 97.8% 100%, 2.2% 100%, 0 95.8%, 0 4.2%);
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: min(100%, 1200px);
+  min-height: min(55vw, 660px);
+  margin: 0 auto;
+  padding: clamp(22px, 3.3vw, 48px);
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  font: clamp(13px, 1.55vw, 20px)/1.45 "Malgun Gothic", Arial, sans-serif;
+  word-break: keep-all;
+  filter: drop-shadow(0 0 8px #9beaff33);
+}
+.ra-document::before,
+.ra-document::after {
+  position: absolute;
+  content: "";
+  z-index: -1;
+  clip-path: var(--frame);
+}
+.ra-document::before {
+  inset: 0;
+  background: linear-gradient(120deg, #f4fbfe, #758e94 45%, #f5fcff);
+}
+.ra-document::after {
+  inset: 2px;
+  background: radial-gradient(ellipse at 50% 47%, #111b1e, #090f11 76%);
+}
+.ra-brand {
+  display: flex;
+  align-items: center;
+  gap: .65em;
+  padding-bottom: .5em;
+  border-bottom: 1px solid var(--muted);
+  font: 700 1.2em/1 Arial, sans-serif;
+}
+.ra-mark {
+  width: 2em;
+  height: 2em;
+  background: var(--ink);
+  clip-path: polygon(0 0, 15% 0, 15% 13%, 0 13%, 0 18%, 15% 18%, 15% 100%, 0 100%, 0 88%, 21% 88%, 21% 100%, 77% 100%, 65% 87%, 21% 87%, 21% 36%, 61% 79%, 21% 79%, 21% 87%, 26% 19%, 43% 19%, 100% 79%, 79% 79%, 26% 19%, 0 18%);
+}
+.ra-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .7em 1em;
+  flex-wrap: wrap;
+  padding: .8em 0;
+  border-bottom: 1px solid var(--rule);
+}
+.ra-title { display: flex; flex-wrap: wrap; align-items: center; margin: 0; font-size: 1.32em; }
+.ra-title span { padding: .25em .85em; }
+.ra-title-en {
+  padding-inline: 1.05em !important;
+  clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+  background: linear-gradient(110deg, #d8e8ec, #a0b4ba);
+  color: #0a1012;
+  font-family: Arial, sans-serif;
+}
+.ra-title-ko { border-block: 1px solid var(--rule); font-size: .82em; }
+.ra-meta { text-align: right; font-family: Arial, sans-serif; }
+.ra-status { display: block; font-size: .78em; }
+.ra-status::after { display: inline-block; content: ""; width: .75em; height: .75em; margin-left: .55em; background: var(--accent); }
+.ra-document h2 { margin: .65em 0 .55em; border-left: .25em solid var(--accent); padding-left: .55em; font-size: 1.03em; }
+.ra-document p { margin: 0 0 .65em; }
+.ra-document table { width: 100%; border-collapse: collapse; margin-bottom: .65em; }
+.ra-document th, .ra-document td { padding: .42em .55em; border: 1px solid var(--rule); text-align: center; }
+.ra-document thead th { background: #172528; font-weight: 600; }
+.ra-document th small { display: block; color: var(--muted); font: .8em Arial, sans-serif; }
+.ra-document tbody th { font-weight: 500; }
+.ra-footer {
+  margin-top: auto;
+  padding: .6em 0;
+  border-block: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .82em;
+}
+.ra-spread { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1em; font-size: .86em; }
+@media (max-width: 720px) {
+  .ra-spread { grid-template-columns: 1fr; }
+  .ra-meta { text-align: left; }
+}
