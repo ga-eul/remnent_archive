@@ -526,6 +526,8 @@ button,input{font:inherit;color:inherit}
 .msgr-msg.pinned .msgr-who{color:#e6edf3}
 .msgr-msg.pinned .msgr-label{color:var(--neon)}
 .msgr-msg.pinned p{color:#d8e2ee;line-height:1.85}
+.msgr-msg.pinned .msgr-gap{height:.55em}
+.msgr-msg.pinned .msgr-strong{font-weight:700;color:#fff}
 
 /* 입력칸 (사용할 수 없음) */
 .msgr-input{display:flex;gap:10px;padding:12px 18px;border-top:1px solid #c6cad2;background:#eceef1}

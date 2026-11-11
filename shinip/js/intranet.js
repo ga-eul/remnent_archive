@@ -209,7 +209,9 @@ window.R01 = window.R01 || {};
         h('div', { class: 'msgr-msg pinned' }, ava('RA', 'ra'),
           h('div', { class: 'msgr-msg-body' },
             h('span', { class: 'msgr-who' }, p.name, h('span', { class: 'msgr-label mono' }, p.label)),
-            p.lines.map((t) => h('p', null, t)))));
+            p.lines.map((t) => (t === '' ? h('p', { class: 'msgr-gap', 'aria-hidden': 'true' })
+              : typeof t === 'string' ? h('p', null, t)                     // 문자열에는 옛 .bold() 메서드가 있어 t.bold로 가리면 안 된다
+                : h('p', t.bold ? { class: 'msgr-strong' } : null, t.text))))));
     } else {
       const g = M.groups.find((x) => x.id === ui.room);
       headSub = '그룹 · 메시지 ' + g.threads.reduce((n, th) => n + th.msgs.length, 0) + '건';
