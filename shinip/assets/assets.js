@@ -33,6 +33,13 @@ R01.CLUE_ASSETS = {
   '05A': { kind: 'doc', html: 'assets/clue/clue-05a.html' },
   '05C': { kind: 'pending' },                                   // 에셋 미제작
   '05D': { kind: 'doc', html: 'assets/clue/clue-05d.html', fallback: 'assets/clue/clue-05d.png' }, // png는 대체용만
+  // 05-B 묶음 (R-18a): 복구된 영상은 손상된 CCTV 연출. 화면에 SUBJECT 등 대상자 표기 금지 (D13·D14). 영상 약 4초.
+  // 영상에는 ‘BLD.A / LABORATORY’와 ‘4XXX-01-24 16:40:23’이 고정으로 찍혀 있어, 정지 이미지에만 같은 표기를 올리고
+  // 재생 중에는 덧씌운 표시를 숨긴다 (hudOnVideo: false)
+  '05B_VHS': { kind: 'cctv', vhs: true, hudOnVideo: false, img: 'assets/clue/clue-05b-vhs.png', video: 'assets/clue/clue-05b-vhs.mp4', ratio: '1671 / 941',
+    rec: 'BLD.A / LABORATORY', cam: '', date: '4XXX-01-24', still: ['16:40:23'], from: '16:40:23', to: '16:40:23' },
+  '05B_PERSONNEL': { kind: 'doc', html: 'assets/clue/clue-05b-personnel.html' },
+  '06DE': { kind: 'doc', html: 'assets/clue/clue-06de.html' },  // 제작_에셋/06-DE.html은 같은 내용의 중복 파일이라 쓰지 않음
   '06A': { kind: 'doc', html: 'assets/clue/clue-06a.html' },
   '06B': { kind: 'doc', html: 'assets/clue/clue-06b.html' }
 };

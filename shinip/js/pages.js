@@ -236,16 +236,19 @@ window.R01 = window.R01 || {};
     const vid = h('video', { class: 'cctv-video', src: a.video, playsinline: true, preload: 'metadata', hidden: true });
     const play = button('▶ 영상 재생', () => {
       img.hidden = true; vid.hidden = false; vid.currentTime = 0; vid.play();
+      if (a.hudOnVideo === false) box.classList.add('playing');   // 영상에 시각이 이미 찍혀 있으면 덧씌운 표시를 숨김
       play.textContent = '↻ 다시 재생';
     }, { small: true });
-    const box = h('figure', { class: 'cctv', style: 'aspect-ratio:' + a.ratio },
+    // vhs: 손상된 복구 영상 (05-B-VHS) — 노이즈 띠·흔들림을 더한다 (연출 줄이기면 멈춤)
+    const box = h('figure', { class: 'cctv' + (a.vhs ? ' vhs' : ''), style: 'aspect-ratio:' + a.ratio },
       img, vid,
       h('div', { class: 'cctv-hud', 'aria-hidden': 'true' },
-        h('span', { class: 'cctv-rec mono' }, h('i'), 'REC'), h('span', { class: 'cctv-cam mono' }, a.cam), clock),
-      h('i', { class: 'cctv-scan', 'aria-hidden': 'true' }));
+        h('span', { class: 'cctv-rec mono' }, a.vhs ? null : h('i'), a.rec || 'REC'), h('span', { class: 'cctv-cam mono' }, a.cam), clock),
+      h('i', { class: 'cctv-scan', 'aria-hidden': 'true' }),
+      a.vhs ? h('i', { class: 'vhs-band', 'aria-hidden': 'true' }) : null);
     // 정지 화면: 3장면 시각을 번갈아 표시 (연출 줄이기면 16:40 하나로 고정)
     let i = 0;
-    setClock(a.still[isReduced() ? 1 : 0]);
+    setClock(a.still[isReduced() ? Math.min(1, a.still.length - 1) : 0]);
     const timer = setInterval(() => {
       if (!box.isConnected) { clearInterval(timer); return; }
       if (!vid.hidden || isReduced()) return;
@@ -258,15 +261,34 @@ window.R01 = window.R01 || {};
     return h('div', { class: 'clue-cctv' }, box, h('div', { class: 'clue-tools' }, play));
   }
 
-  /* 실물 이미지 위에 HTML 본문 (03-C). [본문 숨기기]로 아래 이미지만 볼 수 있다 */
+  /* 실물 이미지 → 클릭하면 HTML 본문 (03-C). 처음엔 이미지만, 올리면 돋보기, 누르면 그 위에 본문이 열린다 */
+  const LENS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
   function overlayView(a, x) {
-    const frame = docFrame(a.html, 'clue-over-frame', x.name);
-    const box = h('figure', { class: 'clue-over', style: 'background-image:url(' + a.img + ')' }, frame);
-    const toggle = button('본문 숨기기', () => {
-      const off = box.classList.toggle('bare');
-      toggle.textContent = off ? '본문 보기' : '본문 숨기기';
-    }, { small: true });
-    return h('div', null, box, h('div', { class: 'clue-tools' }, toggle));
+    let frame = null;                                    // 본문은 처음 열 때 불러온다
+    const lens = h('span', { class: 'clue-lens', 'aria-hidden': 'true' });
+    lens.innerHTML = LENS_SVG;                           // 고정 SVG
+    const back = button('← 수첩으로', () => close(), { small: true });
+    back.hidden = true;
+    const box = h('figure', { class: 'clue-over bare', style: 'background-image:url(' + a.img + ')',
+      role: 'button', tabindex: '0', 'aria-label': x.name + ' 펼쳐 보기' }, lens);
+    const open = () => {
+      if (!box.classList.contains('bare')) return;
+      if (!frame) { frame = docFrame(a.html, 'clue-over-frame', x.name); box.append(frame); }
+      box.classList.remove('bare'); box.removeAttribute('role'); box.removeAttribute('tabindex');
+      back.hidden = false;
+    };
+    function close() {
+      box.classList.add('bare'); box.setAttribute('role', 'button'); box.setAttribute('tabindex', '0');
+      back.hidden = true; box.focus();
+    }
+    box.addEventListener('click', open);
+    box.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    // 돋보기는 커서를 따라다닌다
+    box.addEventListener('mousemove', (e) => {
+      const r = box.getBoundingClientRect();
+      lens.style.left = (e.clientX - r.left) + 'px'; lens.style.top = (e.clientY - r.top) + 'px';
+    });
+    return h('div', null, box, h('div', { class: 'clue-tools' }, back));
   }
 
   function clueView(x) {

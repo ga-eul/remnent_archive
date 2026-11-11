@@ -267,9 +267,32 @@ button,input{font:inherit;color:inherit}
 .cctv-clock{position:absolute;right:2.6cqw;bottom:2.2cqw;white-space:pre}
 .cctv-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);box-shadow:inset 0 0 12cqw rgba(0,0,0,.55)}
 @keyframes cctvBlink{50%{opacity:0}}
+/* 05-B-VHS 손상된 복구 영상 */
+.cctv.vhs .cctv-still,.cctv.vhs .cctv-video{filter:contrast(1.15) saturate(.9);animation:vhsJitter 3.2s steps(1) infinite}
+.cctv.vhs .cctv-rec{color:#e9f3f1;letter-spacing:.06em}
+.cctv.vhs .cctv-clock{left:2.6cqw;right:auto}
+.cctv.playing .cctv-hud{display:none}
+.cctv.vhs .cctv-hud{color:#dff7f2;text-shadow:-1px 0 rgba(255,40,80,.7),1px 0 rgba(40,220,255,.7),0 0 4px #000}
+.cctv.vhs .cctv-clock{animation:vhsFlicker 2.4s steps(1) infinite}
+.vhs-band{position:absolute;left:0;right:0;top:-12%;height:9%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,255,255,.12) 40%,rgba(180,255,250,.22) 50%,rgba(255,255,255,.1) 60%,transparent);mix-blend-mode:screen;animation:vhsBand 4.5s linear infinite}
+@keyframes vhsJitter{0%,100%{transform:none}37%{transform:translate(-.6%,0) skewX(-.6deg)}38%{transform:none}71%{transform:translate(.8%,.2%)}72%{transform:none}}
+@keyframes vhsFlicker{0%,100%{opacity:1}43%{opacity:.25}45%{opacity:1}80%{opacity:.6}}
+@keyframes vhsBand{0%{top:-12%}100%{top:112%}}
 .clue-over{position:relative;margin:0;aspect-ratio:1536/1024;background:#050d14 center/cover no-repeat;border:1px solid #2c3746;border-radius:4px;overflow:hidden}
 .clue-over-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;color-scheme:dark;transition:opacity .25s}
 .clue-over.bare .clue-over-frame{opacity:0;pointer-events:none}
+/* 03-C: 수첩 이미지에 올리면 돋보기, 누르면 본문 */
+.clue-over.bare{cursor:none;transition:filter .2s}
+.clue-over.bare:hover,.clue-over.bare:focus-visible{filter:brightness(1.12)}
+.clue-over.bare:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+.clue-lens{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;display:flex;align-items:center;justify-content:center;border-radius:50%;
+  background:rgba(8,19,27,.55);border:2px solid rgba(169,234,212,.9);color:#a9ead4;box-shadow:0 0 18px rgba(125,245,201,.35),inset 0 0 12px rgba(169,234,212,.25);
+  pointer-events:none;opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s}
+.clue-lens svg{width:30px;height:30px}
+.clue-over.bare:hover .clue-lens{opacity:1;transform:scale(1)}
+.clue-over.bare:focus-visible .clue-lens{opacity:1;transform:scale(1);left:50%!important;top:50%!important}
+.clue-over:not(.bare) .clue-lens{display:none}
+@media (hover:none){.clue-over.bare .clue-lens{opacity:1;transform:scale(1)}}
 @media (max-width:700px){.clue-over{aspect-ratio:auto;height:78vh}}
 @media (max-width:560px){.evi-meta{grid-template-columns:1fr}.evi-meta div{border-right:0;border-bottom:1px solid #2c3746}}
 

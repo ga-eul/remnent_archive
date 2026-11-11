@@ -162,7 +162,8 @@ ok(R.STAFF.A.name === '엘리넛 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role 
 const all = fs.readdirSync(dir, { recursive: true }).filter((f) => /\.(js|html|css)$/.test(f))
   .map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n');
 ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(all), '금지 문자열 없음');
-ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace('계정 유형: TEMP', '')), 'D13·D24 화면 문구에 실험용·TEMP 없음 (06-D/E의 ‘계정 유형: TEMP’만 허용, 주석 제외)');
+ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace('계정 유형: TEMP', '')
+  .replace('<th scope="col">계정 유형</th>', '').replace('<code class="audit-type">TEMP</code>', '')), 'D13·D24 화면 문구에 실험용·TEMP 없음 (06-D/E의 ‘계정 유형: TEMP’만 허용, 주석 제외)');
 
 console.log(`pass ${pass} / fail ${fail}`);
 process.exit(fail ? 1 : 0);
