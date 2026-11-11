@@ -40,6 +40,14 @@ window.R01 = window.R01 || {};
     return el;
   };
 
+  /* 심문 화면 직원 사진 (A·B·C). 사진이 없으면 실루엣 */
+  P.staffPhoto = function (who, size) {
+    const src = R.STAFF_PHOTOS && R.STAFF_PHOTOS[who];
+    if (!src) return P.avatar(null, size);
+    return h('span', { class: 'avatar', style: 'width:' + size + 'px;height:' + size + 'px;background:#fff' },
+      h('img', { src, alt: '' }));
+  };
+
   /* 사원증 (사원증.jpg 시안을 코드로 다시 짠 것). TEMP·실험용 표기 없음 (R-10, D13) */
   P.idCard = function (name, avatar) {
     return h('div', { class: 'idcard' },
@@ -307,7 +315,7 @@ window.R01 = window.R01 || {};
       const n = s.interview_asked[w].length;
       return h('button', { type: 'button', class: 'emp' + (viewWho === w ? ' on' : '') + (locked ? ' locked' : '') + (isNext ? ' next' : ''), disabled: locked,
         onClick: () => { viewWho = w; R.app.render(); } },
-      P.avatar(null, 44),
+      P.staffPhoto(w, 44),
       h('span', { class: 'emp-text' },
         h('span', { class: 'emp-name' }, st.name),
         h('span', { class: 'emp-role' }, st.role),
@@ -340,7 +348,7 @@ window.R01 = window.R01 || {};
         h('div', { class: 'iv-main' },
           h('div', { class: 'iv-head' }, h('span', { class: 'mono' }, 'INTERROGATION RECORD · REC'),
             h('span', { class: 'mono muted' }, 'STATEMENT ' + asked.length + ' / 4')),
-          h('div', { class: 'iv-who' }, P.avatar(null, 72),
+          h('div', { class: 'iv-who' }, P.staffPhoto(viewWho, 72),
             h('div', null, h('p', { class: 'mono iv-tag' }, 'EMPLOYEE 0' + (ORDER.indexOf(viewWho) + 1) + ' · 심문'),
               h('p', { class: 'iv-name' }, st.name), h('p', { class: 'iv-meta' }, st.age + '세 · ' + st.role))),
           // 질문은 위에 고정, 받은 진술은 그 아래로 이어진다 (새 진술이 보이도록 아래로 스크롤)

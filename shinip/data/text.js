@@ -4,7 +4,7 @@ window.R01 = window.R01 || {};
 
 /* 직원 표시 정보 (D44) — 이름: characters.md 실명, 나이: D44 확정, 직책: characters.md 역할 */
 R01.STAFF = {
-  A: { name: '엘리넛 쇼', age: 52, role: '연구 담당', initial: '엘' },
+  A: { name: '엘리넛 쇼', age: 49, role: '연구 담당', initial: '엘' },
   B: { name: '마거릿 베일', age: 38, role: '인사/기록 담당', initial: '마' },
   C: { name: '피터 하그리브스', age: 45, role: '보안 담당', initial: '피' }
 };
