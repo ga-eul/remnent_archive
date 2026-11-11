@@ -12,7 +12,8 @@ R01.ASSETS = {
   ramiRealize: 'assets/img/rami-realize.png',      // 인트라넷 UI/래미/래미_깨달음.png (제한구역)
   ramiChat: 'assets/img/rami-chat.png',            // 인트라넷 UI/래미_대화창/래미_대화창_1.png (AI 창 위로 내민 래미만 잘라 씀)
   intranetHero: 'assets/img/intranet-hero.jpg',    // 인트로 허브의 회사 건물 사진 (허브 파일 안 EMBEDDED_INTRO에서 꺼냄)
-  noiseGlitch: 'assets/img/noise-glitch.jpg'       // 수정 요청/노이즈 연출.jpg (1600px로 줄임). 3차 수색 진입 노이즈
+  noiseGlitch: 'assets/img/noise-glitch.jpg',      // 수정 요청/노이즈 연출.jpg (1600px로 줄임). 3차 수색 진입 노이즈
+  ending1Bg: 'assets/img/ending1-bg.jpg'           // 엔딩/엔딩1_복사.jpg (1600px로 줄임). 엔딩 1 연출 화면 배경
   // 인트라넷 UI/오프닝.jpg(아이콘 있는 바탕화면)는 D35로 쓰지 않는다. 배경은 같은 남색을 CSS로 칠한다
 };
 

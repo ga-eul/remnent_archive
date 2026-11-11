@@ -154,6 +154,10 @@ button,input{font:inherit;color:inherit}
 
 /* ---------- 엔딩 (화면 전체) ---------- */
 .ending-screen{min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:16px;max-width:760px;margin:0 auto;padding:40px 20px}
+.ending-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#04090c center/cover no-repeat}
+.ending-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(4,9,12,.72) 0%,rgba(4,9,12,.88) 70%)}
+.ending-screen.with-bg>:not(.ending-bg){position:relative;z-index:1}
+.ending-screen.with-bg .seq-row{background:rgba(11,16,24,.85)}
 .seq{display:flex;flex-direction:column;gap:10px;min-height:260px}
 .seq-title{font-size:20px;font-weight:700;margin-bottom:6px}
 .seq-row{display:flex;justify-content:space-between;gap:16px;padding:10px 14px;border:1px solid var(--line);border-radius:6px;background:#0b1018;animation:fadeIn .4s ease}

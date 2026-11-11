@@ -154,7 +154,9 @@ window.R01 = window.R01 || {};
     if (endPhase === 'seq') {
       const box = h('div', { class: 'seq' });
       const act = h('div', { class: 'row end' });
-      const wrap = h('section', { class: 'ending-screen' }, h('p', { class: 'step mono' }, E.sub), box, act);
+      // 엔딩 1 연출 화면은 엔딩1.png를 어둡게 깐 배경 위에 글자를 띄운다
+      const bg = s.ending_id === 1 ? h('div', { class: 'ending-bg', style: 'background-image:url(' + R.ASSETS.ending1Bg + ')', 'aria-hidden': 'true' }) : null;
+      const wrap = h('section', { class: 'ending-screen' + (bg ? ' with-bg' : '') }, bg, h('p', { class: 'step mono' }, E.sub), box, act);
       const fn = { 1: seq1, 2: seq2, 3: seq3 }[s.ending_id];
       setTimeout(() => fn(s, box, () => act.append(button(F.toJoint, () => { endPhase = 'result'; R.app.render(); }, { primary: true }))), 0);
       return wrap;
