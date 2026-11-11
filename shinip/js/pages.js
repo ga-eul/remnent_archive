@@ -225,8 +225,7 @@ window.R01 = window.R01 || {};
           h('span', { class: 'map-name' }, pl.name),
           open ? h('span', { class: 'map-got' }, '확보 ' + n) : h('span', { class: 'map-lock' }, '출입 통제'),
           open && placeDone(s, pl.id) ? doneBadge() : null);
-        }),
-        h('span', { class: 'map-entrance mono' }, 'ENTRANCE')));
+        })));
   }
 
   /* 장소 화면: 조사 지점을 누르면 자료 창, 자료 창을 닫으면 다시 이 화면 */

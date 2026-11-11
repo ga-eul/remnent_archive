@@ -70,7 +70,7 @@ button,input{font:inherit;color:inherit}
 .map-got{font-size:12px;font-weight:400;color:var(--muted)}
 
 /* 수색: 장소 목록 (사내 약도) */
-.map{position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(140px,1fr));gap:14px;padding:22px 22px 44px;
+.map{position:relative;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(140px,1fr));gap:14px;padding:22px;
   border:2px solid #2a3c5e;border-radius:6px;background:#0a1324;
   background-image:linear-gradient(rgba(46,230,214,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(46,230,214,.05) 1px,transparent 1px);background-size:24px 24px}
 .map-room{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #3a5076;border-radius:4px;
@@ -209,8 +209,6 @@ button,input{font:inherit;color:inherit}
 .iv-main .iv-next{margin:14px 16px 0}
 .side-tabs button{white-space:nowrap}
 .evi-meta.two{grid-template-columns:1fr 1fr}
-.map-entrance{position:absolute;left:22px;bottom:12px;font-size:11px;letter-spacing:.2em;color:#c8a978}
-.map-entrance::after{content:'';display:block;width:90px;height:4px;margin-top:4px;background:#c8a978}
 @media (max-width:640px){.map{grid-template-columns:1fr 1fr}.map-room.control{grid-column:auto}}
 
 /* 수색: 장소 화면 */
