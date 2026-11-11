@@ -1,7 +1,6 @@
 /* 에셋 목록 (prd.md 1절 원칙 3: 화면별 이미지 경로를 이 파일 하나에 모은다)
    코드는 이 목록의 이름만 참조한다. 교체는 같은 파일명으로 덮어쓰거나 여기 한 줄만 고친다.
-   원본은 저장소의 `인트라넷 UI/` 폴더에 있고, 쓰는 것만 shinip/assets/img/ 로 복사해 영문 이름으로 둔다.
-   아바타 사진은 아직 에셋이 없어 코드로 그린 임시 실루엣을 쓴다 (prd.md 1절 원칙 4). */
+   원본은 저장소의 `인트라넷 UI/` 폴더에 있고, 쓰는 것만 shinip/assets/img/ 로 복사해 영문 이름으로 둔다. */
 window.R01 = window.R01 || {};
 R01.ASSETS = {
   openingNotice: 'assets/img/opening-frame.png',   // 인트라넷 UI/오프닝용.png (글자 없는 틀)
@@ -17,10 +16,11 @@ R01.ASSETS = {
   // 인트라넷 UI/오프닝.jpg(아이콘 있는 바탕화면)는 D35로 쓰지 않는다. 배경은 같은 남색을 CSS로 칠한다
 };
 
-/* 임시 아바타 4종 (사진 에셋이 생기면 이 목록의 src로 교체) */
+/* 사원증 사진 4종: 원본은 저장소의 `아바타/아바타-01~04.jpg`.
+   원형 칸에 맞게 머리·어깨 중심으로 정사각형(480px)으로 잘라 둔 것을 쓴다. tone은 이미지가 뜨기 전 바탕색 */
 R01.AVATARS = [
-  { id: 0, tone: '#2c4a63' },
-  { id: 1, tone: '#3b4f3f' },
-  { id: 2, tone: '#53405e' },
-  { id: 3, tone: '#5e4a35' }
+  { id: 0, tone: '#2c4a63', src: 'assets/img/avatar-01.jpg' },
+  { id: 1, tone: '#3b4f3f', src: 'assets/img/avatar-02.jpg' },
+  { id: 2, tone: '#53405e', src: 'assets/img/avatar-03.jpg' },
+  { id: 3, tone: '#5e4a35', src: 'assets/img/avatar-04.jpg' }
 ];

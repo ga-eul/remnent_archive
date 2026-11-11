@@ -26,9 +26,13 @@ window.R01 = window.R01 || {};
   let pickedAvatar = null;
   let monoIndex = 0;
 
-  /* 임시 아바타: 코드로 그린 실루엣 */
+  /* 아바타: 고른 사원증 사진. 고르기 전이나 사진이 없는 인물(심문 상대 등)은 코드로 그린 실루엣 */
   P.avatar = function (id, size) {
     const a = R.AVATARS.find((x) => x.id === id);
+    if (a && a.src) {
+      return h('span', { class: 'avatar', style: 'width:' + size + 'px;height:' + size + 'px;background:' + a.tone },
+        h('img', { src: a.src, alt: '' }));
+    }
     const svg = '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="' + (a ? a.tone : '#1f3a52') +
       '"/><circle cx="50" cy="40" r="17" fill="#8aa7b9"/><path d="M18 88c4-20 18-30 32-30s28 10 32 30" fill="#8aa7b9"/></svg>';
     const el = h('span', { class: 'avatar', style: 'width:' + size + 'px;height:' + size + 'px' });
