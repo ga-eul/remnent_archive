@@ -287,7 +287,7 @@ computeGrade(id): n = count(true in GRADE_KEYS[id])
 - R-05 05-B는 05-B-VHS와 05-B-PERSONNEL 두 상태값으로 추적한다.
 - R-06 06-C·06-F·C02·C03·C09·C12는 결번이다.
 - R-07 06-G 표시명은 **‘사용자 식별 실패 보고서’**다. 본문은 한 가지: "계정과 실험 기록은 연결되어 있지만, 실제 사용자 신원은 확인할 수 없음".
-- R-08 세계관 표기: A = Dr. Eleanor Shaw, B = Margaret Vale, C = Peter Hargreaves, HUMAN-01 = Thomas Reid, HUMAN-02 = Lena Hart. 플레이어는 실제 인간 HUMAN-04. 에드워드 밀러는 전임자·HUMAN-03 실험 대상·CCTV 속 제4의 인물·실험 실패로 기록이 삭제된 인물(게임 화면에는 HUMAN-03으로만 표시). 래미는 RAMI.
+- R-08 세계관 표기: A = Dr. Elliot Shaw, B = Margaret Vale, C = Peter Hargreaves, HUMAN-01 = Thomas Reid, HUMAN-02 = Lena Hart. 플레이어는 실제 인간 HUMAN-04. 에드워드 밀러는 전임자·HUMAN-03 실험 대상·CCTV 속 제4의 인물·실험 실패로 기록이 삭제된 인물(게임 화면에는 HUMAN-03으로만 표시). 래미는 RAMI.
 - R-09 메신저 위젯 규칙 (8절 참고).
 - R-09a 자료의 시각은 정답 타임라인을 따른다.
 - R-09b 삭제된 직원의 사번은 RA-(삭제 코드). 범례는 05-D에서만 공개.

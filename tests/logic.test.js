@@ -142,7 +142,7 @@ ok(gsum.length === 3 && gsum[0].point === '3차 수색' && gsum[0].theme === '�
 const loaded = S.loadSave(saves[1].id);
 ok(loaded && loaded.page === '06' && loaded.player_name === '판2' && !loaded.final_deduction_started && S.status() === 'in_progress', 'D43 불러오면 3차 수색, 진행 중');
 ok(S.loadCase().player_name === '판2' && S.loadGlobal().progress['present-01'].point === '3차 수색', 'D43 진행 칸·진행 요약 갱신');
-ok(R.STAFF.A.name === '엘리너 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role === '보안 담당', 'D44 직원 이름·나이·직책');
+ok(R.STAFF.A.name === '엘리넛 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role === '보안 담당', 'D44 직원 이름·나이·직책');
 
 // 상단 진행 단계 표시줄: 이미 진행한 단계로만 이동, 자료·연결은 그대로, 최종 추론 뒤에는 불가
 {

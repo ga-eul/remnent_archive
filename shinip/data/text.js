@@ -4,7 +4,7 @@ window.R01 = window.R01 || {};
 
 /* 직원 표시 정보 (D44) — 이름: characters.md 실명, 나이: D44 확정, 직책: characters.md 역할 */
 R01.STAFF = {
-  A: { name: '엘리너 쇼', age: 52, role: '연구 담당', initial: '엘' },
+  A: { name: '엘리넛 쇼', age: 52, role: '연구 담당', initial: '엘' },
   B: { name: '마거릿 베일', age: 38, role: '인사/기록 담당', initial: '마' },
   C: { name: '피터 하그리브스', age: 45, role: '보안 담당', initial: '피' }
 };
@@ -13,7 +13,7 @@ R01.staffName = (who) => (R01.STAFF[who] ? R01.STAFF[who].name : who);
 /* 1절 심문 이벤트. lines: [말하는 사람, 대사] 목록 (C는 플레이어 되묻기 포함) */
 R01.INTERVIEW = {
   A: {
-    label: '엘리너 쇼', role: '연구 담당',
+    label: '엘리넛 쇼', role: '연구 담당',
     qa: [
       { q: 'Q1. 직원 명부에는 세 명뿐인데 CCTV에는 다른 사람이 보입니다. 어떻게 생각합니까?',
         lines: [['A', 'CCTV에 오류가 있을 가능성도 있습니다. 직원 명부는 현재 정상적으로 등록된 인원을 기준으로 작성됩니다. 등록되지 않은 사람이 보였다는 이유만으로 명부가 잘못됐다고 판단하기는 어렵습니다.']] },
