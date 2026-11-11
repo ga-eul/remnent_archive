@@ -115,8 +115,9 @@ window.R01 = window.R01 || {};
         monoIndex = 0;
         commit((st) => L.openingNext(st));
       };
+      const line = lines[monoIndex];
       const box = h('button', { type: 'button', class: 'mono-box', style: 'background-image:url(' + A.dialogueFrame + ')', onClick: next },
-        h('span', { class: 'mono-text' }, lines[monoIndex]), h('span', { class: 'notice-next', 'aria-hidden': 'true' }, '▶'));
+        h('span', { class: 'mono-text' + (line.highlight ? ' highlight' : '') }, line.text || line), h('span', { class: 'notice-next', 'aria-hidden': 'true' }, '▶'));
       setTimeout(() => box.focus(), 0);
       return h('div', { class: 'scene', style: 'background-image:url(' + A.monologueBg + ')' }, box);
     }
