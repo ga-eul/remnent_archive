@@ -172,6 +172,14 @@ ok(R.STAFF.A.name === '엘리넛 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role 
   ok(!/HUMAN|중단|실패|04회차/.test(c) && c.includes('확인 불가'), 'D58 05-C 절차 기록만 (HUMAN 번호·판정 없음)');
 }
 
+// D62·R-32: 05-B-PERSONNEL 화면 표시명·문서 제목에 결론(삭제된 직원) 금지
+{
+  const c = L.clue('05B_PERSONNEL');
+  const doc = fs.readFileSync(path.join(dir, R.CLUE_ASSETS['05B_PERSONNEL'].html), 'utf8');
+  ok(c.name === '인사·업무 기록' && !/삭제/.test(c.name + R.SPOTS['05B_PERSONNEL'].summary.join('')), 'D62 05-B-PERSONNEL 표시명');
+  ok(!doc.includes('삭제된 직원'), 'D62 05-B-PERSONNEL 문서 제목에 결론 없음');
+}
+
 // 금지 문자열 (CLAUDE.md 절대 금지)
 const all = fs.readdirSync(dir, { recursive: true }).filter((f) => /\.(js|html|css)$/.test(f))
   .map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n');

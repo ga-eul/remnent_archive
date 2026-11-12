@@ -14,7 +14,8 @@ R01.CLUES = [
   { id: '04-A', key: '04A', name: '직원 면담 종합 기록', type: 'doc', source: 'interview' },
   { id: '05-A', key: '05A', name: '인간과 기계의 업무 비교', type: 'doc', place: 'archive', search: 2 },
   { id: '05-B-VHS', key: '05B_VHS', name: '복구된 영상 기록', type: 'cctv', place: 'control', search: 2, bundle: '05-B' },
-  { id: '05-B-PERSONNEL', key: '05B_PERSONNEL', name: '삭제된 직원의 원본 인사 기록', type: 'doc', place: 'control', search: 2, bundle: '05-B' },
+  // 05-B-PERSONNEL: 화면 표시명은 ‘인사·업무 기록’ (D62, R-32). 개발자 내부 이름은 ‘삭제된 직원의 원본 인사 기록’
+  { id: '05-B-PERSONNEL', key: '05B_PERSONNEL', name: '인사·업무 기록', type: 'doc', place: 'control', search: 2, bundle: '05-B' },
   { id: '05-C', key: '05C', name: '기억 추출 실험 기록', type: 'doc', place: 'lab', search: 2 },
   { id: '05-D', key: '05D', name: '이전 실험 참가자 자료', type: 'doc', place: 'lab', search: 2, requires: ['05C'] },
   { id: '05-E', key: '05E', name: '보안 시스템 예외 접근 기록', type: 'doc', place: 'control', search: 2 },
@@ -37,7 +38,7 @@ R01.SPOTS = {
   '03C': { spot: '책상 서랍', summary: ['생활공간에서 나온 두 권의 일기.'] },
   '05A': { spot: '업무 자료 캐비닛', summary: ['사람의 업무와 기계의 업무를 비교한 자료.'] },
   '05B_VHS': { spot: '기록 복구 장비', summary: ['손상된 CCTV 프레임을 복구한 영상.'] },
-  '05B_PERSONNEL': { spot: '기록 복구 장비', summary: ['삭제된 직원의 원본 인사 기록.'] },
+  '05B_PERSONNEL': { spot: '기록 복구 장비', summary: ['기록 복구 장비에서 나온 인사·업무 기록.'] },
   '05C': { spot: '실험 기록 단말', summary: ['기억 추출과 백업에 관한 실험 기록.'] },
   '05D': { spot: '참가자 자료 보관함', summary: ['이전 실험 참가자들의 기록.'] },
   '05E': { spot: '보안 시스템 단말', summary: ['보안 시스템에 남은 예외 접근 기록.'] },
