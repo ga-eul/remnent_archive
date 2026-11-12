@@ -77,7 +77,7 @@ window.R01 = window.R01 || {};
           h('p', { class: 'in-hero-sub' }, h('em', null, hero.subAccent), hero.sub),
           h('p', { class: 'in-hero-desc' }, hero.desc),
           h('div', { class: 'row' },
-            button(hero.more, () => toast('[3단계 임시] 회사 소개는 이후 단계에서 연결합니다'), { small: true })))),
+            button(hero.more, () => {}, { small: true })))),   // 회사 소개 화면은 아직 없음 (누르면 반응 없음)
       h('section', { class: 'in-cards' },
         h('article', { class: 'in-card light' },
           h('div', { class: 'in-card-head' }, h('h2', null, '사내 공지사항'),
@@ -138,8 +138,7 @@ window.R01 = window.R01 || {};
     if (ui.tab === 'schedule') return scheduleTab(s);
     if (ui.tab === 'notice') return noticeTab();
     return h('section', { class: 'in-page' }, h('h2', null, '업무 기록'),
-      h('p', null, s.player_name + ' · ' + O.dept + ' · ', h('span', { class: 'mono accent' }, O.employeeNo)),
-      h('p', { class: 'temp' }, '[3단계 임시] 아직 기록된 업무가 없습니다. 조사 기록은 4단계에서 연결합니다.'));
+      h('p', null, s.player_name + ' · ' + O.dept + ' · ', h('span', { class: 'mono accent' }, O.employeeNo)));
   }
 
   /* ---------- 사내 메신저 (사내 메신저.png 시안) ---------- */
