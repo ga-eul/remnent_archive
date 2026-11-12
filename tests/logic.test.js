@@ -158,6 +158,20 @@ ok(R.STAFF.A.name === '엘리넛 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role 
   ok(L.newState().memo === '' && 'memo' in L.newState(), '추리 메모장 칸');
 }
 
+// 단서 에셋 연결 (D54~D58): 모든 자료에 에셋이 있고, 등록 경로의 파일이 실제로 있다
+{
+  const A = R.CLUE_ASSETS;
+  ok(R.CLUES.every((c) => A[c.key] && A[c.key].kind !== 'pending'), 'D58 모든 자료에 에셋 연결 (에셋 준비 중 없음)');
+  const files = Object.values(A).flatMap((a) => [a.html, a.img, a.video, a.fallback].filter(Boolean));
+  ok(files.every((f) => fs.existsSync(path.join(dir, f))), 'CLUE_ASSETS 경로의 파일이 모두 있음');
+  const g = fs.readFileSync(path.join(dir, A['06G'].html), 'utf8');
+  ok(g.includes('계정과 실험 기록은 연결되어 있지만, 실제 사용자 신원은 확인할 수 없음'), 'R-07 06-G 본문');
+  ok(!/인사 기록|미등록|TEMP|HUMAN-04|06-D\/E/.test(g), 'D28 ⑨ 06-G에 06-D/E 표기·지시 없음');
+  ok(!R.SPOTS['06G'].summary.join('').includes('신원은 확인할 수 없음'), 'D40 ③ 06-G 기록 요약에 본문 없음');
+  const c = fs.readFileSync(path.join(dir, A['05C'].html), 'utf8');
+  ok(!/HUMAN|중단|실패|04회차/.test(c) && c.includes('확인 불가'), 'D58 05-C 절차 기록만 (HUMAN 번호·판정 없음)');
+}
+
 // 금지 문자열 (CLAUDE.md 절대 금지)
 const all = fs.readdirSync(dir, { recursive: true }).filter((f) => /\.(js|html|css)$/.test(f))
   .map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n');

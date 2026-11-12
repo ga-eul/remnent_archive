@@ -296,7 +296,12 @@ window.R01 = window.R01 || {};
     if (!a) return tempPhoto(x);
     if (a.kind === 'pending') return tempPhoto(x, '[에셋 준비 중]');
     if (a.kind === 'doc') return h('div', { class: 'clue-doc' }, docFrame(a.html, 'clue-frame', x.name, a.fallback));
-    if (a.kind === 'image') return imageView(a, x);
+    if (a.kind === 'image') {
+      const image = imageView(a, x);
+      if (!a.html) return image;
+      return h('div', null, image, h('div', { class: 'clue-doc' },
+        docFrame(a.html, 'clue-frame', '업무 기록')));
+    }
     if (a.kind === 'cctv') return cctvView(a, x);
     if (a.kind === 'overlay') return overlayView(a, x);
     return tempPhoto(x);

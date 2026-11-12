@@ -24,24 +24,30 @@ R01.ASSETS = {
    patches.box: 이미지 안 위치 [왼쪽, 위, 너비, 높이] (%). 이미지에 그려진 글자를 설정에 맞게 덮는다 */
 R01.CLUE_ASSETS = {
   // 03-A: 이미지의 A 이름(엘리너 쇼 / Eleanor Shaw)을 엘리넛 쇼 / Elliot Shaw로 덮는다 (D49·D54)
-  '03A': { kind: 'image', img: 'assets/clue/clue-03a.png', ratio: '1671 / 941',
+  '03A': { kind: 'image', img: 'assets/clue/clue-03a.png', html: 'assets/clue/clue-03a-worklog.html', ratio: '1671 / 941',
     patches: [{ box: [19.6, 47, 18.1, 8.3], bg: '#0a1113', lines: ['엘리넛 쇼', 'Elliot Shaw'] }] },
   // 03-B: 사건일 4XXX.01.24 16:40 (world.md 정답 타임라인). 영상 8초 동안 16:39:30 → 16:41:30
   '03B': { kind: 'cctv', img: 'assets/clue/clue-03b.jpg', video: 'assets/clue/clue-03b.mp4', ratio: '1671 / 941',
     cam: 'CAM 02', date: '4XXX.01.24', still: ['16:39:12', '16:40:07', '16:41:03'], from: '16:39:30', to: '16:41:30' },
   '03C': { kind: 'overlay', img: 'assets/clue/clue-03c.png', html: 'assets/clue/clue-03c.html', ratio: '1536 / 1024' },
   '05A': { kind: 'doc', html: 'assets/clue/clue-05a.html' },
-  '05C': { kind: 'pending' },                                   // 에셋 미제작
+  '05C': { kind: 'doc', html: 'assets/clue/clue-05c.html' },
   '05D': { kind: 'doc', html: 'assets/clue/clue-05d.html', fallback: 'assets/clue/clue-05d.png' }, // png는 대체용만
-  // 05-B 묶음 (R-18a): 복구된 영상은 손상된 CCTV 연출. 화면에 SUBJECT 등 대상자 표기 금지 (D13·D14). 영상 약 4초.
+  // 05-B 묶음 (R-18a): 복구된 영상은 손상된 CCTV 연출. 화면에 SUBJECT 등 대상자 표기 금지 (D13·D14). 영상 6초 (1024×576).
   // 영상에는 ‘BLD.A / LABORATORY’와 ‘4XXX-01-24 16:40:23’이 고정으로 찍혀 있어, 정지 이미지에만 같은 표기를 올리고
   // 재생 중에는 덧씌운 표시를 숨긴다 (hudOnVideo: false)
   '05B_VHS': { kind: 'cctv', vhs: true, hudOnVideo: false, img: 'assets/clue/clue-05b-vhs.png', video: 'assets/clue/clue-05b-vhs.mp4', ratio: '1671 / 941',
     rec: 'BLD.A / LABORATORY', cam: '', date: '4XXX-01-24', still: ['16:40:23'], from: '16:40:23', to: '16:40:23' },
   '05B_PERSONNEL': { kind: 'doc', html: 'assets/clue/clue-05b-personnel.html' },
-  '06DE': { kind: 'doc', html: 'assets/clue/clue-06de.html' },  // 제작_에셋/06-DE.html은 같은 내용의 중복 파일이라 쓰지 않음
+  '06DE': { kind: 'doc', html: 'assets/clue/clue-06de.html' },
   '06A': { kind: 'doc', html: 'assets/clue/clue-06a.html' },
-  '06B': { kind: 'doc', html: 'assets/clue/clue-06b.html' }
+  '06B': { kind: 'doc', html: 'assets/clue/clue-06b.html' },
+  // ③ 선택·보조 (D58)
+  '05E': { kind: 'doc', html: 'assets/clue/clue-05e.html' },
+  '06S': { kind: 'doc', html: 'assets/clue/clue-06s.html' },
+  '04A': { kind: 'doc', html: 'assets/clue/clue-04a.html' },   // 고정 문서 (심문 Q1~Q4 전부 필수라 내용이 같음)
+  // 06-G: 고정 문서, 본문 한 가지 (R-07). 화면 표시는 C13 연결 단계뿐 (R-53) — clue_order에 들어갈 때만 보인다
+  '06G': { kind: 'doc', html: 'assets/clue/clue-06g.html' }
 };
 
 /* 심문 화면 직원 사진: 원본은 저장소의 `직원/엘리넛_쇼.png`·`마거릿_베일.png`·`피터_하그리브스.png`.

@@ -9,6 +9,7 @@
     .interview-summary { overflow-x: auto; }
     .interview-summary th[scope="row"] { white-space: nowrap; }
     .interview-summary td { text-align: left; }
+    .interview-summary .role { color: var(--muted); font-weight: 400; }
   </style>
 </head>
 <body style="margin: 0; padding: clamp(12px, 3vw, 38px); background: #090f11;">
@@ -28,9 +29,9 @@
             <tr><th scope="col">면담 대상</th><th scope="col">CCTV 관련 답변</th><th scope="col">기록과 기억이 다를 때</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">직원 A<small>연구 담당</small></th><td>영상 오류 가능성을 제기했다. 명부에 없는 인물이 실제로 있었는지는 판단할 근거가 부족하다고 답했다.</td><td>개인의 기억이나 목격보다 같은 기준으로 남긴 기록을 우선한다.</td></tr>
-            <tr><th scope="row">직원 B<small>인사·기록 담당</small></th><td>명부와 영상이 다르다는 사실은 면담에서 처음 들었다고 답했다. CCTV 쪽 오류 가능성을 언급했다.</td><td>자신이 잘못 기억했을 가능성을 먼저 생각하고 회사 기록을 다시 확인한다.</td></tr>
-            <tr><th scope="row">직원 C<small>보안 담당</small></th><td>영상이 등록된 출입 기록과 맞지 않는다고 답했다. 인물이 누구인지는 확인 중이라고 했다.</td><td>어느 쪽도 곧바로 믿지 않고 시간과 동선부터 다시 확인한다.</td></tr>
+            <tr><th scope="row">엘리넛 쇼 · <span class="role">연구 담당</span></th><td>영상 오류 가능성을 제기했다. 명부에 없는 인물이 실제로 있었는지는 판단할 근거가 부족하다고 답했다.</td><td>개인의 기억이나 목격보다 같은 기준으로 남긴 기록을 우선한다.</td></tr>
+            <tr><th scope="row">마거릿 베일 · <span class="role">인사·기록 담당</span></th><td>명부와 영상이 다르다는 사실은 면담에서 처음 들었다고 답했다. CCTV 쪽 오류 가능성을 언급했다.</td><td>자신이 잘못 기억했을 가능성을 먼저 생각하고 회사 기록을 다시 확인한다.</td></tr>
+            <tr><th scope="row">피터 하그리브스 · <span class="role">보안 담당</span></th><td>영상이 등록된 출입 기록과 맞지 않는다고 답했다. 인물이 누구인지는 확인 중이라고 했다.</td><td>어느 쪽도 곧바로 믿지 않고 시간과 동선부터 다시 확인한다. 공식 기록도 사람이 남기는 것이므로 틀릴 수 있다고 답했다.</td></tr>
           </tbody>
         </table>
       </div>
@@ -39,7 +40,7 @@
       <h2 id="identification-summary">인물 식별 여부</h2>
       <p>세 직원의 답변에서 CCTV 속 인물의 신원은 확인되지 않았다.</p>
     </section>
-    <footer class="ra-footer">면담 기록 · 직원 A·B·C 면담 완료 후 생성</footer>
+    <footer class="ra-footer">면담 기록 · 세 직원 면담 완료 후 생성</footer>
   </article>
 </body>
 </html>

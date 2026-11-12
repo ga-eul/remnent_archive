@@ -42,10 +42,28 @@
   font: 700 1.2em/1 Arial, sans-serif;
 }
 .ra-mark {
+  position: relative;
+  flex: none;
   width: 2em;
   height: 2em;
+  background:
+    linear-gradient(var(--ink), var(--ink)) left top / 15% 12% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) left 54% / 15% 60% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) left bottom / 15% 13% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center bottom / 54% 13% no-repeat;
+}
+.ra-mark::before,
+.ra-mark::after {
+  position: absolute;
+  inset: 0;
+  content: "";
   background: var(--ink);
-  clip-path: polygon(0 0, 15% 0, 15% 13%, 0 13%, 0 18%, 15% 18%, 15% 100%, 0 100%, 0 88%, 21% 88%, 21% 100%, 77% 100%, 65% 87%, 21% 87%, 21% 36%, 61% 79%, 21% 79%, 21% 87%, 26% 19%, 43% 19%, 100% 79%, 79% 79%, 26% 19%, 0 18%);
+}
+.ra-mark::before {
+  clip-path: polygon(23% 19%, 46% 19%, 100% 79%, 79% 79%);
+}
+.ra-mark::after {
+  clip-path: polygon(23% 33%, 64% 79%, 23% 79%);
 }
 .ra-heading {
   display: flex;

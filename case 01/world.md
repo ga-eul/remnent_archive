@@ -42,7 +42,7 @@
 | 실험 | 결과 | 핵심 질문 / 결론 |
 |---|---|---|
 | HUMAN-01 MEMORY EXTRACTION | 기술적 성공 | 기억 추출 가능. 그러나 기억만으로 판단을 재현하지 못함 |
-| HUMAN-02 MEMORY REPLICATION | 부분적 성공 | 원본과 복제본의 판단이 달라짐. 기억 ≠ 자아 (03-C 두 일기의 근거) |
+| HUMAN-02 MEMORY REPLICATION | 부분적 성공 | 원본과 복제본의 판단이 달라짐. 기억 ≠ 자아 |
 | HUMAN-03 IDENTITY PRESERVATION | 실패 | 대상(에드워드 밀러)이 정체성 부정·실험 거부. 기록 삭제·은폐 |
 | HUMAN-04 SELF DATAIZATION | 진행 중 | 실제 인간(플레이어)의 행동과 선택을 관찰해 5개 데이터 수집 |
 
