@@ -13,7 +13,11 @@ R01.ASSETS = {
   ramiChat: 'assets/img/rami-chat.png',            // 인트라넷 UI/래미_대화창/래미_대화창_1.png (AI 창 위로 내민 래미만 잘라 씀)
   intranetHero: 'assets/img/intranet-hero.jpg',    // 인트로 허브의 회사 건물 사진 (허브 파일 안 EMBEDDED_INTRO에서 꺼냄)
   noiseGlitch: 'assets/img/noise-glitch.jpg',      // 수정 요청/노이즈 연출.jpg (1600px로 줄임). 3차 수색 진입 노이즈
-  ending1Bg: 'assets/img/ending1-bg.jpg'           // 엔딩/엔딩1_복사.jpg (1600px로 줄임). 엔딩 1 연출 화면 배경
+  ending1Bg: 'assets/img/ending1-bg.jpg',          // 엔딩/엔딩1_복사.jpg (1600px로 줄임). 엔딩 1 연출 화면 배경
+  ending2Bg: 'assets/img/ending2-bg.jpg',          // 엔딩/엔딩2-1.png (1600px jpg로 줄임). 엔딩 2 연출 화면 배경
+  // 엔딩 3 연출 화면 배경은 사원증 아바타에 따라 나뉜다 (1600px jpg로 줄임)
+  ending3BgG: 'assets/img/ending3-bg-g.jpg',       // 엔딩/엔딩3_g.png — 아바타-01·04 (player_avatar 0·3)
+  ending3BgM: 'assets/img/ending3-bg-m.jpg'        // 엔딩/엔딩3_m.png — 아바타-02·03 (player_avatar 1·2)
   // 인트라넷 UI/오프닝.jpg(아이콘 있는 바탕화면)는 D35로 쓰지 않는다. 배경은 같은 남색을 CSS로 칠한다
 };
 

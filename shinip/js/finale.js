@@ -154,8 +154,11 @@ window.R01 = window.R01 || {};
     if (endPhase === 'seq') {
       const box = h('div', { class: 'seq' });
       const act = h('div', { class: 'row end' });
-      // 엔딩 1 연출 화면은 엔딩1.png를 어둡게 깐 배경 위에 글자를 띄운다
-      const bg = s.ending_id === 1 ? h('div', { class: 'ending-bg', style: 'background-image:url(' + R.ASSETS.ending1Bg + ')', 'aria-hidden': 'true' }) : null;
+      // 엔딩 1·2 연출 화면은 엔딩 이미지를 어둡게 깐 배경 위에 글자를 띄운다
+      // 엔딩 3은 사원증 아바타에 따라 두 장 중 하나: 아바타-01·04 → 엔딩3_g, 아바타-02·03 → 엔딩3_m
+      const end3 = s.player_avatar === 1 || s.player_avatar === 2 ? R.ASSETS.ending3BgM : R.ASSETS.ending3BgG;
+      const bgSrc = { 1: R.ASSETS.ending1Bg, 2: R.ASSETS.ending2Bg, 3: end3 }[s.ending_id];
+      const bg = bgSrc ? h('div', { class: 'ending-bg', style: 'background-image:url(' + bgSrc + ')', 'aria-hidden': 'true' }) : null;
       const wrap = h('section', { class: 'ending-screen' + (bg ? ' with-bg' : '') }, bg, h('p', { class: 'step mono' }, E.sub), box, act);
       const fn = { 1: seq1, 2: seq2, 3: seq3 }[s.ending_id];
       setTimeout(() => fn(s, box, () => act.append(button(F.toJoint, () => { endPhase = 'result'; R.app.render(); }, { primary: true }))), 0);
