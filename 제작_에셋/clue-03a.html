@@ -8,6 +8,8 @@
   <style>
     .directory-table { overflow-x: auto; }
     .directory-table table { min-width: 530px; }
+    .directory-accounts { border-top: 1px solid var(--rule); }
+    .directory-accounts table { width: min(100%, 75ch); margin-inline: auto; }
     .directory-active::before {
       display: inline-block;
       width: .65em;
@@ -50,6 +52,17 @@
           </tbody>
         </table>
       </div>
+    </section>
+    <section class="directory-accounts" aria-labelledby="security-accounts">
+      <h2 id="security-accounts">보안 시스템 계정 배정</h2>
+      <table aria-labelledby="security-accounts">
+        <thead>
+          <tr><th scope="col">담당 사원번호</th><th scope="col">배정 계정</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">C-03</th><td>SEC-17</td></tr>
+        </tbody>
+      </table>
     </section>
     <footer class="ra-footer directory-footer">
       <span>※ 본 명부는 현재 시스템에 등록된 재직자 기준으로 작성되었습니다.</span>
