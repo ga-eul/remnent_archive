@@ -28,14 +28,14 @@ R01.ASSETS = {
    patches.box: 이미지 안 위치 [왼쪽, 위, 너비, 높이] (%). 이미지에 그려진 글자를 설정에 맞게 덮는다
    patches.img: 글자 대신 이미지(로고)를 덮어 올린다. baseImg·hoverImg가 있으면 img는 늘 보이고, 마우스를 올렸을 때 baseImg가 hoverImg로 바뀐다 (로고 앰블럼) */
 /* 자료 HTML 문서의 버전. 단서 문서(assets/clue/*.html)를 고치면 숫자를 올린다 — 자료 창이 브라우저에 남은 예전 문서 대신 새 문서를 연다 */
-R01.ASSET_VER = '9';
+R01.ASSET_VER = '10';
 R01.CLUE_ASSETS = {
   // 03-A: 직원 명부와 업무 기록을 한 단서의 두 문서로 표시
   '03A': { kind: 'doc', html: 'assets/clue/clue-03a.html', appendix: 'assets/clue/clue-03a-worklog.html' },
   // 03-B: 사건일 4XXX.01.24 16:40 (world.md 정답 타임라인). 영상 8초 동안 16:39:30 → 16:41:30
   '03B': { kind: 'cctv', img: 'assets/clue/clue-03b.jpg', video: 'assets/clue/clue-03b.mp4', ratio: '1671 / 941',
     cam: 'CAM 02', date: '4XXX.01.24', still: ['16:39:12', '16:40:07', '16:41:03'], from: '16:39:30', to: '16:41:30' },
-  '03C': { kind: 'overlay', img: 'assets/clue/clue-03c.png', html: 'assets/clue/clue-03c.html', ratio: '1536 / 1024' },
+  '03C': { kind: 'overlay', img: 'assets/clue/clue-03c.png', html: 'assets/clue/clue-03c.html', ratio: '1447 / 1087' },
   '05A': { kind: 'doc', html: 'assets/clue/clue-05a.html' },
   '05C': { kind: 'doc', html: 'assets/clue/clue-05c.html' },
   '05D': { kind: 'doc', html: 'assets/clue/clue-05d.html', fallback: 'assets/clue/clue-05d.png' }, // png는 대체용만

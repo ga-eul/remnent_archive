@@ -273,7 +273,7 @@ window.R01 = window.R01 || {};
     lens.innerHTML = LENS_SVG;                           // 고정 SVG
     const back = button('← 수첩으로', () => close(), { small: true });
     back.hidden = true;
-    const box = h('figure', { class: 'clue-over bare', style: 'background-image:url(' + a.img + ')',
+    const box = h('figure', { class: 'clue-over bare', style: 'aspect-ratio:' + a.ratio + ';background-image:url(' + a.img + (R.ASSET_VER ? '?v=' + R.ASSET_VER : '') + ')',
       role: 'button', tabindex: '0', 'aria-label': x.name + ' 펼쳐 보기' }, lens);
     const open = () => {
       if (!box.classList.contains('bare')) return;
