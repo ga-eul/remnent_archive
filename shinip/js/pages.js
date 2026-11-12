@@ -201,7 +201,8 @@ window.R01 = window.R01 || {};
   /* HTML 문서 창. 로컬 서버(같은 출처)로 열면 문서 높이에 맞춰 늘어나고,
      파일을 바로 열면(file://) 정해진 높이 안에서 스크롤한다 */
   function docFrame(src, cls, title, fallback) {
-    const f = h('iframe', { class: cls, src, title });
+    // 자료 문서는 주소에 에셋 버전을 붙여 연다 (브라우저에 남은 예전 문서를 쓰지 않게, assets.js ASSET_VER)
+    const f = h('iframe', { class: cls, src: src + (R.ASSET_VER ? (src.includes('?') ? '&' : '?') + 'v=' + R.ASSET_VER : ''), title });
     const fit = () => {
       try {
         const d = f.contentDocument;
@@ -210,7 +211,8 @@ window.R01 = window.R01 || {};
           f.replaceWith(h('img', { class: 'clue-fallback', src: fallback, alt: title }));
           return;
         }
-        if (cls === 'clue-frame') f.style.height = d.documentElement.scrollHeight + 'px';  // 겹치기 창은 이미지 크기 고정
+        // 문서 높이에 맞춘다. scrollHeight는 틀의 현재 높이(16:11)보다 작아지지 않아 아래에 빈 공간이 남으므로 body 높이를 잰다
+        if (cls === 'clue-frame') f.style.height = Math.ceil(d.body.getBoundingClientRect().height) + 'px';  // 겹치기 창은 이미지 크기 고정
       } catch (e) { /* 다른 출처(file://): 기본 높이 유지 */ }
     };
     f.addEventListener('load', () => { fit(); setTimeout(fit, 400); });  // 글꼴이 늦게 붙는 경우 한 번 더
@@ -221,9 +223,10 @@ window.R01 = window.R01 || {};
   function imageView(a, x) {
     return h('figure', { class: 'clue-img', style: 'aspect-ratio:' + a.ratio },
       h('img', { src: a.img, alt: x.name }),
-      (a.patches || []).map((p) => h('div', { class: 'clue-patch', 'aria-hidden': 'true',
+      (a.patches || []).map((p) => h('div', { class: 'clue-patch' + (p.img ? ' logo' : ''), 'aria-hidden': 'true',
         style: 'left:' + p.box[0] + '%;top:' + p.box[1] + '%;width:' + p.box[2] + '%;height:' + p.box[3] + '%;background:' + p.bg },
-      p.lines.map((t, i) => h('span', { class: i ? 'sub' : '' }, t)))));
+      p.img ? [h('img', { src: p.img, alt: '' }), p.baseImg ? h('img', { class: 'base', src: p.baseImg, alt: '' }) : null,
+        p.hoverImg ? h('img', { class: 'hover', src: p.hoverImg, alt: '' }) : null] : p.lines.map((t, i) => h('span', { class: i ? 'sub' : '' }, t)))));
   }
 
   /* CCTV: 정지 화면은 시각이 16:39 → 16:40 → 16:41로 넘어가고, [영상 재생]을 누르면 영상 재생 위치에 맞춰 시각이 바뀐다 (03-B) */

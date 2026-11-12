@@ -41,6 +41,12 @@
   border-bottom: 1px solid var(--muted);
   font: 700 1.2em/1 Arial, sans-serif;
 }
+/* 로고: 회사 이름은 그대로, 마우스를 올리면 앰블럼만 기본 가로형 → 사내 인트라넷 앰블럼 (세 이미지는 같은 범위로 잘라 위치가 맞음) */
+.ra-logo { position: relative; display: block; flex: none; height: 2.4em; aspect-ratio: 785 / 236; }
+.ra-logo img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .2s; }
+.ra-logo-hover, .ra-logo:hover .ra-logo-base { opacity: 0; }
+.ra-logo:hover .ra-logo-hover { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ra-logo img { transition: none; } }
 .ra-mark {
   position: relative;
   flex: none;
