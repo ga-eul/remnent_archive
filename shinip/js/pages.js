@@ -123,9 +123,10 @@ window.R01 = window.R01 || {};
         monoIndex = 0;
         commit((st) => L.openingNext(st));
       };
-      const line = lines[monoIndex];
+      const group = [].concat(lines[monoIndex]);   // 한 묶음(문단)의 줄들을 함께 보여 준다 (D66)
       const box = h('button', { type: 'button', class: 'mono-box', style: 'background-image:url(' + A.dialogueFrame + ')', onClick: next },
-        h('span', { class: 'mono-text' + (line.highlight ? ' highlight' : '') }, line.text || line), h('span', { class: 'notice-next', 'aria-hidden': 'true' }, '▶'));
+        h('span', { class: 'mono-text' }, group.map((line) => h('span', { class: 'mono-line' + (line.highlight ? ' highlight' : '') }, line.text || line))),
+        h('span', { class: 'notice-next', 'aria-hidden': 'true' }, '▶'));
       setTimeout(() => box.focus(), 0);
       return h('div', { class: 'scene', style: 'background-image:url(' + A.monologueBg + ')' }, box);
     }
