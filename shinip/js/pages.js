@@ -222,7 +222,7 @@ window.R01 = window.R01 || {};
   /* 문서 이미지 + 이미지 안 글자를 설정에 맞게 덮는 HTML 글자 (03-A) */
   function imageView(a, x) {
     return h('figure', { class: 'clue-img', style: 'aspect-ratio:' + a.ratio },
-      h('img', { src: a.img, alt: x.name }),
+      h('img', { src: a.img + (R.ASSET_VER ? '?v=' + R.ASSET_VER : ''), alt: x.name }),   // 이미지도 버전을 붙여 예전 사본을 쓰지 않게
       (a.patches || []).map((p) => h('div', { class: 'clue-patch' + (p.img ? ' logo' : ''), 'aria-hidden': 'true',
         style: 'left:' + p.box[0] + '%;top:' + p.box[1] + '%;width:' + p.box[2] + '%;height:' + p.box[3] + '%;background:' + p.bg },
       p.img ? [h('img', { src: p.img, alt: '' }), p.baseImg ? h('img', { class: 'base', src: p.baseImg, alt: '' }) : null,
@@ -298,13 +298,12 @@ window.R01 = window.R01 || {};
     const a = R.CLUE_ASSETS && R.CLUE_ASSETS[x.key];
     if (!a) return tempPhoto(x);
     if (a.kind === 'pending') return tempPhoto(x, '[에셋 준비 중]');
-    if (a.kind === 'doc') return h('div', { class: 'clue-doc' }, docFrame(a.html, 'clue-frame', x.name, a.fallback));
-    if (a.kind === 'image') {
-      const image = imageView(a, x);
-      if (!a.html) return image;
-      return h('div', null, image, h('div', { class: 'clue-doc' },
-        docFrame(a.html, 'clue-frame', '업무 기록')));
+    if (a.kind === 'doc') {
+      const main = docFrame(a.html, 'clue-frame', x.name, a.fallback);
+      return h('div', { class: 'clue-doc' }, main,
+        a.appendix ? docFrame(a.appendix, 'clue-frame', '업무 기록') : null);
     }
+    if (a.kind === 'image') return imageView(a, x);
     if (a.kind === 'cctv') return cctvView(a, x);
     if (a.kind === 'overlay') return overlayView(a, x);
     return tempPhoto(x);

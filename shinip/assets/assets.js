@@ -24,13 +24,10 @@ R01.ASSETS = {
    patches.box: 이미지 안 위치 [왼쪽, 위, 너비, 높이] (%). 이미지에 그려진 글자를 설정에 맞게 덮는다
    patches.img: 글자 대신 이미지(로고)를 덮어 올린다. baseImg·hoverImg가 있으면 img는 늘 보이고, 마우스를 올렸을 때 baseImg가 hoverImg로 바뀐다 (로고 앰블럼) */
 /* 자료 HTML 문서의 버전. 단서 문서(assets/clue/*.html)를 고치면 숫자를 올린다 — 자료 창이 브라우저에 남은 예전 문서 대신 새 문서를 연다 */
-R01.ASSET_VER = '5';
+R01.ASSET_VER = '6';
 R01.CLUE_ASSETS = {
-  // 03-A: 이미지의 A 이름(엘리너 쇼 / Eleanor Shaw)을 엘리넛 쇼 / Elliot Shaw로 덮는다 (D49·D54)
-  '03A': { kind: 'image', img: 'assets/clue/clue-03a.png', html: 'assets/clue/clue-03a-worklog.html', ratio: '1671 / 941',
-    patches: [{ box: [19.6, 47, 18.1, 8.3], bg: '#0a1113', lines: ['엘리넛 쇼', 'Elliot Shaw'] },
-      // 이미지에 그려진 옛 앰블럼(112,57~361,129 px)을 배경색으로 덮고 문서 공통 로고를 올린다 (다른 HTML 문서와 같은 로고)
-      { box: [6.22, 5.31, 16.04, 9.14], bg: '#070e10', img: 'assets/clue/clue-logo-text.png', baseImg: 'assets/clue/clue-logo-emblem.png', hoverImg: 'assets/clue/clue-logo-emblem-intranet.png' }] },
+  // 03-A: 직원 명부와 업무 기록을 한 단서의 두 문서로 표시
+  '03A': { kind: 'doc', html: 'assets/clue/clue-03a.html', appendix: 'assets/clue/clue-03a-worklog.html' },
   // 03-B: 사건일 4XXX.01.24 16:40 (world.md 정답 타임라인). 영상 8초 동안 16:39:30 → 16:41:30
   '03B': { kind: 'cctv', img: 'assets/clue/clue-03b.jpg', video: 'assets/clue/clue-03b.mp4', ratio: '1671 / 941',
     cam: 'CAM 02', date: '4XXX.01.24', still: ['16:39:12', '16:40:07', '16:41:03'], from: '16:39:30', to: '16:41:30' },

@@ -287,6 +287,8 @@ button,input{font:inherit;color:inherit}
 .clue-over.bare .clue-over-frame{opacity:0;pointer-events:none}
 /* 03-C: 수첩 이미지에 올리면 돋보기, 누르면 본문 */
 .clue-over.bare{cursor:none;transition:filter .2s}
+/* 수첩 이미지(펼치기 전)는 자료 창 폭의 70%로 가운데에 둔다. 펼친 일기는 전체 폭 */
+.clue-over.bare{width:70%;margin:0 auto}
 .clue-over.bare:hover,.clue-over.bare:focus-visible{filter:brightness(1.12)}
 .clue-over.bare:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
 .clue-lens{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;display:flex;align-items:center;justify-content:center;border-radius:50%;
