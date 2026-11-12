@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>직원 명부</title>
+  <link rel="stylesheet" href="clue-document.css?v=4">
+  <style>
+    .directory-table { overflow-x: auto; }
+    .directory-table table { min-width: 530px; }
+    .directory-active::before {
+      display: inline-block;
+      width: .65em;
+      height: .65em;
+      margin-right: .55em;
+      background: var(--accent);
+      content: "";
+    }
+    .directory-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5em 1em; }
+    .directory-footer time { color: var(--accent); }
+  </style>
+</head>
+<body style="margin: 0; padding: clamp(12px, 3vw, 38px); background: #090f11;">
+  <article class="ra-document" aria-labelledby="document-title">
+    <header>
+      <div class="ra-brand"><span class="ra-logo"><img class="ra-logo-text" src="clue-logo-text.png" alt="REMNANT ARCHIVE"><img class="ra-logo-base" src="clue-logo-emblem.png" alt="" aria-hidden="true"><img class="ra-logo-hover" src="clue-logo-emblem-intranet.png" alt="" aria-hidden="true"></span></div>
+      <div class="ra-heading">
+        <h1 class="ra-title" id="document-title"><span class="ra-title-en" lang="en">EMPLOYEE DIRECTORY</span><span class="ra-title-ko">직원 명부</span></h1>
+        <div class="ra-meta">03-A-001<span class="ra-status" lang="en">STATUS : CURRENT</span></div>
+      </div>
+    </header>
+    <section aria-labelledby="registered-staff">
+      <h2 id="registered-staff" lang="en">REGISTERED STAFF (ACTIVE)</h2>
+      <div class="directory-table" role="region" aria-label="등록 직원 표" tabindex="0">
+        <table aria-labelledby="registered-staff">
+          <thead>
+            <tr>
+              <th scope="col">구분<small lang="en">ID</small></th>
+              <th scope="col">이름<small lang="en">NAME</small></th>
+              <th scope="col">사원번호<small lang="en">EMP. NO.</small></th>
+              <th scope="col">담당 업무<small lang="en">ROLE</small></th>
+              <th scope="col">소속 부서<small lang="en">DEPT.</small></th>
+              <th scope="col">상태<small lang="en">STATUS</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>STAFF-A</td><th scope="row">엘리넛 쇼<small lang="en">Elliot Shaw</small></th><td>A-01</td><td>연구 담당</td><td>연구팀</td><td class="directory-active">재직</td></tr>
+            <tr><td>STAFF-B</td><th scope="row">마거릿 베일<small lang="en">Margaret Vale</small></th><td>B-02</td><td>인사/기록 담당</td><td>인사관리팀</td><td class="directory-active">재직</td></tr>
+            <tr><td>STAFF-C</td><th scope="row">피터 하그리브스<small lang="en">Peter Hargreaves</small></th><td>C-03</td><td>보안 담당</td><td>보안관리팀</td><td class="directory-active">재직</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <footer class="ra-footer directory-footer">
+      <span>※ 본 명부는 현재 시스템에 등록된 재직자 기준으로 작성되었습니다.</span>
+      <span>기준일 · <time>4XXX.04.12</time></span>
+    </footer>
+  </article>
+</body>
+</html>
