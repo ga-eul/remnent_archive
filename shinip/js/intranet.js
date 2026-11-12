@@ -18,6 +18,8 @@ window.R01 = window.R01 || {};
     user: '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="16" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 31c3-6 7-8 11-8s8 2 11 8" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
     logo: '<svg viewBox="0 0 40 44" aria-hidden="true"><rect x="2" y="0" width="5" height="5" fill="currentColor"/><rect x="2" y="9" width="5" height="25" fill="currentColor"/><path d="M11 9l24 25H11z" fill="none" stroke="currentColor" stroke-width="4"/><rect x="2" y="38" width="5" height="5" fill="currentColor"/><path d="M11 38h18l4 5H11z" fill="currentColor"/></svg>'
   };
+  // 메신저 보내기 버튼의 종이비행기 (입력칸은 사용할 수 없어 장식으로만 둔다)
+  SVG.send = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 20.6 3.6c.5-.2 1 .3.8.8L13.8 22c-.2.5-.9.5-1.1 0l-2.6-6.9L3 12.4c-.5-.2-.5-1 0-1.2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10.1 15.1 20.9 3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
   const icon = (name, cls) => { const el = h('span', { class: 'ico ' + (cls || '') }); el.innerHTML = SVG[name]; return el; };
 
   /* ---------- 래미 말하기 (대화창 + 기록, R-18) ---------- */
@@ -241,7 +243,7 @@ window.R01 = window.R01 || {};
       h('div', { class: 'msgr-main' },
         h('div', { class: 'msgr-main-head' }, h('strong', null, roomName), headSub ? h('span', null, headSub) : null),
         view,
-        h('div', { class: 'msgr-input' }, h('input', { disabled: true, 'aria-label': '메시지 입력 (사용할 수 없음)' }), h('span', { class: 'msgr-send' }))));
+        h('div', { class: 'msgr-input' }, h('input', { disabled: true, 'aria-label': '메시지 입력 (사용할 수 없음)' }), h('span', { class: 'msgr-send', 'aria-hidden': 'true' }, icon('send')))));
   }
 
   /* ---------- 사원 정보 (사원정보.jpg 시안) ---------- */
