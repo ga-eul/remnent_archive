@@ -8,6 +8,8 @@ window.R01 = window.R01 || {};
 (function (R) {
   /* 허브 주소. 저장소에서는 인트로 파일 이름이 `index (1).html`이다. 배포할 때 '../index.html'로 바꾼다. */
   const HUB_URL = '../index (1).html';
+  /* 데모 종료 페이지 (D79). 엔딩을 마치고 엔딩 수집에서 나갈 때마다 거쳐 간다. 허브 [보존 기록]에서는 거치지 않는다 */
+  const DEMO_URL = '../shinip_demo_complete.html';
 
   const L = R.logic;
   const S = R.store;
@@ -79,11 +81,12 @@ window.R01 = window.R01 || {};
               h('span', null, s.player_name), h('span', { class: 'mono accent' }, R.OPENING.employeeNo)) : null,
             canArchive ? h('button', { type: 'button', class: 'btn small archive-btn', onClick: () => R.pages.archive(s) },
               'My Archive', h('span', { class: 'archive-count mono' }, String(s.clue_order.length))) : null)),
-        stepBar(s),
+        stepBar(s) || '',            // 단계 표시줄이 없는 화면(엔딩 수집 등)에 "null" 글자가 찍히지 않게
         R.pages[s.page](s));
       if (DEV) root.append(devPanel(s));
     },
-    goHub() { location.href = encodeURI(HUB_URL); }
+    goHub() { location.href = encodeURI(HUB_URL); },
+    goDemo() { location.href = encodeURI(DEMO_URL); }
   });
 
   /* ---------- 상단 진행 단계 표시줄 (수색 1부터). 이미 진행한 단계는 눌러서 돌아갈 수 있다 ---------- */

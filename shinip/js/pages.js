@@ -561,9 +561,10 @@ window.R01 = window.R01 || {};
   /* 07 최종 추론·엔딩은 js/finale.js */
 
   /* ---------- 엔딩·엔딩 수집 ---------- */
-  /* 엔딩 수집: 본 엔딩은 제목·최고 등급, 보지 않은 엔딩은 번호와 자물쇠만 (D42) */
+  /* 엔딩 수집: 본 엔딩은 제목·최고 등급, 보지 않은 엔딩은 번호와 자물쇠만 (D42)
+     게임 진행 중(엔딩을 마치고 들어옴, s 있음)이면 버튼이 데모 종료 페이지로, 허브 [보존 기록](s 없음)이면 허브로 간다 (D79) */
   const LOCK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
-  P.collection = function () {
+  P.collection = function (s) {
     const seen = R.store.endingsSeen();
     const locked = (id) => {
       const ico = h('span', { class: 'lock-ico' }); ico.innerHTML = LOCK_SVG;   // 고정 SVG
@@ -573,7 +574,7 @@ window.R01 = window.R01 || {};
       [1, 2, 3].map((id) => seen[id]
         ? card('ENDING 0' + id + ' — ' + R.ENDINGS[id].title, { tag: seen[id], sub: R.ENDINGS[id].ko })
         : locked(id)),
-      h('div', { class: 'row end' }, button('허브로 돌아가기', () => R.app.goHub(), { primary: true })));
+      h('div', { class: 'row end' }, button('허브로 돌아가기', () => (s ? R.app.goDemo() : R.app.goHub()), { primary: true })));
   };
 
   /* ---------- My Archive — 오른쪽 사이드바 (래미 AI 창과 같은 형태). 조합 화면은 4단계 ---------- */

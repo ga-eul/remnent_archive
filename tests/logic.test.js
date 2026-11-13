@@ -323,5 +323,22 @@ ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(all), '금지 문자�
 ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace('계정 유형: TEMP', '')
   .replace('<th scope="col">계정 유형</th>', '').replace('<code class="audit-type">TEMP</code>', '')), 'D13·D24 화면 문구에 실험용·TEMP 없음 (06-D/E의 ‘계정 유형: TEMP’만 허용, 주석 제외)');
 
+// D79 데모 종료 페이지 (저장소 루트 shinip_demo_complete.html)
+{
+  const demoPath = path.join(dir, '..', 'shinip_demo_complete.html');
+  if (fs.existsSync(demoPath)) {
+    const demo = fs.readFileSync(demoPath, 'utf8');
+    const gameHtml = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+    const font = (x) => (x.match(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/) || [])[0];
+    ok(font(demo) && font(demo) === font(gameHtml), 'D79 데모 페이지 글꼴이 게임과 같음');
+    ok(!/Pretendard|Consolas/.test(demo), 'D79 데모 페이지에 다른 글꼴 없음');
+    ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(demo), 'D79 데모 페이지 금지 문자열 없음');
+    ok(!/엔딩 카드|연결해 주세요/.test(demo), 'D79 데모 페이지에 엔딩 카드·개발용 안내 문구 없음');
+    ok(/const HUB_URL = 'index \(1\)\.html'/.test(demo), 'D79 데모 페이지 허브 주소');
+    const main = fs.readFileSync(path.join(dir, 'js', 'main.js'), 'utf8');
+    ok(main.includes("DEMO_URL = '../shinip_demo_complete.html'"), 'D79 게임에서 데모 페이지 주소');
+  }
+}
+
 console.log(`pass ${pass} / fail ${fail}`);
 process.exit(fail ? 1 : 0);

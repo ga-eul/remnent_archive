@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REMNANT ARCHIVE | DEMO COMPLETE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0d1116;--panel:#151b21;--line:#29343d;--teal:#10e3d1;--green:#2cae85;--muted:#92a1af;--white:#e8edf2;--mono:"JetBrains Mono", ui-monospace, monospace;--sans:"Noto Sans KR", system-ui, sans-serif}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--white);font-family:var(--sans);display:grid;place-items:center;padding:48px 20px}main{width:min(100%,760px);animation:fade .7s ease both}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}.eyebrow{font:600 11px/1.6 var(--mono);letter-spacing:.32em;color:var(--green);text-align:center}.rule{height:1px;background:var(--line);margin:22px 0 34px}.hero{text-align:center}.hero h1{margin:12px 0 22px;color:var(--teal);font:600 clamp(24px,4vw,38px)/1.2 var(--mono);letter-spacing:.19em}.hero h2{font-size:21px;margin:0 0 22px}.hero p{margin:8px 0;font-size:14px;line-height:1.9;color:#b5c1ca}.hero .question{color:#e4edf1;font-weight:600;margin-top:18px}.terminal{margin-top:43px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:25px 29px}.section-label{font:600 11px var(--mono);color:var(--green);letter-spacing:.2em}.terminal h3{margin:10px 0 18px;font-size:16px}.terminal>p{color:#aebbc5;font-size:13px;line-height:1.9}.choice{display:flex;align-items:flex-start;gap:15px;padding:16px 0;border-top:1px solid #263039}.choice:first-of-type{margin-top:20px}.choice .tag{flex:none;border:1px solid #34574f;color:#74e1c5;border-radius:4px;padding:5px 8px;font:600 11px var(--mono)}.choice strong{font-size:13px}.choice p{margin:5px 0 0;font-size:12px;line-height:1.8;color:var(--muted)}.notice{margin-top:23px;border-left:2px solid var(--green);padding:1px 0 1px 15px}.notice h3{margin:0 0 9px;font-size:14px}.notice p{margin:0;font-size:12px;color:#aebbc5;line-height:1.9}.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}button{cursor:pointer;font-family:inherit;background:#112522;color:#e6f9f5;border:1px solid #267e67;border-radius:8px;font-size:14px;font-weight:600;padding:14px 23px;min-width:185px;transition:background .2s,border-color .2s}button:hover,button:focus-visible{background:#17463c;border-color:var(--teal);outline:none}button.secondary{background:transparent;border-color:#34414b;color:#b8c9d1}button.secondary:hover{background:#1a252d}.foot{text-align:center;color:#637680;font:10px var(--mono);letter-spacing:.22em;margin-top:38px}@media(max-width:520px){body{padding:30px 16px}.terminal{padding:22px 18px}.hero h2{font-size:18px}.hero p{font-size:13px}.actions button{width:100%}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero"><div class="eyebrow">REMNANT ARCHIVE SYSTEM · CASE 01</div><div class="rule"></div><h1>DEMO COMPLETE</h1><h2>「신입사원」 데모 체험이 종료되었습니다.</h2><p>렘넌트 아카이브의 일부 기록을 확인하셨습니다.</p><p>하지만 아직 밝혀지지 않은 기억과 기록들이 남아 있습니다.</p><p class="question">당신이 확인한 기록은 과연 진실일까요?</p></header>
+<section class="terminal" aria-labelledby="replay-title"><div class="section-label">SESSION INFORMATION / REPLAY GUIDE</div><h3 id="replay-title">데모 종료 및 재시작 안내</h3><p>데모 체험을 완료해 주셔서 감사합니다.<br>허브로 돌아간 후, 다음 두 가지 방법으로 다시 플레이하실 수 있습니다.</p><div class="choice"><span class="tag">RESET</span><div><strong>[입사 지원하기]</strong><p>진행 기록만 지우고 처음부터 다시 체험할 수 있습니다. 본 엔딩·등급·설정은 지우지 않습니다.</p></div></div><div class="choice"><span class="tag">RESUME</span><div><strong>[이어서 출근하기]</strong><p>기존 플레이 기록을 유지한 채 최종 추론 이전 단계로 돌아가, 엔딩 수집에서 아직 얻지 못한 엔딩을 획득할 수 있습니다.</p></div></div><div class="notice"><div class="section-label">UPCOMING TRANSMISSION</div><h3>후속 소식 안내</h3><p>아직 공개되지 않은 기록과 새로운 이야기가 여러분을 기다리고 있습니다.<br>정식 출시 및 텀블벅 펀딩 소식은 공식 채널을 통해 안내될 예정입니다.</p></div></section>
+<div class="actions"><button id="hub">허브로 돌아가기</button><button class="secondary" id="news" hidden>후속 소식 확인하기</button></div><footer class="foot">NOTHING IS EVER LOST. · REMNANT ARCHIVE</footer>
+</main>
+<script>
+// 허브(인트로 페이지) 주소. 저장소에서는 `index (1).html`, 배포할 때 'index.html'로 바꾼다 (shinip/js/main.js HUB_URL과 함께)
+const HUB_URL = 'index (1).html';
+// 공식 X 계정 주소. 비어 있으면 [후속 소식 확인하기] 버튼을 숨긴다
+const NEWS_URL = 'https://x.com/remi_r_archive';
+document.getElementById('hub').addEventListener('click',()=>{location.href=encodeURI(HUB_URL)});
+const news=document.getElementById('news');
+if(NEWS_URL){news.hidden=false;news.addEventListener('click',()=>{window.open(NEWS_URL,'_blank','noopener,noreferrer')})}
+</script>
+</body></html>

@@ -78,6 +78,7 @@ remnant-intro/
 
 허브는 저장 칸 `remnant.global`의 CASE 상태(status)만 읽습니다. 게임 폴더(`shinip/`)는 `index.html`과 같은 위치에 둡니다.
 저장소 안에서는 인트로 파일 이름이 `index (1).html`이라, 게임의 [허브로 돌아가기]도 이 이름을 가리킵니다. 배포할 때 이름을 `index.html`로 바꾸면 `shinip/js/main.js`의 `HUB_URL`도 `'../index.html'`로 바꿉니다.
+엔딩을 마친 뒤 엔딩 수집의 [허브로 돌아가기]는 데모 종료 페이지 `shinip_demo_complete.html`(인트로와 같은 위치)을 거쳐 허브로 돌아옵니다. 이 페이지의 `HUB_URL`(`'index (1).html'`)도 배포할 때 `'index.html'`로 바꿉니다.
 
 ## GitHub Pages로 올리기
 
