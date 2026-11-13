@@ -384,22 +384,24 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   const SFX = R.SFX, FILES = R.SFX_FILES, MIX = R.SFX_MIX;
   const keys = Object.keys(SFX);                                   // 번호 + 보조 번호('29-1', D88)
   const ids = keys.filter((k) => /^\d+$/.test(k)).map(Number).sort((x, y) => x - y);
-  ok(JSON.stringify(keys.filter((k) => !/^\d+$/.test(k))) === JSON.stringify(['29-1']), 'D88 보조 번호는 29-1 하나');
+  ok(JSON.stringify(keys.filter((k) => !/^\d+$/.test(k))) === JSON.stringify(['29-1', 'bgm1']), 'D88·D91 번호가 아닌 항목은 29-1, bgm1');
   const want = []; for (let n = 0; n <= 32; n++) if (![13, 15, 21].includes(n)) want.push(n);
   ok(JSON.stringify(ids) === JSON.stringify(want), 'D83·D86 효과음 30개 (0~32번 중 13·15·21번 없음)');
   const sfxDir = path.join(dir, 'assets', 'sfx');
   const onDisk = fs.readdirSync(sfxDir).filter((f) => f.endsWith('.mp3')).sort();
-  ok(JSON.stringify(onDisk) === JSON.stringify(Object.keys(FILES).sort()), 'D83 assets/sfx 파일 = SFX_FILES 목록');
+  ok(JSON.stringify(onDisk) === JSON.stringify(Object.keys(FILES).filter((f) => !FILES[f].dir).sort()), 'D83 assets/sfx 파일 = SFX_FILES 목록');
+  const bgmDir = path.join(dir, 'assets', 'bgm');
+  ok(JSON.stringify(fs.readdirSync(bgmDir).sort()) === JSON.stringify(Object.keys(FILES).filter((f) => FILES[f].dir === 'bgm').sort()), 'D91 assets/bgm 파일 = 배경음 목록');
   ok(keys.every((n) => FILES[SFX[n].file]), 'D83 모든 번호가 있는 파일을 가리킴');
   ok(Object.keys(FILES).every((f) => keys.some((n) => SFX[n].file === f)), 'D83 쓰지 않는 파일 없음');
-  const hashes = onDisk.map((f) => crypto.createHash('md5').update(fs.readFileSync(path.join(sfxDir, f))).digest('hex'));
+  const hashes = Object.keys(FILES).map((f) => crypto.createHash('md5').update(fs.readFileSync(path.join(dir, 'assets', FILES[f].dir || 'sfx', f))).digest('hex'));
   ok(new Set(hashes).size === hashes.length, 'D83 같은 MP3는 한 번만 복사');
   ok([[1, 32], [20, 25], [3, 8], [10, 18], [28, 29]].every(([x, y]) => SFX[x].file === SFX[y].file), 'D83 1·32, 20·25, 3·8, 10·18, 28·29는 같은 파일 공유');
   ok(!Object.values(FILES).some((f) => f.src.some((n) => /ksjsbwuil|후보/.test(n))), 'D83 번호 없는 후보·엔딩2 후보는 쓰지 않음');
   ok(FILES[SFX[30].file].src[0] === '30-엔딩2.mp3', 'D83 30번은 30-엔딩2.mp3');
   // 클리핑 여유: 원본 피크 + 이벤트 볼륨 + 효과음 마스터 ≤ -1 dBFS (리미터 앞 기준)
   const db = (v) => 20 * Math.log10(v);
-  const hot = keys.filter((n) => FILES[SFX[n].file].peak + db(SFX[n].vol * MIX.master) > -1);
+  const hot = keys.filter((n) => FILES[SFX[n].file].peak + db(SFX[n].vol * (SFX[n].bus === 'bgm' ? MIX.bgm : MIX.master)) > -1);
   ok(hot.length === 0, 'D83 모든 효과음 피크 -1dBFS 이하 ' + hot.join(','));
   ok(SFX[26].vol <= 0.12, 'D83 26 글리치 볼륨 낮춤');
   ok(SFX[17].loop && SFX[17].vol <= 0.18, 'D83 17 CCTV 노이즈 반복·낮은 볼륨');
@@ -409,7 +411,7 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   // 원본 폴더가 있으면 사본이 원본과 바이트까지 같은지
   const srcDir = path.join(dir, '..', '효과음_26개+후보');
   if (fs.existsSync(srcDir)) {
-    ok(Object.entries(FILES).every(([f, m]) => m.src.every((n) => fs.readFileSync(path.join(srcDir, n)).equals(fs.readFileSync(path.join(sfxDir, f))))),
+    ok(Object.entries(FILES).every(([f, m]) => { const sd = path.join(dir, '..', m.srcDir || '효과음_26개+후보'); return !fs.existsSync(sd) || m.src.every((n) => fs.readFileSync(path.join(sd, n)).equals(fs.readFileSync(path.join(dir, 'assets', m.dir || 'sfx', f)))); }),
       'D83 게임용 사본 = 원본 (수정 없음)');
   }
   // 재생 모듈·연결
@@ -473,6 +475,18 @@ ok(L.clue('06DE').name === '계정 이력 및 시스템 감사 로그', 'D85 06-
   const pg = fs.readFileSync(path.join(dir, 'js', 'pages.js'), 'utf8');
   ok(/const sfx = !!a\.vhs;/.test(pg) && /if \(sfx\) R\.sound\.play\(16\)/.test(pg) && /if \(sfx\) \{ R\.sound\.stop\(17\); R\.sound\.play\(18\); \}/.test(pg) && /const noiseOn = \(\) => \{\s+if \(!sfx\) return;/.test(pg), 'D90 CCTV 효과음은 vhs 영상에만');
   ok(R.CLUE_ASSETS['05B_VHS'].vhs === true && R.CLUE_ASSETS['03B'].kind === 'cctv' && !R.CLUE_ASSETS['03B'].vhs, 'D90 vhs 표시는 05-B-VHS에만');
+}
+
+// D91 허브 배경음: 엔딩 뒤 데모 종료 화면에서 돌아온 그때만, 한 번, BGM 묶음, 효과음보다 작게
+{
+  const B = R.SFX.bgm1, F = R.SFX_FILES[B.file];
+  ok(B.bus === 'bgm' && !B.loop && F.dir === 'bgm', 'D91 배경음은 BGM 묶음, 반복 없음');
+  const eff = F.rms + 20 * Math.log10(B.vol * R.SFX_MIX.bgm);
+  ok(eff <= -40 && eff >= -46, 'D91 배경음 실제 RMS ' + eff.toFixed(1) + 'dBFS (효과음보다 조금 작게)');
+  const demo = fs.readFileSync(path.join(dir, '..', 'shinip_demo_complete.html'), 'utf8');
+  const hub = fs.readFileSync(path.join(dir, '..', 'index (1).html'), 'utf8');
+  ok(/sessionStorage\.setItem\('remnant\.bgmAfterEnding','1'\)/.test(demo), 'D91 데모 [허브로 돌아가기]가 표시를 남김');
+  ok(/sessionStorage\.removeItem\('remnant\.bgmAfterEnding'\)/.test(hub) && /SND\.tryPlay\('bgm1'/.test(hub), 'D91 허브가 표시를 읽고 지운 뒤 한 번 재생');
 }
 
 console.log(`pass ${pass} / fail ${fail}`);

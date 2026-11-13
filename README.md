@@ -84,6 +84,8 @@ remnant-intro/
 
 효과음은 `shinip/assets/sfx/`(게임용 사본)와 `shinip/data/sfx.js`(번호·파일·볼륨 설정), `shinip/js/sound.js`(재생)에 있습니다. 하단 "소리 켜짐/꺼짐"은 `remnant.global`의 `settings.sound`에 저장되어 게임에도 적용되고, 처음 방문하면 켜짐입니다. 브라우저 정책상 첫 클릭 뒤부터 소리가 납니다.
 
+허브 배경음은 `shinip/assets/bgm/`에 있고, 엔딩을 보고 데모 종료 화면의 [허브로 돌아가기]로 돌아온 그때만 한 번 재생됩니다. 원본(`배경음/` 폴더)은 Git에 넣지 않고 따로 보관합니다.
+
 ## GitHub Pages로 올리기
 
 1. 저장소 맨 위(루트)에 `index.html`과 `images` 폴더를 그대로 올립니다.

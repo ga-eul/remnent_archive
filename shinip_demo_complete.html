@@ -25,7 +25,8 @@ const HUB_URL = 'index (1).html';
 // 공식 X 계정 주소. 비어 있으면 [후속 소식 확인하기] 버튼을 숨긴다
 const NEWS_URL = 'https://x.com/remi_r_archive';
 if(window.R01&&R01.sound)R01.sound.preload(['32']);
-document.getElementById('hub').addEventListener('click',()=>{if(window.R01&&R01.sound)R01.sound.navigate(encodeURI(HUB_URL),32);else location.href=encodeURI(HUB_URL)});
+/* 엔딩 뒤 허브로 돌아갈 때만 허브 배경음을 한 번 틀도록 표시를 남긴다 (이 탭에서만, 허브가 읽고 바로 지운다, D91) */
+document.getElementById('hub').addEventListener('click',()=>{try{sessionStorage.setItem('remnant.bgmAfterEnding','1')}catch(e){}if(window.R01&&R01.sound)R01.sound.navigate(encodeURI(HUB_URL),32);else location.href=encodeURI(HUB_URL)});
 const news=document.getElementById('news');
 if(NEWS_URL){news.hidden=false;news.addEventListener('click',()=>{window.open(NEWS_URL,'_blank','noopener,noreferrer')})}
 </script>

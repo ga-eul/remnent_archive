@@ -118,7 +118,7 @@ window.R01 = window.R01 || {};
   }
 
   applyReduced();
-  if (R.sound) R.sound.preload(Object.keys(R.SFX || {}).filter((id) => !['1', '2', '32'].includes(id)));   // 게임에서 쓰는 효과음 미리 받기 (D83)
+  if (R.sound) R.sound.preload(Object.keys(R.SFX || {}).filter((id) => !['1', '2', '32'].includes(id) && R.SFX[id].bus !== 'bgm'));   // 게임에서 쓰는 효과음 미리 받기 (D83, 허브 배경음 제외 D91)
   if (RECORDS_ONLY) bootRecords();
   else { app.state = boot(); app.render(); }
 })(window.R01);

@@ -112,6 +112,7 @@
 | D88 | (2026-11-13) **엔딩 1 로그아웃 효과음 (D83 보충).** `29-1-엔딩1-로그아웃.mp3`(보조 번호 29-1, 1.63초, 피크 -4.9·RMS -36.4dBFS, 볼륨 1.00)를 엔딩 1 결과 화면 뒤 ‘로그아웃되었습니다.’ 장면이 나타나는 순간 한 번 재생한다. 반복 없음, 장면이 사라지면 정지, 엔딩 한 번에 한 번만. 엔딩 2·3, 일반 이동에는 쓰지 않는다. 엔딩 1 연출·시간·진행 순서는 그대로 |
 | D89 | (2026-11-13) **C13 결과 문장 변경 (D30 ② 표현 변경).** "계정은 존재한다. 그러나 이 계정에 연결된 입사 기록은 없다." (두 줄). ‘대조 완료’ 표시·유지·복원 규칙과 HUMAN-04·실험 대상 언급 금지는 그대로 |
 | D90 | (2026-11-13) **CCTV 효과음은 05-B-VHS에만 (D83 ① 변경).** 16(영상 재생)·17(영상 노이즈)·18(재생 실패)은 05-B-VHS 복구 영상에서만 울리고, 03-B CCTV 기록에서는 울리지 않는다. 수색에서 자료 창이 열릴 때의 14번은 그대로 |
+| D91 | (2026-11-13) **허브 배경음 (엔딩 뒤 한 번).** ① `배경음/1원본+허밍.mp3`(원본 WAV `1원본＋허밍.wav`를 사용자가 MP3로 변환, 143초, 피크 -0.7·RMS -16.0dBFS)를 엔딩을 보고 데모 종료 화면 [허브로 돌아가기]로 허브에 돌아온 그때만 한 번 재생한다. 반복 없음, 허브를 떠나면 멈춤, 새로고침·재접속에서는 다시 틀지 않는다 ② 효과음 음량에 맞춰 BGM 묶음 0.5 × 볼륨 0.10(-26dB) → 실제 RMS 약 -42dBFS(효과음보다 조금 작게). 효과음과 같은 리미터, 소리 꺼짐이면 음소거 ③ 자동 재생이 막히면 허브를 처음 누를 때 시작 ④ 게임용 사본은 `shinip/assets/bgm/`, 원본 폴더 `배경음/`은 Git에 넣지 않는다 |
 | D56 | (2026-11-11) **03-C 일기 열람 방식.** 03-C 자료 창에는 처음에 수첩 두 권 이미지(`clue-03c.png`)만 보인다. 이미지에 커서를 올리면 이미지가 조금 밝아지고 커서 자리에 돋보기 표시가 뜬다. 누르면 그 자리에 세부 일기 내용(`clue-03c.html`, 두 수첩 × 3편)이 열리고, [← 수첩으로]를 누르면 다시 이미지로 돌아간다. 키보드는 Enter·Space로 연다. 별도 `일기.jpg` 없이 기존 이미지·HTML을 쓴다 (D54 ② 03-C 변경) |
 
 **반영 위치**: 05-B-PERSONNEL·C08·C11 문구(D3), 05-E 설명·엔딩 3의 C 기록·엔딩 3 COMPLETE 문구(D4), 06-G 표시명·R-07·QA 기준(D2), C13 행 추가(D2), CASE 01 금지 정보 예외(D1), 최종 추론 순서표·판정 의사코드·엔딩 조건표·C13 행·CONNECTIONS·R-06/R-40~42/R-51~56/R-60/R-62·판정표·상태값(D5).
@@ -169,6 +170,7 @@
 - D57 — shinip: `assets/assets.js` CLUE_ASSETS(05C, 06DE 주석), `assets/clue/clue-05c.html` 복사본 / 제작_에셋: `06-DE.html` 삭제 / decisions.md: 4절 7번
 - D58 — 제작_에셋·shinip `assets/clue/`: `clue-05c.html` / case01-logic.md: 5절 05-C 행 / 단서_제작_에셋.md: 정리표 05-C 행 / tests/logic.test.js: 05-C 절차 기록 검사
 - D59 — 제작_에셋·shinip `assets/clue/`: `clue-05e.html`·`clue-06s.html`·`clue-04a.html`·`clue-06g.html` / shinip: `assets/assets.js` CLUE_ASSETS(05E·06S·04A·06G), `data/clues.js` 06G 기록 요약 / case01-logic.md: 5절 표 아래 에셋 구현 방식 문단 / tests/logic.test.js: 에셋 연결·경로·06-G 본문 검사 / 단서_제작_에셋.md: 에셋 파일 이름표·형태 안내·정리표 / decisions.md: 4절 7번
+- D91 — shinip: `assets/bgm/hub-after-ending.mp3`(새 사본), `data/sfx.js` bgm1·SFX_FILES dir·srcDir, `js/sound.js`(배경음 폴더·BGM 묶음·maxWait·준비 중 표시), `js/main.js`(게임에서 배경음 미리 받지 않음) / 저장소 루트 `index (1).html`(엔딩 뒤 한 번 재생), `shinip_demo_complete.html`(표시 남김), `.gitignore`(`배경음/`) / world.md: 접속 첫 화면 / prd.md: 1절 에셋 표, 6단계 진행 결과 / README.md / tests: D91
 - D90 — shinip: `js/pages.js` cctvView(vhs일 때만 16·17·18) / prd.md: 6단계 진행 결과 / tests: D90
 - D89 — dialogue.md: 6절 C13 결과 문장 / case01-logic.md: 9절 C13 / prd.md: 5단계 성공 화면 / shinip: `data/text.js` c13Result
 - D88 — shinip: `assets/sfx/ending1-logout.mp3`(새 사본), `data/sfx.js` 29-1, `js/finale.js` 엔딩 1 로그아웃 장면 / prd.md: 1절 에셋 표, 6단계 진행 결과 / tests: D88

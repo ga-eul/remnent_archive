@@ -428,6 +428,23 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   };
   const SND = window.R01 && R01.sound;
   if (SND) SND.preload(['1', '2']);
+  /* 배경음 (D91): 엔딩을 보고 데모 종료 화면에서 돌아온 그때만 한 번. 표시는 읽자마자 지워 새로고침·재접속에서는 다시 틀지 않는다.
+     브라우저가 자동 재생을 막으면 허브를 처음 누를 때 시작한다 */
+  (function(){
+    let after = false;
+    try { after = sessionStorage.getItem('remnant.bgmAfterEnding') === '1'; sessionStorage.removeItem('remnant.bgmAfterEnding'); } catch(e){}
+    if (!after || !SND) return;
+    SND.preload(['bgm1']);
+    let started = false;
+    const check = () => { if (SND.playing('bgm1')) started = true; };
+    SND.tryPlay('bgm1', () => !started);
+    setTimeout(check, 900);
+    const firstInput = () => {
+      window.removeEventListener('pointerdown', firstInput, true); window.removeEventListener('keydown', firstInput, true);
+      check(); if (!started) { started = true; SND.play('bgm1'); }
+    };
+    window.addEventListener('pointerdown', firstInput, true); window.addEventListener('keydown', firstInput, true);
+  })();
 
   /* 배경 이미지: 파일이 있으면 사진, 없으면 SVG 대체 장면 */
   photo.addEventListener('load', ()=> scene.classList.remove('no-photo'));

@@ -12,8 +12,10 @@ window.R01 = window.R01 || {};
   const MIX = R.SFX_MIX || { master: 0.8, bgm: 0.5, limiter: {} };
   const GKEY = 'remnant.global';
   const script = document.currentScript;
-  const BASE = new URL('../assets/sfx/', script ? script.src : location.href).href;
-  const url = (file) => BASE + encodeURIComponent(file) + '?v=' + (R.SFX_VER || '1');
+  const BASE = new URL('../assets/', script ? script.src : location.href).href;   // 효과음 assets/sfx, 배경음 assets/bgm (D91)
+  const FILES = R.SFX_FILES || {};
+  const url = (file) => BASE + ((FILES[file] && FILES[file].dir) || 'sfx') + '/' + encodeURIComponent(file) + '?v=' + (R.SFX_VER || '1');
+  const busVol = (c) => (c.bus === 'bgm' ? MIX.bgm : MIX.master);
   const RESTART_FADE = 0.015;   // 같은 소리를 다시 낼 때 앞의 것을 끊는 시간(초). 딸깍 잡음만 막을 만큼 짧게 (D86)
   const useWA = location.protocol !== 'file:' && !!(window.AudioContext || window.webkitAudioContext);
 
@@ -28,6 +30,7 @@ window.R01 = window.R01 || {};
   const buf = {};        // file → Promise<AudioBuffer>
   const last = {};       // id → 마지막 재생 시각
   const active = {};     // id → 재생 중인 소리 (clip·loop 정리용)
+  const pending = {};    // id → 파일을 준비하는 중 (두 번 시작하지 않게)
 
   function buildGraph() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -71,7 +74,7 @@ window.R01 = window.R01 || {};
     src.buffer = b;
     const g = ctx.createGain();
     g.gain.setValueAtTime(c.vol, t);
-    src.connect(g); g.connect(sfxBus);
+    src.connect(g); g.connect(c.bus === 'bgm' ? bgmBus : sfxBus);
     const hnd = { stop(fade) {
       const n = ctx.currentTime, f = fade == null ? 0.05 : fade;
       try { g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(g.gain.value, n); g.gain.linearRampToValueAtTime(0.0001, n + f); src.stop(n + f + 0.01); } catch (e) { /* 이미 멈춤 */ }
@@ -91,7 +94,7 @@ window.R01 = window.R01 || {};
   /* ---------- HTMLAudio 재생 (file://) ---------- */
   function startEl(id, c) {
     const a = new Audio(url(c.file));
-    const vol = Math.min(1, c.vol * MIX.master);
+    const vol = Math.min(1, c.vol * busVol(c));
     a.volume = on ? vol : 0;
     a.loop = !!c.loop;
     let timers = [];
@@ -130,11 +133,13 @@ window.R01 = window.R01 || {};
       const asked = Date.now();
       const p = decoded(c.file);
       if (!p) return;
+      pending[id] = true;
       p.then((b) => {
-        if (Date.now() - asked > 400) return;                   // 늦게 받은 소리는 버린다 (화면과 어긋나지 않게)
+        delete pending[id];
+        if (Date.now() - asked > (c.maxWait || 400)) return;   // 늦게 받은 소리는 버린다 (화면과 어긋나지 않게). 긴 배경음은 maxWait로 더 기다린다
         if (active[id]) active[id].stop(RESTART_FADE);
         active[id] = startWA(id, c, b);
-      }).catch(() => { /* 파일 없음 */ });
+      }).catch(() => { delete pending[id]; /* 파일 없음 */ });
     } else {
       active[id] = startEl(id, c);
     }
@@ -173,7 +178,7 @@ window.R01 = window.R01 || {};
     }
   };
   S.stop = function (id, fade) { if (active[id]) { active[id].stop(fade == null ? 0.15 : fade); delete active[id]; } };
-  S.playing = (id) => !!active[id];
+  S.playing = (id) => !!active[id] || !!pending[id];
   /* 미리 받아 두기 (첫 재생이 늦지 않게). Web Audio에서만 의미가 있다 */
   S.preload = function (ids) {
     if (!useWA) return;

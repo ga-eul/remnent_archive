@@ -12,6 +12,8 @@ R01.SFX_MIX = { master: 0.8, bgm: 0.5, limiter: { threshold: -3, knee: 0, ratio:
 
 /* 게임용 파일 → 원본 파일 (같은 내용의 원본이 여러 개면 모두 적는다) */
 R01.SFX_FILES = {
+  /* 배경음 (D91): dir = 게임용 사본 폴더(shinip/assets/bgm), srcDir = 원본 폴더(저장소 루트 `배경음/`, Git에 넣지 않음) */
+  'hub-after-ending.mp3':    { dir: 'bgm', srcDir: '배경음', src: ['1원본+허밍.mp3'], peak: -0.7, rms: -16.0, sec: 143.36 },   // 원본 WAV(`1원본＋허밍.wav`)와 측정값 같음
   'notice-typing.mp3':       { src: ['0-안내문-타이핑.mp3'], peak: -8.6, rms: -38.4, sec: 8.10 },     // D86, 측정: 브라우저 디코드(같은 방식으로 CSV 값과 일치 확인)
   'rami-next.mp3':           { src: ['11-래미대화창-대화창넘기기.mp3'], peak: -16.8, rms: -40.4, sec: 1.03 },  // D86
   'hub-click.mp3':           { src: ['1,32.mp3'], peak: -11.8, rms: -41.0, sec: 0.14 },
@@ -72,5 +74,7 @@ R01.SFX = {
   '29-1': { file: 'ending1-logout.mp3', vol: 1.00, gap: 5000, at: '엔딩 1 결과 화면 뒤 ‘로그아웃되었습니다.’ 장면이 나타나는 순간 한 번(1.63초, 반복 없음). 장면이 사라지면 정지' },  // D88
   30: { file: 'ending2.mp3', vol: 1.00, gap: 2000, at: '엔딩 2 연출 시작' },
   31: { file: 'ending3.mp3', vol: 1.00, gap: 2000, at: '엔딩 3 연출 시작' },
-  32: { file: 'hub-click.mp3', vol: 1.00, gap: 60, at: '데모 종료 화면 [허브로 돌아가기]' }
+  32: { file: 'hub-click.mp3', vol: 1.00, gap: 60, at: '데모 종료 화면 [허브로 돌아가기]' },
+  /* 배경음: BGM 묶음(SFX_MIX.bgm)을 지난다. 0.10 × 0.5 = -26dB → 실제 RMS 약 -42dBFS(효과음보다 조금 작게), 피크 -26.7dBFS (D91) */
+  bgm1: { file: 'hub-after-ending.mp3', vol: 0.10, bus: 'bgm', gap: 0, maxWait: 15000, at: '엔딩을 보고 데모 종료 화면 [허브로 돌아가기]로 허브에 돌아온 그때만 한 번(143초, 반복 없음). 허브를 떠나면 멈춤' }
 };
