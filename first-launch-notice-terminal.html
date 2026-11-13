@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>플레이 전 안내</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100svh; display: grid; place-items: center; padding: clamp(16px, 5vw, 88px); background: #101513; color: #e0e7df; font-family: "Noto Sans KR", system-ui, sans-serif; }
+    .notice:focus { outline: none; }
+    .notice { width: min(100%, 1250px); container-type: inline-size; border: 1px solid #394a41; background: #171e1a; }
+    .content { padding: clamp(24px, 5.2cqw, 66px); font-size: clamp(15px, 2.1cqw, 30px); line-height: 1.65; text-align: center; word-break: keep-all; overflow-wrap: anywhere; }
+    h1 { margin: 0 0 1.1em; color: #b0d5bc; font-size: 1.65em; line-height: 1.2; letter-spacing: -.05em; }
+    p { margin: 0; }
+    .fiction { font-weight: 400; }
+    .warning { width: fit-content; max-width: 100%; margin: 1.3em auto 0; padding-left: .9em; border-left: 2px solid #d5a65b; text-align: left; }
+    .warning-pending { border-left-color: transparent; }
+    .warning p + p { margin-top: .1em; }
+    .warning strong, .setting strong { color: #ebbe79; }
+    .setting { margin-top: .45em; color: #afb9b0; font-size: .79em; text-align: center; }
+    .earphones { display: flex; align-items: center; justify-content: center; gap: .65em; margin-top: 1.45em; color: #afb9b0; font-size: .78em; }
+    .headphones { flex: none; position: relative; width: 1.05em; height: .88em; border: .105em solid currentColor; border-bottom: 0; border-radius: .55em .55em 0 0; }
+    .headphones::before, .headphones::after { content: ""; position: absolute; bottom: -.06em; width: .23em; height: .42em; background: currentColor; border-radius: .06em; }
+    .headphones::before { left: -.11em; }
+    .headphones::after { right: -.11em; }
+    .disclosure { margin-top: 1.65em; color: #a1aea4; font-size: .69em; }
+    .pending { visibility: hidden; }
+    .earphones, .disclosure { transition: opacity 540ms ease-out; }
+    .fade-pending { visibility: hidden; opacity: 0; }
+    .notice.skip-fade .earphones, .notice.skip-fade .disclosure { transition: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .loading { color: #b0d5bc; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: clamp(16px, 1.6vw, 24px); letter-spacing: .12em; outline: none; }
+    .loading p { margin: 0; }
+    .dots::after { content: "..."; display: inline-block; width: 0; overflow: hidden; vertical-align: bottom; animation: dots 1.2s steps(4, end) infinite; }
+    @keyframes dots { to { width: 1.6em; } }
+    .reduced .earphones, .reduced .disclosure { transition: none; }
+    .reduced .dots::after { animation: none; width: auto; }
+    @media (prefers-reduced-motion: reduce) { .earphones, .disclosure { transition: none; } .dots::after { animation: none; width: auto; } }
+  </style>
+</head>
+<body>
+  <main class="notice" aria-labelledby="title" tabindex="0">
+    <div class="content">
+      <h1 id="title">플레이 전 안내</h1>
+      <div id="body-copy" aria-hidden="true">
+        <div class="fiction">
+          <p data-type>이 게임은 <strong>허구의 이야기</strong>입니다.</p>
+          <p data-type>등장하는 인물, 단체, 회사, 사건은 실제와 아무런 관련이 없습니다.</p>
+        </div>
+        <div class="warning">
+          <p data-type>이 게임에는 <strong>화면 깜빡임</strong>과 <strong>빛 효과</strong>가 포함되어 있습니다.</p>
+          <p data-type>빛에 민감한 분은 플레이에 주의해 주세요.</p>
+        </div>
+        <p class="setting" data-type>허브 아래쪽의 '<strong>연출 줄이기</strong>'를 켤 수 있습니다.</p>
+      </div>
+      <div id="accessible-copy" class="sr-only"></div>
+      <p class="earphones"><span class="headphones" aria-hidden="true"></span>이어폰 착용을 권장합니다.</p>
+      <p class="disclosure">일러스트는 AI로 생성되었으며, 제작 과정에 AI 도구를 활용했습니다.</p>
+    </div>
+  </main>
+  <div class="loading" id="loading" role="status" aria-live="polite" tabindex="-1" hidden><p>로딩 중<span class="dots" aria-hidden="true"></span></p></div>
+  <script>
+    /* 처음 한 번만 보이는 플레이 전 안내 (D81). 허브가 remnant.global.settings.notice_seen이 없으면 이 페이지로 보낸다.
+       글이 다 나온 뒤 화면을 누르면(또는 Enter·Space) ‘로딩 중’ 화면 → 3초 뒤 허브. 허브로 갈 때 본 기록을 남긴다.
+       허브 주소: 저장소에서는 `index (1).html`, 배포할 때 'index.html'로 바꾼다 (shinip/js/main.js·shinip_demo_complete.html과 함께) */
+    const HUB_URL = 'index (1).html';
+    const GLOBAL_KEY = 'remnant.global';
+    const notice = document.querySelector(".notice");
+    const loading = document.querySelector("#loading");
+    const lines = [...notice.querySelectorAll("[data-type]")];
+    const warning = document.querySelector(".warning");
+    const firstWarningLine = warning.querySelector("[data-type]");
+    const earphones = document.querySelector(".earphones");
+    const disclosure = document.querySelector(".disclosure");
+    document.querySelector("#accessible-copy").textContent = lines.map((line) => line.textContent).join(" ");
+
+    /* 연출 줄이기: 허브에서 정한 값(remnant.global.settings.reduced)이 있으면 그것을, 없으면 기기 설정을 따른다 */
+    function readGlobal() {
+      try { return JSON.parse(localStorage.getItem(GLOBAL_KEY) || "{}") || {}; } catch (e) { return {}; }
+    }
+    const savedReduced = (readGlobal().settings || {}).reduced;
+    const reduced = typeof savedReduced === "boolean" ? savedReduced : matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) document.body.classList.add("reduced");
+
+    let ready = false;      // 안내 글이 모두 나온 뒤에만 누르면 허브로 간다
+    let leaving = false;
+    let advance = () => {};
+    function markSeen() {   // settings 안에 둔다 (게임이 remnant.global을 저장할 때 settings는 그대로 남는다)
+      try {
+        const g = readGlobal();
+        g.settings = g.settings || {};
+        g.settings.notice_seen = true;
+        localStorage.setItem(GLOBAL_KEY, JSON.stringify(g));
+      } catch (e) { /* 저장할 수 없으면 다음에 다시 보인다 */ }
+    }
+    function leave() {
+      if (leaving) return;
+      leaving = true;
+      markSeen();
+      notice.hidden = true;
+      loading.hidden = false;
+      loading.focus({ preventScroll: true });
+      setTimeout(() => location.replace(encodeURI(HUB_URL)), 3000);
+    }
+    function press() { if (ready) leave(); else advance(); }
+    /* 문서 전체에서 받아서, 페이지가 열리자마자 클릭·키보드가 모두 먹는다 */
+    document.addEventListener("click", press);
+    document.addEventListener("keydown", (event) => {
+      if (event.repeat || (event.key !== "Enter" && event.key !== " ")) return;
+      event.preventDefault();
+      press();
+    });
+    notice.focus({ preventScroll: true });
+
+    async function playNotice() {
+      let activeGroup = 0;
+      let skipThrough = -1;
+      let resume;
+      const wait = (ms) => {
+        if (activeGroup <= skipThrough) return Promise.resolve();
+        return new Promise((resolve) => {
+          const timer = setTimeout(() => resume(), ms);
+          resume = () => {
+            clearTimeout(timer);
+            resume = undefined;
+            resolve();
+          };
+        });
+      };
+      advance = function () {
+        if (activeGroup > 2) return;
+        skipThrough = Math.min(2, Math.max(activeGroup, skipThrough + 1));
+        resume?.();
+      };
+
+      const rows = lines.map((line) => {
+        const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        return nodes.map((node) => {
+          const hidden = document.createElement("span");
+          hidden.className = "pending";
+          hidden.textContent = node.data;
+          const characters = Array.from(node.data);
+          node.after(hidden);
+          node.data = "";
+          return { node, hidden, characters };
+        });
+      });
+      warning.classList.add("warning-pending");
+      earphones.classList.add("fade-pending");
+      disclosure.classList.add("fade-pending");
+      await wait(300);
+      for (const [index, row] of rows.entries()) {
+        if (lines[index] === firstWarningLine) {
+          activeGroup = 1;
+          if (skipThrough === 0) await wait(230);
+          warning.classList.remove("warning-pending");
+        }
+        for (const { node, hidden, characters } of row) {
+          for (const [position, character] of characters.entries()) {
+            if (activeGroup <= skipThrough) {
+              node.appendData(characters.slice(position).join(""));
+              break;
+            }
+            node.appendData(character);
+            hidden.textContent = characters.slice(position + 1).join("");
+            await wait(character === " " ? 24 : 62);
+          }
+          hidden.remove();
+        }
+        if (index < rows.length - 1) await wait(230);
+      }
+      activeGroup = 2;
+      if (skipThrough === 1) await wait(230);
+      if (skipThrough === 2) notice.classList.add("skip-fade");
+      earphones.classList.remove("fade-pending");
+      await wait(960);
+      if (skipThrough === 2) notice.classList.add("skip-fade");
+      disclosure.classList.remove("fade-pending");
+      activeGroup = 3;
+      setTimeout(() => { ready = true; }, 600);   // 건너뛰기를 연달아 누르다 바로 넘어가지 않게 잠깐 기다린다
+    }
+
+    if (reduced) ready = true;   // 연출 줄이기: 글을 한 번에 보여 주고 바로 누를 수 있다
+    else playNotice();
+  </script>
+</body>
+</html>

@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Remnant Archive 인트로</title>
+<script>
+  /* 처음 연 한 번만 플레이 전 안내로 보낸다 (D81). 본 기록은 remnant.global.settings.notice_seen */
+  try { var g0 = JSON.parse(localStorage.getItem('remnant.global') || '{}') || {}; if (!(g0.settings && g0.settings.notice_seen)) location.replace('first-launch-notice-terminal.html'); } catch (e) { /* 저장 칸을 읽을 수 없으면 안내 없이 허브 */ }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -69,6 +73,7 @@
   .item.primary{border-color:rgba(63,182,139,.55);background:rgba(63,182,139,.08)}
   .item.primary .ko{color:#fff}
   .item:hover,.item:focus-visible{outline:none;border-color:var(--accent);background:rgba(63,182,139,.12)}
+  .item[hidden]{display:none}
   .item[aria-disabled="true"] .ko{color:var(--dim)}
   .item[aria-disabled="true"]:hover,.item[aria-disabled="true"]:focus-visible{border-color:var(--line);background:rgba(255,255,255,.03)}
   .item .tag.warn{color:var(--warn);border-color:rgba(209,69,59,.5)}
@@ -265,7 +270,8 @@
       <button class="item" data-go="보존 기록" data-href="shinip/index.html?view=records">
         <span class="ko">보존 기록</span><span class="en">RECORDS</span>
       </button>
-      <button class="item" data-go="설정">
+      <!-- [설정]: 지금은 설정할 항목이 없어 숨긴다. 항목이 생기면 hidden을 지워 다시 보이게 한다 (D82) -->
+      <button class="item" data-go="설정" hidden>
         <span class="ko">설정</span><span class="en">SETTINGS</span>
       </button>
     </nav>
@@ -285,7 +291,6 @@
         <button class="chip" id="motion" aria-pressed="false">연출 줄이기</button>
       </div>
       <p class="hint">↑↓ 이동 · ENTER 선택</p>
-      <p>일러스트는 AI로 생성되었으며, 제작 과정에 AI 도구를 활용했습니다.</p>
       <p><a href="#">개인정보처리방침</a> · <a href="#">이용약관</a> · © 2026 REMNANT ARCHIVE · 주시연 · 김가을</p>
     </footer>
   </main>
@@ -478,7 +483,7 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   }
 
   /* 메뉴 클릭 + 키보드 이동 */
-  const items = [...document.querySelectorAll('.item')];
+  const items = [...document.querySelectorAll('.item:not([hidden])')];   // 숨긴 메뉴는 ↑↓ 이동에서 뺀다
 
   /* CASE 01 상태: 허브는 remnant.global의 status만 읽는다 (R-81) */
   const CASE_URL = 'shinip/index.html';

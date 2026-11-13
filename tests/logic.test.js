@@ -340,5 +340,35 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   }
 }
 
+// D81 처음 한 번만 보이는 플레이 전 안내 (저장소 루트 first-launch-notice-terminal.html)
+{
+  const noticePath = path.join(dir, '..', 'first-launch-notice-terminal.html');
+  const hubPath = path.join(dir, '..', 'index (1).html');
+  if (fs.existsSync(noticePath) && fs.existsSync(hubPath)) {
+    const notice = fs.readFileSync(noticePath, 'utf8');
+    const hub = fs.readFileSync(hubPath, 'utf8');
+    const gameHtml = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+    const font = (x) => (x.match(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/) || [])[0];
+    ok(font(notice) && font(notice) === font(gameHtml) && font(hub) === font(gameHtml), 'D81 안내 페이지 글꼴이 게임·허브와 같음');
+    ok(!/Malgun|Apple SD Gothic/.test(notice), 'D81 안내 페이지에 다른 글꼴 없음');
+    ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(notice), 'D81 안내 페이지 금지 문자열 없음');
+    ok(notice.includes("허브 아래쪽의 '<strong>연출 줄이기</strong>'") && !notice.includes('설정에서'), 'D81 연출 줄이기 안내 문구');
+    ok(/로딩 중/.test(notice) && /setTimeout\(\(\) => location\.replace\(encodeURI\(HUB_URL\)\), 3000\)/.test(notice), 'D81 로딩 중 → 3초 뒤 허브');
+    ok(/const HUB_URL = 'index \(1\)\.html'/.test(notice), 'D81 안내 페이지 허브 주소');
+    ok(/g\.settings\.notice_seen = true/.test(notice), 'D81 본 기록은 settings.notice_seen');
+    ok(/settings\.notice_seen\)\) location\.replace\('first-launch-notice-terminal\.html'\)/.test(hub), 'D81 허브가 처음 한 번만 안내로 보냄');
+    ok(!/AI로 생성/.test(hub) && /AI로 생성/.test(notice), 'D81 AI 고지는 안내 페이지에만');
+    // 게임이 remnant.global을 다시 저장해도 settings.notice_seen이 남는다
+    const before = mem['remnant.global'];
+    mem['remnant.global'] = JSON.stringify({ settings: { notice_seen: true, reduced: false } });
+    S.setStatus('in_progress');
+    S.saveCase(L.recompute(L.newState()));
+    S.recordEnding(1, 'INCOMPLETE');
+    const g = JSON.parse(mem['remnant.global']);
+    ok(g.settings.notice_seen === true && g.settings.reduced === false, 'D81 게임 저장 뒤에도 settings.notice_seen 유지');
+    if (before === undefined) delete mem['remnant.global']; else mem['remnant.global'] = before;
+  }
+}
+
 console.log(`pass ${pass} / fail ${fail}`);
 process.exit(fail ? 1 : 0);

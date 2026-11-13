@@ -74,11 +74,13 @@ remnant-intro/
 - 이어서 출근하기 → `shinip/index.html?mode=continue` (진행 중일 때만 켜짐, 엔딩을 본 뒤에는 ‘근무 종료’)
 - 보존 기록 → `shinip/index.html?view=records` (엔딩 수집 화면, 진행 기록은 건드리지 않음)
 - 유출된 기억 → ‘복구 중’ (데모에서는 잠김)
+- 설정 → 지금은 설정할 항목이 없어 숨김 (`hidden`을 지우면 다시 보임)
 - 하단 "연출 줄이기"는 저장되어 게임 화면에도 똑같이 적용됩니다.
 
 허브는 저장 칸 `remnant.global`의 CASE 상태(status)만 읽습니다. 게임 폴더(`shinip/`)는 `index.html`과 같은 위치에 둡니다.
 저장소 안에서는 인트로 파일 이름이 `index (1).html`이라, 게임의 [허브로 돌아가기]도 이 이름을 가리킵니다. 배포할 때 이름을 `index.html`로 바꾸면 `shinip/js/main.js`의 `HUB_URL`도 `'../index.html'`로 바꿉니다.
 엔딩을 마친 뒤 엔딩 수집의 [허브로 돌아가기]는 데모 종료 페이지 `shinip_demo_complete.html`(인트로와 같은 위치)을 거쳐 허브로 돌아옵니다. 이 페이지의 `HUB_URL`(`'index (1).html'`)도 배포할 때 `'index.html'`로 바꿉니다.
+게임을 처음 연 한 번만 허브 앞에 플레이 전 안내 `first-launch-notice-terminal.html`(인트로와 같은 위치)이 나옵니다. 화면을 누르면 ‘로딩 중’ 3초 뒤 허브로 가고, 본 기록은 `remnant.global`의 `settings.notice_seen`에 남습니다. 이 페이지의 `HUB_URL`도 배포할 때 `'index.html'`로 바꿉니다. 즉 인트로 이름을 바꾸면 허브 주소를 고칠 곳은 `shinip/js/main.js`·`shinip_demo_complete.html`·`first-launch-notice-terminal.html` 세 군데입니다.
 
 ## GitHub Pages로 올리기
 

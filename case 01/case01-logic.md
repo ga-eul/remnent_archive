@@ -367,7 +367,7 @@ computeGrade(id): n = count(true in GRADE_KEYS[id])
 
 **08 저장 및 재시작**
 - R-80 CASE 01 진행 상태는 localStorage `remnant.present-01`에 저장하고 새로고침 시 복원. 처음부터 다시 하면 이 키만 비운다. 저장 항목에는 **tried_pairs**와 C13 진행 상태(c13_step_open·c13_step_done·connection_C13)가 반드시 들어간다(D29). 새로고침 후에도 오답 후보 회색 유지, 같은 조합 재선택 불가, C13 성공 여부(성공이면 조합 영역 잠금 상태와 ‘대조 완료’·결과 문장 화면)와 C13 단계가 그대로 복원된다.
-- R-81 게임 전체 공통 기록은 `remnant.global`에 저장한다: endings_seen(본 엔딩과 엔딩별 최고 등급), 해금된 파트·CASE, 설정, CASE별 상태 `status`(`none` 기록 없음 / `in_progress` 진행 중 / `finished` 엔딩 판정 끝남). 새 게임(처음부터)에서도 유지. status는 CASE 01이 직접 바꾼다: 시작할 때(처음부터 다시 포함) `in_progress`, 엔딩 판정(ending_evaluation) 때 `finished`. 허브는 CASE 진행 칸(`remnant.present-01`)의 내부 값을 읽지 않고 이 status만 읽는다.
+- R-81 게임 전체 공통 기록은 `remnant.global`에 저장한다: endings_seen(본 엔딩과 엔딩별 최고 등급), 해금된 파트·CASE, 설정(`settings`: 연출 줄이기 `reduced`, 플레이 전 안내를 본 기록 `notice_seen` D81), CASE별 상태 `status`(`none` 기록 없음 / `in_progress` 진행 중 / `finished` 엔딩 판정 끝남). 새 게임(처음부터)에서도 유지. status는 CASE 01이 직접 바꾼다: 시작할 때(처음부터 다시 포함) `in_progress`, 엔딩 판정(ending_evaluation) 때 `finished`. 허브는 CASE 진행 칸(`remnant.present-01`)의 내부 값을 읽지 않고 이 status만 읽는다.
 - R-82 엔딩을 본 뒤 새로고침하면 엔딩 수집 화면으로 이동.
 - R-83 엔딩 수집 화면(허브의 [보존 기록]과 같은 화면)은 본 엔딩과 최고 등급만 공개, 보지 않은 엔딩은 번호(‘ENDING 02’ 등)와 자물쇠 아이콘만 표시하고 제목·내용·등급은 보여 주지 않는다 (D42). 엔딩 수집 뒤에는 허브로 돌아가며, [유출된 기억]이 열려 있으면 그 화면의 PRESENT · CASE 01 카드로 돌아간다. ‘처음부터 다시’는 허브의 [입사 지원하기]와 PRESENT · CASE 01 카드 안에 둔다.
 - R-84 CASE 01 status가 `in_progress`일 때 [입사 지원하기] 또는 ‘처음부터 다시’를 누르면 확인 창을 띄운다(문구는 `dialogue.md` 5절). [처음부터]를 고르면 `remnant.present-01`만 비우고 새로 시작한다. `remnant.global`(본 엔딩·등급·설정)은 지우지 않는다.
