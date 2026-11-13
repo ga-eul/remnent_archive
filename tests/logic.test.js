@@ -447,5 +447,20 @@ ok(L.clue('06DE').name === '계정 이력 및 시스템 감사 로그', 'D85 06-
   ok(bad.length === 0, 'D85 자료 문서에 플레이어 없음 ' + bad.join(','));
 }
 
+// D87 잠금 표시, 26번이 노이즈와 함께 끝남
+{
+  const pg = fs.readFileSync(path.join(dir, 'js', 'pages.js'), 'utf8');
+  const css = fs.readFileSync(path.join(dir, 'css', 'base.css'), 'utf8');
+  ok(/const locked = \(sp\) => !L\.itemShown\(s, sp\.item\)/.test(pg) && /lockMark\('hot-lock'\)/.test(pg) && /lockMark\('plan-lock'\)/.test(pg), 'D87 열 수 없는 오브젝트에 잠금 표시 (도면·목록)');
+  ok(/\.hot\.locked::after\{display:none\}/.test(css), 'D87 잠긴 오브젝트는 가운데 점 대신 잠금');
+  // 1차 수색에서 잠기는 오브젝트 = 업무 자료 캐비닛, 보안 시스템 단말, 서버 랙, 자료 캐비닛, 공용 테이블
+  const s1 = L.recompute(L.newState()); s1.page = '03';
+  const lockedNow = Object.values(R.HOTSPOTS).flat().filter((sp) => ['archive', 'control', 'living'].some((p) => sp.id.startsWith(p)) && !L.itemShown(s1, sp.item)).map((sp) => sp.name);
+  ok(JSON.stringify(lockedNow) === JSON.stringify(['업무 자료 캐비닛', '보안 시스템 단말', '서버 랙', '자료 캐비닛', '공용 테이블']), 'D87 1차 수색 잠금 대상 ' + lockedNow.join(','));
+  const life = Number((css.match(/\.glitch-over\{[^}]*animation:glitchLife ([\d.]+)s/) || [])[1]);
+  const c26 = R.SFX[26];
+  ok(c26.clip && !c26.delay && Math.abs(c26.clip.hold + c26.clip.fade - life) < 0.01, 'D87 26번이 노이즈(' + life + 's)와 함께 끝남');
+}
+
 console.log(`pass ${pass} / fail ${fail}`);
 process.exit(fail ? 1 : 0);

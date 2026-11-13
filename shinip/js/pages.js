@@ -156,7 +156,7 @@ window.R01 = window.R01 || {};
     setTimeout(() => {
       if (key === 'warn') P.glitchBurst();                      // 3차 수색 진입: 대화창과 동시에 노이즈
       P.ramiSay([R.RAMI.events[key]], null, RAMI_FACE[key]);
-      if (key === 'warn') R.sound.play(26);                     // 효과음은 경고 대사가 뜬 직후에 (data/sfx.js delay, D83)
+      if (key === 'warn') R.sound.play(26);                     // 노이즈와 함께 시작해 노이즈가 사라지는 1.8초에 페이드아웃으로 끝난다 (data/sfx.js clip, D87)
     }, 120);
   };
 
@@ -430,6 +430,9 @@ window.R01 = window.R01 || {};
       const b = L.spotBadge(s, sp);
       return { cls: b ? ' ' + b : '', text: b ? SPOT_BADGE[b] : '' };
     };
+    /* 아직 열 수 없는 오브젝트는 잠금 표시 (D87). 눌러도 지금처럼 아무것도 열리지 않는다 */
+    const locked = (sp) => !L.itemShown(s, sp.item);
+    const lockMark = (cls) => { const el = h('span', { class: cls, 'aria-hidden': 'true' }); el.innerHTML = LOCK_SVG; return el; };   // 고정 SVG
     const groupText = (g) => {
       const n = L.partsRead(s, g);
       return n ? n + '/' + R.CLUE_PARTS[g].length + ' 확인' : '';
@@ -440,14 +443,18 @@ window.R01 = window.R01 || {};
         h('span', { class: 'hot-group mono', style: pos(groups[g].box), 'aria-hidden': 'true' }, h('span', null, groupText(g)))),
       spots.map((sp) => {
         const b = label(sp);
-        return h('button', { type: 'button', class: 'hot' + b.cls + (sp.side ? ' side-' + sp.side : ''), style: pos(sp.box), 'data-spot': sp.id, 'data-where': 'map',
-          'aria-label': sp.name + (b.text ? ' — ' + b.text : ''), onClick: () => pressSpot(sp, 'map') },
-        h('span', { class: 'hot-name' }, sp.name), b.text ? h('span', { class: 'hot-badge mono' }, b.text) : null);
+        const lk = locked(sp);
+        return h('button', { type: 'button', class: 'hot' + b.cls + (lk ? ' locked' : '') + (sp.side ? ' side-' + sp.side : ''), style: pos(sp.box), 'data-spot': sp.id, 'data-where': 'map',
+          'aria-label': sp.name + (lk ? ' — 잠김' : b.text ? ' — ' + b.text : ''), 'aria-disabled': lk ? 'true' : null, onClick: () => pressSpot(sp, 'map') },
+        h('span', { class: 'hot-name' }, sp.name), b.text ? h('span', { class: 'hot-badge mono' }, b.text) : null, lk ? lockMark('hot-lock') : null);
       }));
     const list = h('div', { class: 'plan-list' }, spots.map((sp) => {
       const b = label(sp);
+      const lk = locked(sp);
       const g = sp.group && groups[sp.group];
-      return h('button', { type: 'button', class: 'plan-item' + b.cls, 'data-spot': sp.id, 'data-where': 'list', onClick: () => pressSpot(sp, 'list') },
+      return h('button', { type: 'button', class: 'plan-item' + b.cls + (lk ? ' locked' : ''), 'data-spot': sp.id, 'data-where': 'list',
+        'aria-label': (g ? g.name + ' · ' + sp.name : sp.name) + (lk ? ' — 잠김' : ''), 'aria-disabled': lk ? 'true' : null, onClick: () => pressSpot(sp, 'list') },
+        lk ? lockMark('plan-lock') : null,
         h('span', null, g ? g.name + ' · ' + sp.name : sp.name),
         b.text ? h('span', { class: 'hot-badge mono' }, b.text) : null,
         g && groupText(sp.group) ? h('span', { class: 'plan-group mono' }, groupText(sp.group)) : null);

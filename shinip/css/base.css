@@ -230,6 +230,14 @@ button,input{font:inherit;color:inherit}
 .hot::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--neon);opacity:.85;animation:hotPulse 2.4s ease-out infinite}
 .hot.done::after{background:var(--accent);opacity:.55;animation:none}
 .hot.new::after{background:#ffcf5a;opacity:1}
+/* 아직 열 수 없는 오브젝트: 가운데 점 대신 잠금 표시 (D87) */
+.hot.locked{cursor:not-allowed}
+.hot.locked::after{display:none}
+.hot.locked:hover,.hot.locked:focus-visible{border-color:rgba(138,151,166,.6);background:rgba(138,151,166,.08);box-shadow:none}
+.hot-lock{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;padding:4px;border-radius:50%;background:rgba(5,13,20,.82);border:1px solid rgba(138,151,166,.55);color:#aab4c0;pointer-events:none}
+.hot-lock svg,.plan-lock svg{display:block;width:100%;height:100%}
+.plan-item.locked{color:var(--muted);cursor:not-allowed}
+.plan-lock{display:inline-flex;width:14px;height:14px;color:var(--muted)}
 .hot:hover,.hot:focus-visible{outline:none;border-color:var(--neon);background:rgba(46,230,214,.1);box-shadow:0 0 18px rgba(46,230,214,.3)}
 .hot:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
 .hot-name{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);z-index:2;white-space:nowrap;font-size:12px;font-weight:700;padding:2px 8px;border-radius:3px;background:rgba(5,13,20,.9);color:var(--text);opacity:0;pointer-events:none;transition:opacity .15s}

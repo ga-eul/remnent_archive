@@ -64,7 +64,7 @@ R01.SFX = {
   23: { file: 'combo-fail.mp3', vol: 0.45, gap: 250, at: 'My Archive 조합 실패' },                    // 성공음보다 커지지 않게 0.65 → 0.45
   24: { file: 'combo-success.mp3', vol: 1.00, gap: 250, at: 'My Archive 조합 성공' },
   25: { file: 'record-new.mp3', vol: 1.00, gap: 250, delay: 450, at: 'My Archive NEW 카드 생성(조합 성공음 뒤)' },
-  26: { file: 'rami-warning-glitch.mp3', vol: 0.10, gap: 3000, delay: 700, at: '제한구역 첫 진입: 래미 경고 대사가 뜬 직후' },  // 피크 +1.4dBFS → 0.12에서 0.10으로 더 낮춤 (피크 -18.6dBFS)
+  26: { file: 'rami-warning-glitch.mp3', vol: 0.10, gap: 3000, clip: { hold: 1.26, fade: 0.54 }, at: '제한구역 첫 진입: 노이즈 화면과 함께 시작, 노이즈가 흐려지는 1.26초부터 페이드아웃해 노이즈가 사라지는 1.8초에 끝' },  // 피크 +1.4dBFS → 0.10 (피크 -18.6dBFS). 노이즈 길이는 css .glitch-over 1.8s (D87)
   27: { file: 'analysis-complete.mp3', vol: 0.60, gap: 1000, at: '최종 추론 신원 확인 절차가 끝났을 때' },
   28: { file: 'final-confirm.mp3', vol: 1.00, gap: 500, at: '최종 선택으로 진행 확인 창 [진행]' },
   29: { file: 'final-confirm.mp3', vol: 1.00, gap: 2000, at: '엔딩 1 연출 시작' },
