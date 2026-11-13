@@ -2,7 +2,7 @@
    진행: 래미 첫 등장·안내 → 메신저 전임자 메시지 → 래미에게 보안코드 질문 → 십자말풀이 → REMAIN → 브리핑 → [제한 시스템 접속] (= 1차 수색 시작) */
 window.R01 = window.R01 || {};
 (function (R) {
-  const { h, button, dialogue, toast } = R.ui;
+  const { h, button, dialogue } = R.ui;
   const L = R.logic;
   const I = R.INTRANET, RA = R.RAMI, CW = R.CROSSWORD, M = R.MESSENGER, O = R.OPENING;
   const commit = (fn) => R.app.commit(fn);
@@ -279,9 +279,7 @@ window.R01 = window.R01 || {};
       const solved = s.crossword_solved.includes(i);
       const input = h('input', { class: 'input mono cw-in', maxlength: String(w.answer.length + 2), 'aria-label': '가로 ' + (i + 1) + ' 답' });
       const check = () => {
-        let ok = false;
-        commit((st) => { ok = L.solveWord(st, i, input.value); });
-        if (!ok) toast('[초안] 다시 생각해 보세요');
+        commit((st) => { L.solveWord(st, i, input.value); });
       };
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
       return h('li', { class: solved ? 'done' : '' },
