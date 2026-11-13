@@ -2,7 +2,7 @@
    추리 자료가 아니다. My Archive·clue_order·확보 수·조합·C13 후보·완성도·해금·엔딩 판정에 넣지 않는다.
    읽은 기록만 진행 칸의 notes_read에 남는다. 문구는 원문 그대로 두고 고치지 않는다.
    place: 문서 위치 / from: 처음 볼 수 있는 수색 단계 (없으면 1) / img: 현장 이미지 (원본 `보조_단서_이미지파일/`, 게임용 jpg 사본)
-   RA-S10은 실명·날짜를 지운 수정본을 연결하고, 제목·기록 요약은 이미지에 맞춘다 (D75·D77). RA-S12 원본 파일 이름은 `RA-12.png` */
+   RA-S10은 실명·날짜를 지운 수정본을 연결하고, 제목·기록 요약은 이미지에 맞춘다 (D75·D77). RA-S09·RA-S11 기록 요약도 수정 이미지에 맞춘다 (D78). RA-S12 원본 파일 이름은 `RA-12.png` */
 window.R01 = window.R01 || {};
 R01.FIELD_NOTES = {
   'RA-S01': { title: '문서 분류 안내', place: 'archive', img: 'assets/field/ra-s01.jpg', ratio: '1443 / 1090',
@@ -22,11 +22,11 @@ R01.FIELD_NOTES = {
   'RA-S08': { title: '공용 기기 이용 안내', place: 'living', img: 'assets/field/ra-s08.jpg', ratio: '1448 / 1086',
     summary: '탕비대에 설치된 공용 기기의 사용 안내문이다. 기기 사용 방법과 간단한 주의사항이 적혀 있다.' },
   'RA-S09': { title: '분석 단말 이용 안내', place: 'lab', img: 'assets/field/ra-s09.jpg', ratio: '1448 / 1086',
-    summary: '실험실 분석 단말의 사용 방법과 화면 잠금 절차를 정리한 안내문이다. 별다른 이상은 없어 보인다.' },
+    summary: '실험실 분석 단말의 사용 방법과 화면 구성을 정리한 안내문이다. 별다른 이상은 없어 보인다.' },
   'RA-S10': { title: '실험 장비 관찰 기록', place: 'lab', img: 'assets/field/ra-s10.jpg', ratio: '1448 / 1086',
     summary: '실험 장비의 상태를 점검한 관찰 기록이다. 분석 콘솔과 실험 의자 등 장비 대부분이 정상으로 적혀 있다.' },
   'RA-S11': { title: '실험 장비 정리 안내', place: 'lab', img: 'assets/field/ra-s11.jpg', ratio: '1448 / 1086',
-    summary: '실험 장비의 정리 순서와 이동 통로 확보에 관한 안내문이다. 사용한 장비는 지정된 위치에 보관하도록 되어 있다.' },
+    summary: '실험 장비의 분류와 정리 절차를 정리한 안내문이다. 사용한 장비는 지정된 위치에 보관하도록 되어 있다.' },
   'RA-S12': { title: '보안 자료 보관함 취급 안내', place: 'restricted', img: 'assets/field/ra-s12.jpg', ratio: '1448 / 1086',
     summary: '보안 자료를 보관하는 전자 잠금함의 취급 안내문이다. 허가되지 않은 조작을 금지한다는 경고가 적혀 있다.' },
   'RA-S13': { title: '제한구역 출입 상태 기록', place: 'restricted', img: 'assets/field/ra-s13.jpg', ratio: '1448 / 1086',
