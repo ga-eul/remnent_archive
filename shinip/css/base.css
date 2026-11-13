@@ -702,7 +702,7 @@ body.reduced *,body.reduced *::before,body.reduced *::after{animation:none!impor
 .msgr-notice .msgr-time{margin-left:auto;align-self:flex-end}
 .msgr-block{border-bottom:0;padding:4px 0 8px}
 
-/* ---------- 상단 진행 단계 표시줄 (수정 요청/상단 진행단계 표시.png) ---------- */
+/* ---------- 상단 진행 단계 표시줄 ---------- */
 .steps{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:-6px 0 22px;overflow-x:auto}
 .step-tab{display:flex;align-items:baseline;gap:8px;border:0;border-bottom:2px solid var(--line);background:none;color:var(--dim);
   padding:10px 4px 9px;font-size:14px;text-align:left;white-space:nowrap;cursor:default}
@@ -741,7 +741,7 @@ body.reduced *,body.reduced *::before,body.reduced *::after{animation:none!impor
 body.reduced .rami-access,body.reduced .in-cta .btn{animation:none}
 @media (prefers-reduced-motion:reduce){.rami-access,.in-cta .btn{animation:none}}
 
-/* ---------- 3차 수색 진입 글리치 노이즈 (수정 요청/노이즈 연출.jpg) ----------
+/* ---------- 3차 수색 진입 글리치 노이즈 ----------
    screen 합성: 이미지의 검은 부분은 원래 화면 그대로, 밝은 줄무늬만 화면 위에 겹친다 */
 .glitch-over{position:fixed;inset:0;z-index:25;pointer-events:none;mix-blend-mode:screen;overflow:hidden;animation:glitchLife 1.8s linear forwards}
 .glitch-over i{position:absolute;inset:-3%;background:no-repeat center/cover;mix-blend-mode:screen}

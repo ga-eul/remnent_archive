@@ -159,7 +159,7 @@ window.R01 = window.R01 || {};
     }, 120);
   };
 
-  /* 3차 수색 진입 노이즈 (수정 요청/노이즈 연출.jpg): 이미지의 검은 부분은 원래 화면이 비치도록 screen 합성 */
+  /* 3차 수색 진입 노이즈: 이미지의 검은 부분은 원래 화면이 비치도록 screen 합성 */
   P.glitchBurst = function () {
     if (document.body.classList.contains('reduced')) return;   // 연출 줄이기
     const img = 'url(' + R.ASSETS.noiseGlitch + ')';
