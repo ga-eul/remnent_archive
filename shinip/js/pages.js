@@ -238,18 +238,37 @@ window.R01 = window.R01 || {};
     const setClock = (t) => { clock.textContent = a.date + '  ' + t; };
     const img = h('img', { class: 'cctv-still', src: a.img, alt: x.name });
     const vid = h('video', { class: 'cctv-video', src: a.video, playsinline: true, preload: 'metadata', hidden: true });
-    const play = button('▶ 영상 재생', () => {
-      img.hidden = true; vid.hidden = false; vid.currentTime = 0; vid.play();
+    let tried = false;                                   // [영상 재생]을 누른 뒤에만 실패 안내를 띄운다
+    const start = () => {
+      tried = true; fail.hidden = true;
+      if (vid.error) vid.load();                          // 한 번 실패한 영상은 다시 불러온 뒤 재생
+      img.hidden = true; vid.hidden = false; vid.currentTime = 0;
       if (a.hudOnVideo === false) box.classList.add('playing');   // 영상에 시각이 이미 찍혀 있으면 덧씌운 표시를 숨김
       play.textContent = '↻ 다시 재생';
-    }, { small: true });
+      const p = vid.play();
+      if (p && p.catch) p.catch((e) => { if (!e || e.name !== 'AbortError') onFail(); });   // 다시 불러오느라 끊긴 재생은 실패로 보지 않음
+    };
+    // 재생 실패: 빈 화면 대신 정지 화면으로 되돌리고 안내와 [다시 재생]을 보여 준다
+    const onFail = () => {
+      if (!tried || !box.isConnected) return;
+      vid.pause(); vid.hidden = true; img.hidden = false;
+      box.classList.remove('playing');
+      setClock(a.still[isReduced() ? Math.min(1, a.still.length - 1) : i]);
+      play.textContent = '▶ 영상 재생';
+      fail.hidden = false;
+    };
+    const play = button('▶ 영상 재생', start, { small: true });
+    const fail = h('div', { class: 'cctv-fail', role: 'alert', hidden: true },
+      h('p', null, '영상을 불러오지 못했습니다. 다시 재생해 주세요.'), button('다시 재생', start, { small: true }));
+    vid.addEventListener('error', onFail);
+    vid.addEventListener('playing', () => { fail.hidden = true; });
     // vhs: 손상된 복구 영상 (05-B-VHS) — 노이즈 띠·흔들림을 더한다 (연출 줄이기면 멈춤)
     const box = h('figure', { class: 'cctv' + (a.vhs ? ' vhs' : ''), style: 'aspect-ratio:' + a.ratio },
       img, vid,
       h('div', { class: 'cctv-hud', 'aria-hidden': 'true' },
         h('span', { class: 'cctv-rec mono' }, a.vhs ? null : h('i'), a.rec || 'REC'), h('span', { class: 'cctv-cam mono' }, a.cam), clock),
       h('i', { class: 'cctv-scan', 'aria-hidden': 'true' }),
-      a.vhs ? h('i', { class: 'vhs-band', 'aria-hidden': 'true' }) : null);
+      a.vhs ? h('i', { class: 'vhs-band', 'aria-hidden': 'true' }) : null, fail);
     // 정지 화면: 3장면 시각을 번갈아 표시 (연출 줄이기면 16:40 하나로 고정)
     let i = 0;
     setClock(a.still[isReduced() ? Math.min(1, a.still.length - 1) : 0]);
