@@ -11,3 +11,5 @@ CASE01_효과음_음량측정.csv
 desktop/node_modules/
 desktop/app-content/
 desktop/dist/
+# 배포용 zip 결과물 (release/build_release.py)
+release/dist/
