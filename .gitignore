@@ -6,3 +6,8 @@
 CASE01_효과음_음량측정.csv
 # 배경음 원본(WAV·MP3): 따로 보관 (게임용 사본은 shinip/assets/bgm/, D91)
 배경음/
+
+# Windows 앱(Electron) 빌드 결과물: 패키지·복사본·exe (desktop/)
+desktop/node_modules/
+desktop/app-content/
+desktop/dist/

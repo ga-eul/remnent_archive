@@ -86,6 +86,20 @@ remnant-intro/
 
 허브 배경음은 `shinip/assets/bgm/`에 있고, 엔딩을 보고 데모 종료 화면의 [허브로 돌아가기]로 돌아온 그때만 한 번 재생됩니다. 원본(`배경음/` 폴더)은 Git에 넣지 않고 따로 보관합니다.
 
+## Windows 앱으로 실행하기 (D92)
+
+허브와 CASE 01을 Windows용 앱(Electron, 무설치 exe)으로 묶을 수 있습니다. 앱 프로젝트는 `desktop/` 폴더에 따로 있고, 게임 원본 파일은 고치지 않습니다.
+
+1. `desktop/`에서 `npm install` (Node.js 22.12 이상, 처음 한 번)
+2. `npm start` → 앱으로 바로 실행 (개발용, F12 개발자 도구)
+3. `npm run dist` → `desktop/dist/RemnantArchiveDemo-<버전>-portable.exe`
+
+- 빌드할 때 실행에 필요한 파일(이 페이지, 플레이 전 안내, 로딩, 데모 종료 페이지, `shinip/`)만 복사해 묶습니다. 글꼴도 앱 안에 들어가서 인터넷 없이도 같은 글꼴로 보입니다.
+- 저장 위치는 `%APPDATA%\Remnant Archive Demo`입니다. 웹 브라우저에서 하던 기록은 앱으로 넘어오지 않습니다.
+- F11로 전체 화면을 켜고 끕니다. 데모 종료 화면의 X 링크는 기본 브라우저로 열립니다.
+- 코드 서명이 없어서 처음 실행할 때 Windows SmartScreen 경고가 뜹니다([추가 정보] → [실행]).
+- 아이콘을 바꾸려면 저장소 루트 `아이콘.png`를 바꾼 뒤 `python desktop/scripts/make-icon.py`를 실행합니다.
+
 ## GitHub Pages로 올리기
 
 1. 저장소 맨 위(루트)에 `index.html`과 `images` 폴더를 그대로 올립니다.

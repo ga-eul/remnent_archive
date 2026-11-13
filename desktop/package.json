@@ -1,0 +1,56 @@
+{
+  "name": "remnant-archive-demo",
+  "productName": "Remnant Archive Demo",
+  "version": "0.1.0",
+  "description": "REMNANT ARCHIVE — CASE 01 데모 (Windows 앱)",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "stage": "node scripts/stage.js",
+    "start": "node scripts/stage.js && electron .",
+    "dist": "node scripts/stage.js && electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "com.remnantarchive.demo",
+    "productName": "Remnant Archive Demo",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "app-content",
+        "to": "game"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "RemnantArchiveDemo-${version}-portable.exe"
+    },
+    "electronLanguages": [
+      "ko",
+      "en-US"
+    ]
+  },
+  "devDependencies": {
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/noto-sans-kr": "5.3.1",
+    "electron": "45.3.1",
+    "electron-builder": "26.18.0"
+  },
+  "author": "ga-eul"
+}

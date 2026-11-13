@@ -12,8 +12,8 @@ REMNANT ARCHIVE — CASE 01 「신입사원」. 사이버펑크 기업 인트라
 - 설정 문서(아래 "문서 지도"의 .md 파일)의 설정은 게임 개발의 **기초 설정**이다. **임의로 수정하지 않는다.**
 - 변경이 필요하다고 판단되면 **먼저 근거와 제안을 사용자에게 설명하고 허락을 받은 뒤** 변경한다. (설정 문서·코드 모두 해당)
 - 설정 문서는 **현재 확정 상태**만 담는다. 문서끼리 다르거나 미확정 지점을 만나면 `decisions.md`를 확인하고, 거기서도 정해지지 않았으면 임의로 정하지 말고 사용자에게 묻는다.
-- 코드는 인트로 페이지(허브) 시안 `index (1).html`과 CASE 01 게임 `shinip/`(PRD 1~6단계 완료, GitHub 공개 저장소 `ga-eul/remnent_archive`), 엔딩 뒤 데모 종료 페이지 `shinip_demo_complete.html`(저장소 루트, D79), 처음 연 한 번만 허브 앞에 나오는 플레이 전 안내 `first-launch-notice-terminal.html`과 로딩 화면 `loading.html`(저장소 루트, D81·D84)이다. 효과음 설정은 `shinip/data/sfx.js`, 재생은 `shinip/js/sound.js`(D83). 허브 [설정] 메뉴는 지금 숨김(D82). 빌드 없이 파일을 브라우저로 열어 확인한다(글꼴은 인터넷에서 불러옴). 허브 메뉴는 `LIVE_LINKS = true`로 게임에 연결되어 있다(`README.md` 참고). 확인은 저장소 루트에서 로컬 서버(예: `python -m http.server`)를 띄워 `index (1).html`을 열면 허브→게임→허브 흐름까지 볼 수 있다. 구조와 허브 연결 방식은 `prd.md` 1단계 "구현 메모".
-- **PC 브라우저 전용 게임이다. 휴대폰(모바일) 버전·앱 버전은 만들지 않는다 (D80).** 화면 설계·확인·검수는 PC 브라우저 기준으로만 한다. 모바일 화면 대응·모바일 폭 확인·터치 조작·앱 포장은 작업 범위에 넣지 않는다.
+- 코드는 인트로 페이지(허브) 시안 `index (1).html`과 CASE 01 게임 `shinip/`(PRD 1~6단계 완료, GitHub 공개 저장소 `ga-eul/remnent_archive`), 엔딩 뒤 데모 종료 페이지 `shinip_demo_complete.html`(저장소 루트, D79), 처음 연 한 번만 허브 앞에 나오는 플레이 전 안내 `first-launch-notice-terminal.html`과 로딩 화면 `loading.html`(저장소 루트, D81·D84)이다. 효과음 설정은 `shinip/data/sfx.js`, 재생은 `shinip/js/sound.js`(D83). Windows 앱(Electron) 포장은 `desktop/`(D92, 게임 파일을 복사해 묶으며 원본은 고치지 않는다. 빌드는 `desktop/`에서 `npm run dist`). 허브 [설정] 메뉴는 지금 숨김(D82). 빌드 없이 파일을 브라우저로 열어 확인한다(글꼴은 인터넷에서 불러옴). 허브 메뉴는 `LIVE_LINKS = true`로 게임에 연결되어 있다(`README.md` 참고). 확인은 저장소 루트에서 로컬 서버(예: `python -m http.server`)를 띄워 `index (1).html`을 열면 허브→게임→허브 흐름까지 볼 수 있다. 구조와 허브 연결 방식은 `prd.md` 1단계 "구현 메모".
+- **PC 전용 게임이다. 휴대폰(모바일) 버전·모바일 앱은 만들지 않는다 (D80).** 화면 설계·확인·검수는 PC 기준(PC 브라우저, Windows 앱 D92)으로만 한다. 모바일 화면 대응·모바일 폭 확인·터치 조작·모바일 앱 포장은 작업 범위에 넣지 않는다.
 - 테스트: 저장소 루트에서 `node tests/logic.test.js` (진행 규칙·저장·금지 문자열 검사). 코드를 고친 뒤 실행한다.
 
 ## 문서 갱신 규칙
