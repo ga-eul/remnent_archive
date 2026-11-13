@@ -5,7 +5,7 @@ const mem = {};
 const ctx = { window: {}, console,
   localStorage: { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: (k) => { delete mem[k]; } } };
 ctx.window = ctx; vm.createContext(ctx);
-['data/clues.js', 'data/connections.js', 'data/text.js', 'data/intranet.js', 'data/finale.js', 'assets/assets.js', 'js/logic.js', 'js/store.js']
+['data/clues.js', 'data/hotspots.js', 'data/fieldnotes.js', 'data/connections.js', 'data/text.js', 'data/intranet.js', 'data/finale.js', 'assets/assets.js', 'js/logic.js', 'js/store.js']
   .forEach((f) => vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx, { filename: f }));
 const R = ctx.R01, L = R.logic, S = R.store;
 let fail = 0, pass = 0;
@@ -58,13 +58,14 @@ function playTo06(opts = {}) {
   L.openFromSearch(s, '05A');
   ok(L.openFromSearch(s, '05D').length === 0, 'R-17 05-C 전 05-D 불가');
   L.openFromSearch(s, '05C');
-  if (opts.c08Early) { L.openFromSearch(s, '05B_VHS'); ok(s.clue_05B_PERSONNEL_found, 'R-18a 05-B 묶음 열람');
+  if (opts.c08Early) { L.openFromSearch(s, '05B_VHS'); ok(!s.clue_05B_PERSONNEL_found, 'D73 05-B-VHS만 열람 (PERSONNEL은 따로)');
+    L.openFromSearch(s, '05B_PERSONNEL'); ok(s.clue_05B_PERSONNEL_found, 'R-18a 05-B-PERSONNEL 따로 열람');
     ok(L.tryConnect(s, '05B_VHS', '05B_PERSONNEL').result === 'success' && !s.c08_human03_confirmed, 'C08 05-D 전 성공, 갱신 전'); }
   ok(!s.restricted_unlocked, '05-D 전 제한구역 닫힘');
   L.openFromSearch(s, '05D');
   if (opts.c08Early) ok(s.c08_human03_confirmed, 'D17 05-D 열람 후 C08 갱신');
   ok(s.restricted_unlocked, 'R-20 필수 7개 → 제한구역');
-  if (!opts.c08Early) L.openFromSearch(s, '05B_VHS');
+  if (!opts.c08Early) { L.openFromSearch(s, '05B_VHS'); L.openFromSearch(s, '05B_PERSONNEL'); }
   if (opts.e05) L.openFromSearch(s, '05E');
   ok(L.go(s, '06'), '06 이동');
   ok(!L.canStartFinal(s), '06-A 전 최종 추론 불가');
@@ -179,6 +180,140 @@ ok(R.STAFF.A.name === '엘리넛 쇼' && R.STAFF.B.age === 38 && R.STAFF.C.role 
   const doc = fs.readFileSync(path.join(dir, R.CLUE_ASSETS['05B_PERSONNEL'].html), 'utf8');
   ok(c.name === '인사·업무 기록' && !/삭제/.test(c.name + R.SPOTS['05B_PERSONNEL'].summary.join('')), 'D62 05-B-PERSONNEL 표시명');
   ok(!doc.includes('삭제된 직원'), 'D62 05-B-PERSONNEL 문서 제목에 결론 없음');
+}
+
+// 장소 조사 도면·보조자료 (D73, case 01/investigation-map-rules.md)
+{
+  const HS = R.HOTSPOTS, NOTES = R.FIELD_NOTES;
+  const allSpots = Object.keys(HS).flatMap((p) => HS[p].map((x) => Object.assign({ place: p }, x)));
+  const spot = (id) => allSpots.find((x) => x.id === id);
+  const cap = (id) => 'place' + id[0].toUpperCase() + id.slice(1);
+  // 데이터 정합
+  ok(R.PLACES.every((p) => HS[p.id] && R.ASSETS[cap(p.id)] && fs.existsSync(path.join(dir, R.ASSETS[cap(p.id)]))), 'D73 장소 5곳 도면 이미지·클릭 영역');
+  ok(allSpots.every((x) => x.box.length === 4 && x.box[0] >= 0 && x.box[1] >= 0 && x.box[0] + x.box[2] <= 100 && x.box[1] + x.box[3] <= 100), 'D73 클릭 영역 좌표가 도면 안');
+  ok(new Set(allSpots.map((x) => x.id)).size === allSpots.length, 'D73 오브젝트 id 중복 없음');
+  const noteIds = Object.keys(NOTES);
+  ok(noteIds.length === 13 && noteIds.every((id, i) => id === 'RA-S' + String(i + 1).padStart(2, '0')), 'D73 보조자료 RA-S01~RA-S13');
+  ok(noteIds.every((id) => allSpots.filter((x) => x.item.note === id).length === 1 && spot(allSpots.find((x) => x.item.note === id).id).place === NOTES[id].place), 'D73 보조자료마다 오브젝트 하나, 문서 위치와 같은 장소');
+  ok(noteIds.every((id) => NOTES[id].img && fs.existsSync(path.join(dir, NOTES[id].img)) && NOTES[id].img.endsWith(id.toLowerCase() + '.jpg')), 'D75 보조자료 이미지 13개 일대일 연결');
+  const searchClues = R.CLUES.filter((c) => c.place);
+  ok(searchClues.every((c) => {
+    const parts = R.CLUE_PARTS[c.key];
+    const hs = allSpots.filter((x) => x.item.clue === c.key);
+    return hs.every((x) => x.place === c.place) && (parts ? parts.every(([p]) => hs.some((x) => x.item.part === p)) : hs.length === 1);
+  }), 'D73 수색 자료마다 그 장소 오브젝트 (03-A·03-C는 하위 부분마다)');
+  ok(!allSpots.some((x) => ['04A', '06G'].includes(x.item.clue)), 'D73 04-A·06-G는 오브젝트에 두지 않음');
+  // 확정 문구 대조 (저장소 루트 원문이 있을 때)
+  const src = path.join(dir, '..', '보조단서(단서명,자료번호,문서위치,MYARCIVE,기록요약).txt');
+  if (fs.existsSync(src)) {
+    const txt = fs.readFileSync(src, 'utf8').replace(/\r/g, '');
+    const blocks = txt.split(/\n(?=\d+\. RA-S\d\d)/).slice(1);
+    const placeKo = { archive: '기록보관실', control: '관제실', living: '생활공간', lab: '업무실험실', restricted: '제한구역' };
+    ok(blocks.length === 13 && blocks.every((b) => {
+      const id = b.match(/자료번호 : (RA-S\d\d)/)[1], n = NOTES[id];
+      return n && b.includes('단서명(헤드제목) : ' + n.title + '\n') && b.includes('문서위치 : ' + placeKo[n.place] + '\n') &&
+        b.includes('My Archive : 미보관') && b.includes('기록 요약 : ' + n.summary);
+    }), 'D73 보조자료 제목·위치·기록 요약이 확정 원문과 같음');
+  }
+  const noteText = noteIds.map((id) => NOTES[id].title + NOTES[id].summary).join('\n');
+  ok(!/RA-H|HUMAN|SEC-17|DA-A|TEMP|SELF ARCHIVE|엘리넛|마거릿|피터|\d{1,2}:\d{2}|01\.24|04\.12/.test(noteText), 'D73 보조자료 문구에 사건 식별자·실명·날짜 없음');
+
+  // 진행: 1차 수색
+  const s = L.recompute(L.newState());
+  Object.assign(s, { page: '03', briefing_done: true, security_code_correct: true, opening_step: 'hired' });
+  ok(!L.itemShown(s, spot('control-server').item), '1차: 서버 랙(05-B-VHS)은 아직 열리지 않음');
+  L.checkSpot(s, 'control-server');
+  ok(!L.viewItem(s, spot('control-server').item) && !L.has(s, '05B_VHS') && L.spotBadge(s, spot('control-server')) === null, '잠긴 오브젝트를 눌러도 획득·확인 처리 없음');
+  ok(L.viewItem(s, spot('archive-shelf').item) && !L.has(s, '03A') && s.clue_order.length === 0, '03-A 명부만 열람: 아직 미획득');
+  ok(L.spotBadge(s, spot('archive-shelf')) === 'done' && L.spotBadge(s, spot('archive-return')) === null && L.placeStatus(s, 'archive') === null, '명부 [확인함], 업무 기록 표시 없음, 기록보관실 미완료');
+  L.viewItem(s, spot('archive-return').item);
+  ok(L.has(s, '03A') && s.clue_order.join() === '03A' && L.placeStatus(s, 'archive') === 'done', '03-A 두 부분 열람 → 획득, 기록보관실 [수색완료]');
+  L.viewItem(s, spot('control-cctv').item);
+  L.viewItem(s, spot('living-burgundy').item);
+  ok(L.partsRead(s, '03C') === 1 && !L.has(s, '03C') && !s.interview_unlocked && !L.canGo(s, '04'), '03-C 1/2 확인: 면담 버튼 비활성');
+  ok(L.spotBadge(s, spot('living-burgundy')) === 'done' && L.placeStatus(s, 'living') === null, '버건디 수첩 [확인함], 생활공간 미완료');
+  const before = JSON.stringify([s.clue_order, s.interview_unlocked]);
+  ['RA-S01', 'RA-S02', 'RA-S03', 'RA-S04', 'RA-S05', 'RA-S06', 'RA-S08'].forEach((id) => ok(L.viewItem(s, { note: id }), id + ' 1차 열람'));
+  ok(!L.viewItem(s, { note: 'RA-S07' }) && !L.viewItem(s, { note: 'RA-S09' }), 'RA-S07(2차부터)·업무실험실 보조자료는 1차에 열람 불가');
+  ok(JSON.stringify([s.clue_order, s.interview_unlocked]) === before && !L.has(s, '03C'), '보조자료를 읽어도 자료·해금 변화 없음');
+  L.viewItem(s, spot('living-black').item);
+  ok(L.partsRead(s, '03C') === 2 && L.has(s, '03C') && s.interview_unlocked && L.placeStatus(s, 'living') === 'done', '03-C 2/2 → 획득, 면담 해금, 생활공간 [수색완료]');
+  ok(!L.viewItem(s, spot('archive-shelf').item) && s.clue_order.length === 3, '이미 읽은 자료 재열람은 상태 변화 없음');
+
+  // 2차 수색
+  ['A', 'B', 'C'].forEach((w) => { s['interview_' + w + '_done'] = true; });
+  L.openClue(s, '04A'); s.interview_page_started = true;
+  ok(L.go(s, '05') && L.searchStage(s) === 2, '2차 수색');
+  ok(L.placeStatus(s, 'archive') === 'progress' && L.placeStatus(s, 'control') === 'progress', '2차: 기록보관실·관제실 [2차 수색 중]');
+  ok(L.placeStatus(s, 'living') === 'done' && L.placeNewNotes(s, 'living'), '2차: 생활공간은 1차 완료 유지 + [보조자료 있음]');
+  L.viewItem(s, { note: 'RA-S07' });
+  ok(!L.placeNewNotes(s, 'living') && L.placeStatus(s, 'living') === 'done', 'RA-S07 읽으면 [보조자료 있음] 사라짐');
+  ok(L.spotBadge(s, spot('control-server')) === 'new', '1차에 눌러 본 서버 랙이 2차에 [새 자료]');
+  L.viewItem(s, spot('control-server').item);
+  ok(L.has(s, '05B_VHS') && !L.has(s, '05B_PERSONNEL') && L.spotBadge(s, spot('control-server')) === 'done', '05-B-VHS만 획득, [확인함]');
+  ok(L.tryConnect(s, '05B_VHS', '05B_PERSONNEL').result === 'invalid', 'C08은 두 05-B 자료를 모두 얻어야 가능');
+  L.viewItem(s, spot('control-cabinet').item);
+  ok(L.placeStatus(s, 'control') === 'done-extra', '05-B 두 자료 → 관제실 [수색완료 · 추가 조사 가능] (05-E 남음)');
+  ok(L.viewItem(s, spot('control-security').item) && L.placeStatus(s, 'control') === 'done' && !s.connection_C10, '05-E 직접 열람(해금 조건 없음) → [수색완료], C10과 무관');
+  ok(!L.placeOpen(s, 'lab'), '05-A 전 업무실험실 닫힘 (R-16)');
+  L.viewItem(s, spot('archive-cabinet').item);
+  ok(L.placeOpen(s, 'lab') && L.placeStatus(s, 'archive') === 'done', '05-A → 업무실험실 개방, 기록보관실 [수색완료]');
+  L.checkSpot(s, 'lab-desk');
+  ok(!L.viewItem(s, spot('lab-desk').item) && L.spotBadge(s, spot('lab-desk')) === null, '05-C 전 분석 책상(05-D) 열람 불가');
+  L.checkSpot(s, 'lab-chair'); L.viewItem(s, spot('lab-chair').item);
+  ok(L.spotBadge(s, spot('lab-chair')) === 'done', '실험 의자(RA-S10) [확인함]');
+  L.viewItem(s, spot('lab-console').item);
+  ok(L.spotBadge(s, spot('lab-desk')) === 'new' && !s.connection_C05, '05-C 열람 후 분석 책상 [새 자료] (C05와 무관)');
+  ok(L.viewItem(s, spot('lab-desk').item) && L.has(s, '05D') && L.placeStatus(s, 'lab') === 'done', '05-D 열람 → 업무실험실 [수색완료]');
+  ok(s.restricted_unlocked && L.connCount(s) === 0, '제한구역 개방은 필수 7개만 (장소 완료·보조자료와 무관)');
+
+  // 이전 단계로 돌아가기
+  s.second_investigation_started = true;
+  ok(L.jump(s, '03') && L.spotBadge(s, spot('archive-cabinet')) === 'done' && L.itemShown(s, spot('archive-cabinet').item), '1차로 돌아가도 05-A 캐비닛 [확인함]·다시 열람');
+  ok(L.placeStatus(s, 'archive') === 'done' && L.placeStatus(s, 'control') === 'done' && L.placeStatus(s, 'lab') === null, '1차 기준 장소 완료 표시');
+  const n0 = s.clue_order.length;
+  ok(!L.viewItem(s, spot('archive-cabinet').item) && s.clue_order.length === n0, '재열람은 새 획득 없음');
+  L.jump(s, '05');
+
+  // 3차 수색
+  ok(L.go(s, '06'), '3차 수색');
+  L.viewItem(s, spot('restricted-locker').item);
+  ok(L.canStartFinal(s) && L.placeStatus(s, 'restricted') === null, '06-A만: 최종 추론 버튼만 활성, [수색완료] 아님');
+  L.viewItem(s, spot('restricted-glass').item);
+  ok(L.placeStatus(s, 'restricted') === null, '06-A·06-S만: 완료 표시 없음');
+  L.viewItem(s, spot('restricted-pc').item); L.viewItem(s, spot('restricted-server').item);
+  ok(L.placeStatus(s, 'restricted') === 'done', '06-A·06-B·06-D/E (+06-S) → [수색완료]');
+  const t = JSON.parse(JSON.stringify(s)); t.clue_06S_found = false; t.clue_order = t.clue_order.filter((k) => k !== '06S');
+  ok(L.placeStatus(t, 'restricted') === 'done-extra', '06-S 안 읽으면 [수색완료 · 추가 조사 가능]');
+  ok(L.placeStatus(s, 'archive') === 'done' && L.placeStatus(s, 'living') === 'done', '3차: 이전 장소는 2차 기준 유지');
+
+  // 보조자료는 진행에 영향 없음
+  noteIds.forEach((id) => L.viewItem(s, { note: id }));
+  ok(s.notes_read.length === 13 && s.clue_order.every((k) => L.clue(k)) && !s.clue_order.some((k) => /^RA/.test(k)), '보조자료 13개 열람, clue_order에 없음');
+  ok(!L.c13Candidates(s).some((k) => /^RA/.test(k)) && Object.values(R.GRADE_KEYS).flat().every((k) => !/^RA/.test(k)), '보조자료는 C13 후보·완성도 키에 없음');
+
+  // 저장·복원
+  for (const k of Object.keys(mem)) delete mem[k];
+  S.saveCase(s);
+  const r = S.loadCase();
+  ok(r.notes_read.length === 13 && r.spots_checked.includes('lab-desk') && r.parts_seen.includes('03C:black') && L.placeStatus(r, 'restricted') === 'done', '새로고침: 보조자료·눌러 본 기록·하위 열람·장소 완료 복원');
+  // 이전 형식 세이브 (하위 열람·보조자료 칸 없음, 05-B 묶음 획득)
+  const old = L.recompute(L.newState());
+  ['parts_seen', 'notes_read', 'spots_checked'].forEach((k) => delete old[k]);
+  Object.assign(old, { page: '05', briefing_done: true, security_code_correct: true, interview_A_done: true, interview_B_done: true, interview_C_done: true, interview_page_started: true, second_investigation_started: true });
+  ['03A', '03B', '03C', '04A', '05B_VHS', '05B_PERSONNEL'].forEach((k) => { old['clue_' + k + '_found'] = true; old.clue_order.push(k); });
+  mem['remnant.present-01'] = JSON.stringify({ version: 1, state: old });
+  const m = S.loadCase();
+  ok(m && m.parts_seen.length === 4 && L.partsRead(m, '03A') === 2 && L.partsRead(m, '03C') === 2, '이전 세이브: 03-A·03-C 하위 부분 모두 열람으로 채움');
+  ok(['archive-shelf', 'archive-return', 'living-burgundy', 'living-black', 'control-server', 'control-cabinet'].every((id) => L.spotBadge(m, spot(id)) === 'done'), '이전 세이브: 획득 자료 오브젝트 [확인함]');
+  ok(m.interview_unlocked && m.clue_order.length === 6 && L.placeStatus(m, 'control') === 'done-extra', '이전 세이브: 진행·장소 완료 그대로');
+}
+
+// D75: 화면 문구에 [임시]·[초안] 표시 없음 (코드 주석 제외)
+{
+  const code = fs.readdirSync(dir, { recursive: true }).filter((f) => /\.(js|html)$/.test(f))
+    .map((f) => fs.readFileSync(path.join(dir, f), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$|<!--[\s\S]*?-->/gm, '')).join('\n');
+  ok(!/\[(\d단계 )?임시|\[초안\]|\[에셋 준비/.test(code), 'D75 화면 문구에 [임시]·[초안] 없음');
 }
 
 // 금지 문자열 (CLAUDE.md 절대 금지)

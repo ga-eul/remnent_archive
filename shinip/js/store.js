@@ -28,7 +28,7 @@ window.R01 = window.R01 || {};
   }
   /* 저장된 상태를 기본값 위에 덮어 읽는다 (새로 생긴 상태값이 있어도 깨지지 않게) */
   function revive(state) {
-    const s = Object.assign(R.logic.newState(), state);
+    const s = R.logic.migrate(Object.assign(R.logic.newState(), state)); // D73: 하위 부분·보조자료 기록 칸 채우기
     if (s.opening_step === 'welcome') s.opening_step = 'monologue'; // D36 이전 저장분: 환영 알림 단계 삭제
     return R.logic.recompute(s);
   }

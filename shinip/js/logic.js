@@ -35,6 +35,8 @@ window.R01 = window.R01 || {};
       tried_pairs: [],   // R-37a·D26 — 시도한 조합 (순서 무관), C13 단계도 같은 방식 (D27)
       clue_order: [],    // 획득 순서 (My Archive·C13 후보 정렬, D28)
       memo: '',          // 추리 메모장 (플레이어가 직접 쓰는 메모, 진행 칸에 함께 저장)
+      // 장소 조사 (D73): 하위 부분 열람 기록('03A:roster' 등), 보조자료 열람 기록, 눌러 본 오브젝트
+      parts_seen: [], notes_read: [], spots_checked: [],
       ending_id: null, ending_evaluation: false, investigation_grade: null,
       human04_result_revealed: false
     };
@@ -176,6 +178,7 @@ window.R01 = window.R01 || {};
   };
 
   /* ---------- 수색 ---------- */
+  const PARTS = () => R.CLUE_PARTS || {};
   L.searchStage = (s) => SEARCH_STAGE[s.page] || 0;
   L.placeOpen = function (s, place) {
     const st = L.searchStage(s);
@@ -194,12 +197,83 @@ window.R01 = window.R01 || {};
     L.recompute(s);
     return true;
   };
-  /* 묶음 자료(05-B)는 함께 열람, 상태값은 분리 (R-18a) */
+  /* 수색에서 자료 하나를 연다 (하위 부분이 있으면 모두). 05-B는 VHS·PERSONNEL을 따로 연다 (R-18a, D73) */
   L.openFromSearch = function (s, key) {
-    const c = L.clue(key);
-    if (!c || !L.clueAvailable(s, c) || s.final_deduction_started) return [];
-    const group = c.bundle ? R.CLUES.filter((x) => x.bundle === c.bundle) : [c];
-    return group.filter((x) => L.openClue(s, x.key)).map((x) => x.key);
+    const parts = PARTS()[key];
+    const items = parts ? parts.map(([p]) => ({ clue: key, part: p })) : [{ clue: key }];
+    const before = L.has(s, key);
+    items.forEach((it) => L.viewItem(s, it));
+    return !before && L.has(s, key) ? [key] : [];
+  };
+
+  /* ---------- 장소 조사 (D73, investigation-map-rules.md) ----------
+     오브젝트(클릭 영역) 하나 = 자료 하나(item). 상태는 clue_*_found·parts_seen·notes_read에서 계산한다 */
+  L.partSeen = (s, key, part) => L.has(s, key) || s.parts_seen.includes(key + ':' + part);
+  L.partsRead = (s, key) => (PARTS()[key] || []).filter(([p]) => L.partSeen(s, key, p)).length;
+  L.note = (id) => (R.FIELD_NOTES || {})[id];
+  L.itemRead = function (s, it) {
+    if (it.note) return s.notes_read.includes(it.note);
+    return it.part ? L.partSeen(s, it.clue, it.part) : L.has(s, it.clue);
+  };
+  L.itemAvailable = function (s, it) {
+    if (it.note) {
+      const n = L.note(it.note);
+      return !!n && L.searchStage(s) >= (n.from || 1) && L.placeOpen(s, n.place);
+    }
+    const c = L.clue(it.clue);
+    return !!c && L.clueAvailable(s, c);
+  };
+  /* 지금 열람할 수 있거나 이미 읽은 자료 (이전 단계로 돌아가도 다시 열람할 수 있게) */
+  L.itemShown = (s, it) => L.itemAvailable(s, it) || L.itemRead(s, it);
+  /* 자료 창을 열었을 때 기록. 이미 읽은 자료를 다시 열면 아무것도 바뀌지 않는다 (재열람은 새 획득·해금·조합 결과가 아니다) */
+  L.viewItem = function (s, it) {
+    if (s.final_deduction_started || L.itemRead(s, it) || !L.itemAvailable(s, it)) return false;
+    if (it.note) { s.notes_read.push(it.note); return true; }
+    if (it.part) {
+      s.parts_seen.push(it.clue + ':' + it.part);
+      if (L.partsRead(s, it.clue) === PARTS()[it.clue].length) L.openClue(s, it.clue); // 하위 부분을 모두 열람하면 획득
+      return true;
+    }
+    return L.openClue(s, it.clue);
+  };
+  /* 오브젝트를 눌러 본 기록 (잠긴 상태에서 외형만 본 경우 포함). [새 자료] 판정에만 쓴다 */
+  L.checkSpot = function (s, spotId) {
+    if (!s.spots_checked.includes(spotId)) s.spots_checked.push(spotId);
+  };
+  /* 오브젝트 표시: null(표시 없음) / 'new'(눌러 본 뒤 새 내용이 열림) / 'done'(확인함) */
+  L.spotBadge = function (s, spot) {
+    if (!L.itemShown(s, spot.item)) return null;
+    if (L.itemRead(s, spot.item)) return 'done';
+    return s.spots_checked.includes(spot.id) ? 'new' : null;
+  };
+  /* 장소 완료 표시 (조사 UI 전용 — 해금·엔딩 조건에 쓰지 않는다). 지금 보고 있는 수색 단계 기준
+     done / done-extra(선택 자료 남음) / progress(이전 단계는 마쳤고 이 단계 필수 자료가 남음) / null */
+  L.placeStatus = function (s, placeId) {
+    const st = L.searchStage(s);
+    if (!st || !L.placeOpen(s, placeId)) return null;
+    const inPlace = R.CLUES.filter((c) => c.place === placeId && c.search && c.search <= st);
+    const req = inPlace.filter((c) => !c.optional);
+    if (!req.length) return null;
+    if (req.every((c) => L.has(s, c.key))) return inPlace.some((c) => c.optional && !L.has(s, c.key)) ? 'done-extra' : 'done';
+    const earlier = req.filter((c) => c.search < st);
+    return st >= 2 && earlier.length && earlier.every((c) => L.has(s, c.key)) ? 'progress' : null;
+  };
+  /* 이번 단계에 새로 생긴 보조자료가 남아 있는가 ([보조자료 있음]) */
+  L.placeNewNotes = function (s, placeId) {
+    const st = L.searchStage(s);
+    return Object.keys(R.FIELD_NOTES || {}).some((id) => {
+      const n = L.note(id);
+      return n.place === placeId && (n.from || 1) >= 2 && (n.from || 1) <= st && L.itemAvailable(s, { note: id }) && !s.notes_read.includes(id);
+    });
+  };
+  /* 이전 형식 저장 이전: 이미 획득한 03-A·03-C는 하위 부분을 모두 열람한 것으로 채운다 */
+  L.migrate = function (s) {
+    ['parts_seen', 'notes_read', 'spots_checked'].forEach((k) => { if (!Array.isArray(s[k])) s[k] = []; });
+    Object.keys(PARTS()).forEach((key) => {
+      if (!L.has(s, key)) return;
+      PARTS()[key].forEach(([p]) => { if (!s.parts_seen.includes(key + ':' + p)) s.parts_seen.push(key + ':' + p); });
+    });
+    return s;
   };
 
   /* ---------- 04 심문 (R-13: 한 번, A → B → C) ---------- */

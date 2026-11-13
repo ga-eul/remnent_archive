@@ -45,18 +45,29 @@
     .diary-spread h2 { margin: 0; font-size: 16px; color: var(--mint); }
     .diary-entry h3 { margin: 0 0 9px; color: #b5c7c6; font-size: 14px; }
     .diary-entry p { margin: 0 0 8px; }
+    /* 한 권만 보기 (D73): 주소 끝 #burgundy 또는 #black — 장소 조사에서 수첩을 하나씩 연다 */
+    html[data-only] .diary-spread { grid-template-columns: 1fr; }
+    html[data-only] .diary-volume { grid-row: auto; grid-template-rows: none; gap: 14px; }
+    html[data-only="burgundy"] .diary-volume[data-volume="black"],
+    html[data-only="black"] .diary-volume[data-volume="burgundy"] { display: none; }
     @media (max-width: 660px) {
       .diary-spread { grid-template-columns: 1fr; }
       .diary-volume { grid-row: auto; grid-template-rows: none; gap: 14px; }
     }
   </style>
+  <script>
+    (function () {
+      var v = location.hash.slice(1);
+      if (v === 'burgundy' || v === 'black') document.documentElement.setAttribute('data-only', v);
+    })();
+  </script>
 </head>
 <body>
   <main class="diary-view" aria-labelledby="diary-title">
     <header><h1 id="diary-title">생활공간 일기</h1></header>
     <div class="diary-body" role="region" aria-label="일기 본문" tabindex="0">
       <div class="diary-spread">
-        <section class="diary-volume">
+        <section class="diary-volume" data-volume="burgundy">
           <h2>버건디 수첩</h2>
           <article class="diary-entry">
             <h3>2월 둘째 주 화요일, 퇴근 무렵. 날씨 흐림.</h3>
@@ -79,7 +90,7 @@
             <p>내일은 물을 조금 일찍 올려야겠다.</p>
           </article>
         </section>
-        <section class="diary-volume">
+        <section class="diary-volume" data-volume="black">
           <h2>검은 수첩</h2>
           <article class="diary-entry">
             <h3>2월 둘째 주 화요일 · 퇴근 무렵 · 흐림</h3>
@@ -103,7 +114,7 @@
         </section>
       </div>
     </div>
-    <footer>발견 위치 · 생활공간 책상 위</footer>
+    <footer>발견 위치 · 생활공간 소파 옆 탁자 위</footer>
   </main>
 </body>
 </html>

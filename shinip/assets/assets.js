@@ -17,7 +17,14 @@ R01.ASSETS = {
   ending2Bg: 'assets/img/ending2-bg.jpg',          // 엔딩/엔딩2-1.png (1600px jpg로 줄임). 엔딩 2 연출 화면 배경
   // 엔딩 3 연출 화면 배경은 사원증 아바타에 따라 나뉜다 (1600px jpg로 줄임)
   ending3BgG: 'assets/img/ending3-bg-g.jpg',       // 엔딩/엔딩3_g.png — 아바타-01·04 (player_avatar 0·3)
-  ending3BgM: 'assets/img/ending3-bg-m.jpg'        // 엔딩/엔딩3_m.png — 아바타-02·03 (player_avatar 1·2)
+  ending3BgM: 'assets/img/ending3-bg-m.jpg',       // 엔딩/엔딩3_m.png — 아바타-02·03 (player_avatar 1·2)
+  // 장소 조사 도면 (D73): 원본은 저장소의 `장소5곳_이미지구현/` (2172×724, 3:1). 클릭 영역은 data/hotspots.js
+  // 원본 파일 이름 ‘기록보관실.png’와 ‘제한구역.png’는 그림이 서로 바뀌어 있어 그림 내용 기준으로 연결한다
+  placeArchive: 'assets/img/place-archive.png',     // 장소5곳_이미지구현/제한구역.png (서가·캐비닛·반납대·분류 트레이)
+  placeControl: 'assets/img/place-control.png',     // 장소5곳_이미지구현/관제실.png
+  placeLiving: 'assets/img/place-living.png',       // 장소5곳_이미지구현/생활공간.png
+  placeLab: 'assets/img/place-lab.png',             // 장소5곳_이미지구현/업무 실험실.png (= 업무실험실)
+  placeRestricted: 'assets/img/place-restricted.png' // 장소5곳_이미지구현/기록보관실.png (잠금 보관함·유리 덮개 자료대·출입문 패널)
   // 인트라넷 UI/오프닝.jpg(아이콘 있는 바탕화면)는 D35로 쓰지 않는다. 배경은 같은 남색을 CSS로 칠한다
 };
 
@@ -28,13 +35,14 @@ R01.ASSETS = {
    patches.box: 이미지 안 위치 [왼쪽, 위, 너비, 높이] (%). 이미지에 그려진 글자를 설정에 맞게 덮는다
    patches.img: 글자 대신 이미지(로고)를 덮어 올린다. baseImg·hoverImg가 있으면 img는 늘 보이고, 마우스를 올렸을 때 baseImg가 hoverImg로 바뀐다 (로고 앰블럼) */
 /* 자료 HTML 문서의 버전. 단서 문서(assets/clue/*.html)를 고치면 숫자를 올린다 — 자료 창이 브라우저에 남은 예전 문서 대신 새 문서를 연다 */
-R01.ASSET_VER = '12';
+R01.ASSET_VER = '14';
 R01.CLUE_ASSETS = {
   // 03-A: 직원 명부와 업무 기록을 한 단서의 두 문서로 표시
   '03A': { kind: 'doc', html: 'assets/clue/clue-03a.html', appendix: 'assets/clue/clue-03a-worklog.html' },
   // 03-B: 사건일 4XXX.01.24 16:40 (world.md 정답 타임라인). 영상 8초 동안 16:39:30 → 16:41:30
   '03B': { kind: 'cctv', img: 'assets/clue/clue-03b.jpg', video: 'assets/clue/clue-03b.mp4', ratio: '1671 / 941',
     cam: 'CAM 02', date: '4XXX.01.24', still: ['16:39:12', '16:40:07', '16:41:03'], from: '16:39:30', to: '16:41:30' },
+  // 03-C: 두 수첩을 따로 연다 (D73). 문서 주소 끝 #burgundy / #black 이면 그 수첩만 보인다
   '03C': { kind: 'overlay', img: 'assets/clue/clue-03c.png', html: 'assets/clue/clue-03c.html', ratio: '1447 / 1087' },
   '05A': { kind: 'doc', html: 'assets/clue/clue-05a.html' },
   '05C': { kind: 'doc', html: 'assets/clue/clue-05c.html' },

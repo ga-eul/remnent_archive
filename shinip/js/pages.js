@@ -1,8 +1,8 @@
 /* 페이지별 화면 (1단계 뼈대: 그림 없이 버튼으로 진행)
-   "[1단계 임시]"가 붙은 문구는 뼈대용이며 2단계 이후 dialogue.md 원문·화면으로 바뀐다. */
+   화면 문구에 [임시]·[초안] 표시를 붙이지 않는다 (D75). 확정 전 문구는 코드 주석에만 [초안]으로 적는다. */
 window.R01 = window.R01 || {};
 (function (R) {
-  const { h, button, card, modal, dialogue, toast } = R.ui;
+  const { h, button, card, modal, dialogue } = R.ui;
   const L = R.logic;
   const T = R.TEXT;
   const P = (R.pages = {});
@@ -15,7 +15,6 @@ window.R01 = window.R01 || {};
   };
 
   P.stepNo = (page) => String(L.STEPS.findIndex(([p]) => p === page) + 1).padStart(2, '0'); // 진행 단계 표시줄 번호
-  const temp = (text) => h('p', { class: 'temp' }, '[1단계 임시] ' + text);
   const section = (title, ...kids) => h('section', { class: 'panel' }, h('h2', null, title), kids);
   const commit = (fn) => R.app.commit(fn);
   const typeLabel = (c) => (c.type === 'cctv' ? 'CCTV' : '문서');
@@ -181,29 +180,27 @@ window.R01 = window.R01 || {};
   const placeName = (id) => R.PLACES.find((p) => p.id === id).name;
   const foundAt = (c) => (c.place ? placeName(c.place) : R.SOURCE_LABEL[c.source] || '');
 
-  /* 장소 안의 조사 지점: 지금 수색 단계에서 열람할 수 있는 자료만, 묶음 자료(05-B)는 지점 하나 */
-  function spotsIn(s, placeId) {
-    const seen = {};
-    return R.CLUES.filter((c) => c.place === placeId && L.clueAvailable(s, c))
-      .filter((c) => !c.bundle || (seen[c.bundle] ? false : (seen[c.bundle] = true)));
+  /* 장소 완료 표시 (D73): 약도와 장소 화면이 같은 함수(L.placeStatus)로 계산한다. 전체 개수는 보여 주지 않는다 (R-30) */
+  const PLACE_STATUS = { done: '수색완료', 'done-extra': '수색완료 · 추가 조사 가능' };
+  function placeBadges(s, placeId) {
+    const st = L.placeStatus(s, placeId);
+    const label = st === 'progress' ? L.searchStage(s) + '차 수색 중' : PLACE_STATUS[st];
+    return [
+      label ? h('span', { class: 'done-badge mono' + (st === 'progress' ? ' progress' : '') }, label) : null,
+      L.placeNewNotes(s, placeId) ? h('span', { class: 'done-badge mono note' }, '보조자료 있음') : null
+    ];
   }
-  /* [수색완료]: 그 장소에서 지금 볼 수 있는 단서를 모두 확인했을 때 (D39). 전체 개수는 보여 주지 않는다 */
-  function placeDone(s, placeId) {
-    const sp = spotsIn(s, placeId);
-    return sp.length > 0 && sp.every((c) => R.CLUES.filter((x) => x === c || (c.bundle && x.bundle === c.bundle)).every((x) => L.has(s, x.key)));
-  }
-  const doneBadge = () => h('span', { class: 'done-badge mono' }, '수색완료');
 
-  /* ---------- 자료 에셋 (D54): assets.js의 CLUE_ASSETS. 목록에 없으면 임시 화면 ---------- */
+  /* ---------- 자료 에셋 (D54): assets.js의 CLUE_ASSETS. 목록에 없으면 자료 번호만 있는 빈 틀 (안내 문구 없음, D75) ---------- */
   const isReduced = () => document.body.classList.contains('reduced');
-  const tempPhoto = (x, text) => h('div', { class: 'evi-photo' }, h('span', { class: 'mono' }, x.id),
-    h('span', null, text || '[임시 화면] 자료 이미지는 에셋이 정해지면 들어갑니다'));
+  const tempPhoto = (x) => h('div', { class: 'evi-photo' }, h('span', { class: 'mono' }, x.id));
 
   /* HTML 문서 창. 로컬 서버(같은 출처)로 열면 문서 높이에 맞춰 늘어나고,
      파일을 바로 열면(file://) 정해진 높이 안에서 스크롤한다 */
   function docFrame(src, cls, title, fallback) {
     // 자료 문서는 주소에 에셋 버전을 붙여 연다 (브라우저에 남은 예전 문서를 쓰지 않게, assets.js ASSET_VER)
-    const f = h('iframe', { class: cls, src: src + (R.ASSET_VER ? (src.includes('?') ? '&' : '?') + 'v=' + R.ASSET_VER : ''), title });
+    const [path, hash] = src.split('#');               // 주소 끝 #(03-C 한 권만 보기)은 버전 뒤로
+    const f = h('iframe', { class: cls, src: path + (R.ASSET_VER ? (path.includes('?') ? '&' : '?') + 'v=' + R.ASSET_VER : '') + (hash ? '#' + hash : ''), title });
     const fit = () => {
       try {
         const d = f.contentDocument;
@@ -286,7 +283,7 @@ window.R01 = window.R01 || {};
 
   /* 실물 이미지 → 클릭하면 HTML 본문 (03-C). 처음엔 이미지만, 올리면 돋보기, 누르면 그 위에 본문이 열린다 */
   const LENS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
-  function overlayView(a, x) {
+  function overlayView(a, x, part) {
     let frame = null;                                    // 본문은 처음 열 때 불러온다
     const lens = h('span', { class: 'clue-lens', 'aria-hidden': 'true' });
     lens.innerHTML = LENS_SVG;                           // 고정 SVG
@@ -296,7 +293,7 @@ window.R01 = window.R01 || {};
       role: 'button', tabindex: '0', 'aria-label': x.name + ' 펼쳐 보기' }, lens);
     const open = () => {
       if (!box.classList.contains('bare')) return;
-      if (!frame) { frame = docFrame(a.html, 'clue-over-frame', x.name); box.append(frame); }
+      if (!frame) { frame = docFrame(a.html + (part ? '#' + part : ''), 'clue-over-frame', x.name); box.append(frame); }
       box.classList.remove('bare'); box.removeAttribute('role'); box.removeAttribute('tabindex');
       back.hidden = false;
     };
@@ -314,46 +311,64 @@ window.R01 = window.R01 || {};
     return h('div', null, box, h('div', { class: 'clue-tools' }, back));
   }
 
-  function clueView(x) {
+  /* part: 하위 부분 하나만 (03-A 'roster' = 명부 / 'worklog' = 업무 기록, 03-C 'burgundy'·'black' = 수첩 한 권, D73) */
+  function clueView(x, part) {
     const a = R.CLUE_ASSETS && R.CLUE_ASSETS[x.key];
     if (!a) return tempPhoto(x);
-    if (a.kind === 'pending') return tempPhoto(x, '[에셋 준비 중]');
+    if (a.kind === 'pending') return tempPhoto(x);
     if (a.kind === 'doc') {
-      const main = docFrame(a.html, 'clue-frame', x.name, a.fallback);
+      const main = part === 'worklog' ? null : docFrame(a.html, 'clue-frame', x.name, a.fallback);
       return h('div', { class: 'clue-doc' }, main,
-        a.appendix ? docFrame(a.appendix, 'clue-frame', '업무 기록') : null);
+        a.appendix && part !== 'roster' ? docFrame(a.appendix, 'clue-frame', '업무 기록') : null);
     }
     if (a.kind === 'image') return imageView(a, x);
     if (a.kind === 'cctv') return cctvView(a, x);
-    if (a.kind === 'overlay') return overlayView(a, x);
+    if (a.kind === 'overlay') return overlayView(a, x, part);
     return tempPhoto(x);
   }
 
-  /* 자료 창 (단서 노출). [닫기]를 누르면 그 장소 화면으로 돌아간다 */
-  function showEvidence(c, opts) {
-    const group = c.bundle ? R.CLUES.filter((x) => x.bundle === c.bundle) : [c];
-    const wide = group.some((x) => R.CLUE_ASSETS && R.CLUE_ASSETS[x.key] && R.CLUE_ASSETS[x.key].kind !== 'pending');
+  /* 자료 창 틀. [닫기]·Esc·바깥을 누르면 닫고 화면을 다시 그린다 (장소 화면이면 누른 오브젝트로 포커스 복귀) */
+  function eviWindow(wide, head, meta, body) {
     const over = h('div', { class: 'evi-over', role: 'dialog', 'aria-modal': 'true' });
     const close = () => { over.remove(); document.removeEventListener('keydown', esc); R.app.render(); };
     const esc = (e) => { if (e.key === 'Escape') close(); };
     const closeBtn = button('닫기', close, { small: true });
     over.append(h('div', { class: 'evi' + (wide ? ' wide' : '') },
-      h('div', { class: 'evi-head' },
-        h('span', { class: 'mono evi-label' }, 'EVIDENCE · ' + (c.bundle ? c.bundle : c.id), h('span', { class: 'muted' }, ' · ' + group.map(typeLabel).join(' / '))),
-        closeBtn),
-      h('div', { class: 'evi-meta' },
-        h('div', null, h('span', null, '자료 번호'), h('strong', { class: 'mono' }, group.map((x) => x.id).join(' · '))),
-        h('div', null, h('span', null, '발견 위치'), h('strong', null, foundAt(c))),
-        h('div', null, h('span', null, '상태'), h('strong', null, 'My Archive 저장'))),
-      group.map((x) => h('section', { class: 'evi-item' },
-        h('h2', null, x.name),
-        clueView(x),
-        h('div', { class: 'evi-note' }, h('p', { class: 'mono evi-label' }, 'RECORD · 기록 요약'),
-          (R.SPOTS[x.key] ? R.SPOTS[x.key].summary : []).map((t) => h('p', null, t)))))));
+      h('div', { class: 'evi-head' }, h('span', { class: 'mono evi-label' }, head[0], h('span', { class: 'muted' }, ' · ' + head[1])), closeBtn),
+      h('div', { class: 'evi-meta' }, meta.map(([k, v, mono]) => h('div', null, h('span', null, k), h('strong', { class: mono ? 'mono' : null }, v)))),
+      body));
     over.addEventListener('click', (e) => { if (e.target === over) close(); });
     document.addEventListener('keydown', esc);
     document.body.append(over);
     closeBtn.focus();
+  }
+  const recordNote = (lines) => h('div', { class: 'evi-note' }, h('p', { class: 'mono evi-label' }, 'RECORD · 기록 요약'), lines.map((t) => h('p', null, t)));
+
+  /* 추리 자료 창 (단서 노출). opts.part: 하위 부분 하나만 보기 (D73) — 다 보기 전에는 My Archive에 들어가지 않는다 */
+  function showEvidence(c, opts = {}) {
+    const s = R.app.state;
+    const parts = (R.CLUE_PARTS || {})[c.key];
+    const part = parts && opts.part ? parts.find(([p]) => p === opts.part) : null;
+    const wide = !!(R.CLUE_ASSETS && R.CLUE_ASSETS[c.key] && R.CLUE_ASSETS[c.key].kind !== 'pending');
+    const saved = !part || L.has(s, c.key);              // 일부만 본 자료는 상태 칸을 비운다 (D75)
+    eviWindow(wide, ['EVIDENCE · ' + c.id, typeLabel(c)],
+      [['자료 번호', c.id, true], ['발견 위치', foundAt(c)], saved ? ['상태', 'My Archive 저장'] : null].filter(Boolean),
+      h('section', { class: 'evi-item' },
+        h('h2', null, c.name, part ? h('span', { class: 'evi-part' }, part[1]) : null),
+        clueView(c, part ? part[0] : null),
+        recordNote(R.SPOTS[c.key] ? R.SPOTS[c.key].summary : [])));
+  }
+
+  /* 보조자료(현장 자료) 창: My Archive에 저장하지 않는다 (D73). 이미지가 없으면 기록 요약만 */
+  function showNote(id) {
+    const n = L.note(id);
+    eviWindow(!!n.img, ['FIELD NOTE · ' + id, '현장 자료'],
+      [['자료 번호', id, true], ['발견 위치', placeName(n.place)], ['상태', R.FIELD_STATUS]],
+      h('section', { class: 'evi-item' },
+        h('h2', null, n.title),
+        n.img ? h('figure', { class: 'clue-img', style: 'aspect-ratio:' + n.ratio },
+          h('img', { src: n.img + (R.ASSET_VER ? '?v=' + R.ASSET_VER : ''), alt: n.title })) : null,
+        recordNote([n.summary])));
   }
 
   /* 장소 목록 (사내 약도 격자, D22·prd 4-1). 전체 개수는 표시하지 않고 확보 수만 (R-30) */
@@ -370,25 +385,71 @@ window.R01 = window.R01 || {};
             onClick: () => { curPlace = pl.id; R.app.render(); } },
           h('span', { class: 'map-name' }, pl.name),
           open ? h('span', { class: 'map-got' }, '확보 ' + n) : h('span', { class: 'map-lock' }, '출입 통제'),
-          open && placeDone(s, pl.id) ? doneBadge() : null);
+          open ? h('span', { class: 'map-badges' }, placeBadges(s, pl.id)) : null);
         })));
   }
 
-  /* 장소 화면: 조사 지점을 누르면 자료 창, 자료 창을 닫으면 다시 이 화면 */
+  /* 장소 화면 (D73): 도면 이미지 + 클릭 영역(data/hotspots.js). 오브젝트를 누르면 자료 창, 닫으면 다시 이 화면.
+     좁은 화면에서는 도면을 가로로 밀어 보고, 도면 아래 같은 오브젝트의 버튼 목록을 함께 보여 준다 */
+  const PLAN_IMG = { archive: 'placeArchive', control: 'placeControl', living: 'placeLiving', lab: 'placeLab', restricted: 'placeRestricted' };
+  const SPOT_BADGE = { done: '확인함', new: '새 자료' };
+  let focusSpot = null;          // 자료 창을 닫은 뒤 포커스를 돌려줄 오브젝트 [id, 'map'|'list']
+  const pos = (b) => 'left:' + b[0] + '%;top:' + b[1] + '%;width:' + b[2] + '%;height:' + b[3] + '%';
+
+  function pressSpot(sp, where) {
+    const it = sp.item;
+    focusSpot = [sp.id, where];
+    if (!L.itemShown(R.app.state, it)) {                   // 아직 열리지 않음: 눌러 본 기록만 (열람·획득 아님, 문구 없음)
+      commit((st) => L.checkSpot(st, sp.id));
+      return;
+    }
+    commit((st) => { L.checkSpot(st, sp.id); L.viewItem(st, it); });
+    if (it.note) showNote(it.note);
+    else showEvidence(L.clue(it.clue), { part: it.part });
+  }
+
   function placeView(s, placeId) {
-    const spots = spotsIn(s, placeId);
+    const spots = (R.HOTSPOTS || {})[placeId] || [];
+    const groups = R.HOTSPOT_GROUPS || {};
+    const label = (sp) => {
+      const b = L.spotBadge(s, sp);
+      return { cls: b ? ' ' + b : '', text: b ? SPOT_BADGE[b] : '' };
+    };
+    const groupText = (g) => {
+      const n = L.partsRead(s, g);
+      return n ? n + '/' + R.CLUE_PARTS[g].length + ' 확인' : '';
+    };
+    const plan = h('div', { class: 'plan' },
+      h('img', { class: 'plan-img', src: R.ASSETS[PLAN_IMG[placeId]], alt: placeName(placeId) + ' 도면', draggable: 'false' }),
+      Object.keys(groups).filter((g) => spots.some((sp) => sp.group === g) && groupText(g)).map((g) =>
+        h('span', { class: 'hot-group mono', style: pos(groups[g].box), 'aria-hidden': 'true' }, h('span', null, groupText(g)))),
+      spots.map((sp) => {
+        const b = label(sp);
+        return h('button', { type: 'button', class: 'hot' + b.cls + (sp.side ? ' side-' + sp.side : ''), style: pos(sp.box), 'data-spot': sp.id, 'data-where': 'map',
+          'aria-label': sp.name + (b.text ? ' — ' + b.text : ''), onClick: () => pressSpot(sp, 'map') },
+        h('span', { class: 'hot-name' }, sp.name), b.text ? h('span', { class: 'hot-badge mono' }, b.text) : null);
+      }));
+    const list = h('div', { class: 'plan-list' }, spots.map((sp) => {
+      const b = label(sp);
+      const g = sp.group && groups[sp.group];
+      return h('button', { type: 'button', class: 'plan-item' + b.cls, 'data-spot': sp.id, 'data-where': 'list', onClick: () => pressSpot(sp, 'list') },
+        h('span', null, g ? g.name + ' · ' + sp.name : sp.name),
+        b.text ? h('span', { class: 'hot-badge mono' }, b.text) : null,
+        g && groupText(sp.group) ? h('span', { class: 'plan-group mono' }, groupText(sp.group)) : null);
+    }));
+    // 자료 창이 닫혀 있을 때만 누른 오브젝트로 포커스를 돌려준다
+    if (focusSpot) setTimeout(() => {
+      if (!focusSpot || document.querySelector('.evi-over')) return;
+      const el = document.querySelector('[data-spot="' + focusSpot[0] + '"][data-where="' + focusSpot[1] + '"]');
+      focusSpot = null;
+      if (el) el.focus();
+    }, 0);
     return h('div', { class: 'room' },
       h('div', { class: 'room-head' },
-        h('h3', null, placeName(placeId)), placeDone(s, placeId) ? doneBadge() : null,
+        h('h3', null, placeName(placeId)), placeBadges(s, placeId),
         button('← 장소 목록', () => { curPlace = null; R.app.render(); }, { small: true })),
-      spots.length ? h('div', { class: 'room-board' }, spots.map((c) => {
-        const found = L.has(s, c.key);
-        const sp = R.SPOTS[c.key];
-        return h('button', { type: 'button', class: 'spot' + (found ? ' seen' : ''), onClick: () => {
-          if (!found) commit((st) => L.openFromSearch(st, c.key));
-          showEvidence(c);
-        } }, h('span', { class: 'spot-name' }, sp ? sp.spot : c.name), found ? h('span', { class: 'spot-seen mono' }, '확인함') : null);
-      })) : h('p', { class: 'muted room-empty' }, '지금은 더 살펴볼 곳이 없습니다.'));
+      h('div', { class: 'plan-scroll' }, plan),
+      list);
   }
 
   P.showEvidence = showEvidence;
@@ -588,7 +649,7 @@ window.R01 = window.R01 || {};
         h('div', { class: 'side-tabs' }, [['all', '전체'], ['doc', '문서'], ['cctv', 'CCTV'], ['combo', '단서 조합']].map(([k, label]) =>
           h('button', { type: 'button', class: archiveTab === k ? 'on' : '', onClick: () => { archiveTab = k; draw(); } }, label))),
         raw.length || news.length ? h('div', { class: 'side-list' },
-          raw.map((c) => archCard(c.name, typeLabel(c) + ' · ' + foundAt(c), () => showEvidence(c), c.key === '06G' ? null : c.key)),
+          raw.map((c) => archCard(c.name, typeLabel(c) + ' · ' + foundAt(c) + (c.bundle ? ' · ' + R.BUNDLES[c.bundle] : ''), () => showEvidence(c), c.key === '06G' ? null : c.key)),
           news.map((id) => archCard(R.CONNECTIONS[id].card, '단서 조합', () => showConnection(s, id))))
           : h('p', { class: 'muted side-empty' }, R.INTRANET.archiveEmpty));
     }
