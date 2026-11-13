@@ -238,9 +238,10 @@ window.R01 = window.R01 || {};
     const img = h('img', { class: 'cctv-still', src: a.img, alt: x.name });
     const vid = h('video', { class: 'cctv-video', src: a.video, playsinline: true, preload: 'metadata', hidden: true });
     let tried = false;                                   // [영상 재생]을 누른 뒤에만 실패 안내를 띄운다
+    const sfx = !!a.vhs;                                 // CCTV 효과음(16·17·18)은 05-B-VHS 복구 영상에만. 03-B는 소리 없음 (D90)
     const start = () => {
       tried = true; fail.hidden = true;
-      R.sound.play(16);
+      if (sfx) R.sound.play(16);
       if (vid.error) vid.load();                          // 한 번 실패한 영상은 다시 불러온 뒤 재생
       img.hidden = true; vid.hidden = false; vid.currentTime = 0;
       if (a.hudOnVideo === false) box.classList.add('playing');   // 영상에 시각이 이미 찍혀 있으면 덧씌운 표시를 숨김
@@ -252,7 +253,7 @@ window.R01 = window.R01 || {};
     const onFail = () => {
       if (!tried || !box.isConnected) return;
       vid.pause(); vid.hidden = true; img.hidden = false;
-      R.sound.stop(17); R.sound.play(18);
+      if (sfx) { R.sound.stop(17); R.sound.play(18); }
       box.classList.remove('playing');
       setClock(a.still[isReduced() ? Math.min(1, a.still.length - 1) : i]);
       play.textContent = '▶ 영상 재생';
@@ -267,6 +268,7 @@ window.R01 = window.R01 || {};
     let noiseWatch = null;
     const noiseOff = () => { clearInterval(noiseWatch); noiseWatch = null; R.sound.stop(17); };
     const noiseOn = () => {
+      if (!sfx) return;
       if (!R.sound.playing(17)) R.sound.play(17);
       clearInterval(noiseWatch);
       noiseWatch = setInterval(() => { if (!box.isConnected || vid.paused || vid.ended) noiseOff(); }, 250);

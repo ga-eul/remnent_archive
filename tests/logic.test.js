@@ -382,14 +382,16 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
 {
   const crypto = require('crypto');
   const SFX = R.SFX, FILES = R.SFX_FILES, MIX = R.SFX_MIX;
-  const ids = Object.keys(SFX).map(Number).sort((x, y) => x - y);
+  const keys = Object.keys(SFX);                                   // 번호 + 보조 번호('29-1', D88)
+  const ids = keys.filter((k) => /^\d+$/.test(k)).map(Number).sort((x, y) => x - y);
+  ok(JSON.stringify(keys.filter((k) => !/^\d+$/.test(k))) === JSON.stringify(['29-1']), 'D88 보조 번호는 29-1 하나');
   const want = []; for (let n = 0; n <= 32; n++) if (![13, 15, 21].includes(n)) want.push(n);
   ok(JSON.stringify(ids) === JSON.stringify(want), 'D83·D86 효과음 30개 (0~32번 중 13·15·21번 없음)');
   const sfxDir = path.join(dir, 'assets', 'sfx');
   const onDisk = fs.readdirSync(sfxDir).filter((f) => f.endsWith('.mp3')).sort();
   ok(JSON.stringify(onDisk) === JSON.stringify(Object.keys(FILES).sort()), 'D83 assets/sfx 파일 = SFX_FILES 목록');
-  ok(ids.every((n) => FILES[SFX[n].file]), 'D83 모든 번호가 있는 파일을 가리킴');
-  ok(Object.keys(FILES).every((f) => ids.some((n) => SFX[n].file === f)), 'D83 쓰지 않는 파일 없음');
+  ok(keys.every((n) => FILES[SFX[n].file]), 'D83 모든 번호가 있는 파일을 가리킴');
+  ok(Object.keys(FILES).every((f) => keys.some((n) => SFX[n].file === f)), 'D83 쓰지 않는 파일 없음');
   const hashes = onDisk.map((f) => crypto.createHash('md5').update(fs.readFileSync(path.join(sfxDir, f))).digest('hex'));
   ok(new Set(hashes).size === hashes.length, 'D83 같은 MP3는 한 번만 복사');
   ok([[1, 32], [20, 25], [3, 8], [10, 18], [28, 29]].every(([x, y]) => SFX[x].file === SFX[y].file), 'D83 1·32, 20·25, 3·8, 10·18, 28·29는 같은 파일 공유');
@@ -397,13 +399,13 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   ok(FILES[SFX[30].file].src[0] === '30-엔딩2.mp3', 'D83 30번은 30-엔딩2.mp3');
   // 클리핑 여유: 원본 피크 + 이벤트 볼륨 + 효과음 마스터 ≤ -1 dBFS (리미터 앞 기준)
   const db = (v) => 20 * Math.log10(v);
-  const hot = ids.filter((n) => FILES[SFX[n].file].peak + db(SFX[n].vol * MIX.master) > -1);
+  const hot = keys.filter((n) => FILES[SFX[n].file].peak + db(SFX[n].vol * MIX.master) > -1);
   ok(hot.length === 0, 'D83 모든 효과음 피크 -1dBFS 이하 ' + hot.join(','));
   ok(SFX[26].vol <= 0.12, 'D83 26 글리치 볼륨 낮춤');
   ok(SFX[17].loop && SFX[17].vol <= 0.18, 'D83 17 CCTV 노이즈 반복·낮은 볼륨');
   ok(SFX[2].clip && SFX[2].clip.hold === 3 && SFX[2].clip.fade === 1 && SFX[2].vol === 0.2 && !SFX[2].loop, 'D83 2 메뉴 전환: 3초 + 1초 페이드, 20%, 반복 없음');
   ok([5, 9, 22].every((n) => SFX[n].vol > 1), 'D83 5·9·22 증폭');
-  ok(ids.every((n) => SFX[n].vol > 0 && SFX[n].at), 'D83 볼륨·재생 위치 기록');
+  ok(keys.every((n) => SFX[n].vol > 0 && SFX[n].at), 'D83 볼륨·재생 위치 기록');
   // 원본 폴더가 있으면 사본이 원본과 바이트까지 같은지
   const srcDir = path.join(dir, '..', '효과음_26개+후보');
   if (fs.existsSync(srcDir)) {
@@ -430,6 +432,10 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   const gameIds = want.filter((n) => ![0, 1, 2, 32].includes(n));
   const missing = gameIds.filter((n) => !wired.has(n));
   ok(missing.length === 0, 'D83·D86 게임 효과음 26개 모두 연결 ' + missing.join(','));
+  // D88: 29-1 로그아웃은 엔딩 1 로그아웃 장면에서만, 한 번, 장면이 사라지면 정지
+  const fin = fs.readFileSync(path.join(dir, 'js', 'finale.js'), 'utf8');
+  ok((code.match(/R\.sound\.play\('29-1'\)/g) || []).length === 1 && /if \(!logoutSfx\) \{ logoutSfx = true; R\.sound\.play\('29-1'\); \}/.test(fin) && /R\.sound\.stop\('29-1'/.test(fin), 'D88 엔딩 1 로그아웃 효과음 한 번·정지');
+  ok(!SFX['29-1'].loop && SFX['29-1'].file === 'ending1-logout.mp3', 'D88 로그아웃 효과음 반복 없음');
   // D86: 0 타이핑은 안내 페이지, 11 넘기기는 래미 대화창 두 곳(조사 중·인트라넷)에만
   const noticeP = path.join(dir, '..', 'first-launch-notice-terminal.html');
   if (fs.existsSync(noticeP)) { const nt = fs.readFileSync(noticeP, 'utf8'); ok(/SND\.tryPlay\('0'/.test(nt) && /function press\(\) \{ stopTyping\(\);/.test(nt), 'D86 안내 타이핑: 재생, 누르면 즉시 정지'); }
@@ -460,6 +466,13 @@ ok(L.clue('06DE').name === '계정 이력 및 시스템 감사 로그', 'D85 06-
   const life = Number((css.match(/\.glitch-over\{[^}]*animation:glitchLife ([\d.]+)s/) || [])[1]);
   const c26 = R.SFX[26];
   ok(c26.clip && !c26.delay && Math.abs(c26.clip.hold + c26.clip.fade - life) < 0.01, 'D87 26번이 노이즈(' + life + 's)와 함께 끝남');
+}
+
+// D90 CCTV 효과음(16·17·18)은 05-B-VHS에만, 03-B는 없음
+{
+  const pg = fs.readFileSync(path.join(dir, 'js', 'pages.js'), 'utf8');
+  ok(/const sfx = !!a\.vhs;/.test(pg) && /if \(sfx\) R\.sound\.play\(16\)/.test(pg) && /if \(sfx\) \{ R\.sound\.stop\(17\); R\.sound\.play\(18\); \}/.test(pg) && /const noiseOn = \(\) => \{\s+if \(!sfx\) return;/.test(pg), 'D90 CCTV 효과음은 vhs 영상에만');
+  ok(R.CLUE_ASSETS['05B_VHS'].vhs === true && R.CLUE_ASSETS['03B'].kind === 'cctv' && !R.CLUE_ASSETS['03B'].vhs, 'D90 vhs 표시는 05-B-VHS에만');
 }
 
 console.log(`pass ${pass} / fail ${fail}`);

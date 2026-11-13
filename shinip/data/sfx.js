@@ -34,6 +34,7 @@ R01.SFX_FILES = {
   'combo-success.mp3':       { src: ['24-my arhive-조합성공.mp3'], peak: -14.7, rms: -38.3, sec: 1.03 },
   'rami-warning-glitch.mp3': { src: ['26-제한구역-래미의접근경고.mp3'], peak: 1.4, rms: -13.8, sec: 4.03 },
   'analysis-complete.mp3':   { src: ['27-최종추론-분석완료.mp3'], peak: -12.2, rms: -30.2, sec: 0.65 },
+  'ending1-logout.mp3':      { src: ['29-1-엔딩1-로그아웃.mp3'], peak: -4.9, rms: -36.4, sec: 1.63 },   // D88, 측정: 브라우저 디코드
   'final-confirm.mp3':       { src: ['28-최종추론-최종선택확인.mp3', '29-엔딩1.mp3'], peak: -17.8, rms: -34.4, sec: 1.03 },
   'ending2.mp3':             { src: ['30-엔딩2.mp3'], peak: -23.4, rms: -36.3, sec: 1.63 },   // 후보 `30-엔딩2(후보).mp3`는 쓰지 않고 원본 폴더에 보존
   'ending3.mp3':             { src: ['31-엔딩3.mp3'], peak: -20.2, rms: -37.1, sec: 9.53 }   // D86 새 파일로 교체 (측정: 브라우저 디코드)
@@ -68,6 +69,7 @@ R01.SFX = {
   27: { file: 'analysis-complete.mp3', vol: 0.60, gap: 1000, at: '최종 추론 신원 확인 절차가 끝났을 때' },
   28: { file: 'final-confirm.mp3', vol: 1.00, gap: 500, at: '최종 선택으로 진행 확인 창 [진행]' },
   29: { file: 'final-confirm.mp3', vol: 1.00, gap: 2000, at: '엔딩 1 연출 시작' },
+  '29-1': { file: 'ending1-logout.mp3', vol: 1.00, gap: 5000, at: '엔딩 1 결과 화면 뒤 ‘로그아웃되었습니다.’ 장면이 나타나는 순간 한 번(1.63초, 반복 없음). 장면이 사라지면 정지' },  // D88
   30: { file: 'ending2.mp3', vol: 1.00, gap: 2000, at: '엔딩 2 연출 시작' },
   31: { file: 'ending3.mp3', vol: 1.00, gap: 2000, at: '엔딩 3 연출 시작' },
   32: { file: 'hub-click.mp3', vol: 1.00, gap: 60, at: '데모 종료 화면 [허브로 돌아가기]' }

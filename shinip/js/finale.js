@@ -150,8 +150,9 @@ window.R01 = window.R01 || {};
 
   let endPhase = 'seq';
   let endFor = null;
+  let logoutSfx = false;    // 29-1 로그아웃 효과음은 엔딩 1 한 번에 한 번만 (D88)
   P.ending = function (s) {
-    if (endFor !== s.ending_id) { endFor = s.ending_id; endPhase = 'seq'; R.sound.play({ 1: 29, 2: 30, 3: 31 }[s.ending_id]); }   // 엔딩 연출 시작음 (D83)
+    if (endFor !== s.ending_id) { endFor = s.ending_id; endPhase = 'seq'; logoutSfx = false; R.sound.play({ 1: 29, 2: 30, 3: 31 }[s.ending_id]); }   // 엔딩 연출 시작음 (D83)
     const E = R.ENDING_TEXT[s.ending_id];
     if (endPhase === 'seq') {
       const box = h('div', { class: 'seq' });
@@ -185,7 +186,8 @@ window.R01 = window.R01 || {};
           if (endPhase !== 'result' || R.app.state.page !== 'ending') return;
           const over = h('div', { class: 'logout-over', role: 'status' }, h('p', { class: 'mono' }, 'LOGOUT'), h('strong', null, F.logout));
           document.body.append(over);
-          setTimeout(() => { over.remove(); if (endPhase === 'result' && R.app.state.page === 'ending') { endPhase = 'joint'; R.app.render(); } }, 4000);
+          if (!logoutSfx) { logoutSfx = true; R.sound.play('29-1'); }    // 로그아웃 장면이 나타나는 순간 (D88)
+          setTimeout(() => { over.remove(); R.sound.stop('29-1', 0.05); if (endPhase === 'result' && R.app.state.page === 'ending') { endPhase = 'joint'; R.app.render(); } }, 4000);
         }, 7000);
       }
       return view;
