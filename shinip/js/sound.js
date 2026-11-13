@@ -14,6 +14,7 @@ window.R01 = window.R01 || {};
   const script = document.currentScript;
   const BASE = new URL('../assets/sfx/', script ? script.src : location.href).href;
   const url = (file) => BASE + encodeURIComponent(file) + '?v=' + (R.SFX_VER || '1');
+  const RESTART_FADE = 0.015;   // 같은 소리를 다시 낼 때 앞의 것을 끊는 시간(초). 딸깍 잡음만 막을 만큼 짧게 (D86)
   const useWA = location.protocol !== 'file:' && !!(window.AudioContext || window.webkitAudioContext);
 
   function readGlobal() {
@@ -55,7 +56,7 @@ window.R01 = window.R01 || {};
     if (unlocked) return;
     unlocked = true;
     if (useWA) {
-      try { buildGraph(); ctx.resume(); Object.keys(raw).forEach(decoded); } catch (e) { /* Web Audio를 쓸 수 없으면 소리 없음 */ }
+      try { if (!ctx) buildGraph(); ctx.resume(); Object.keys(raw).forEach(decoded); } catch (e) { /* Web Audio를 쓸 수 없으면 소리 없음 */ }
     }
     window.removeEventListener('pointerdown', unlock, true);
     window.removeEventListener('keydown', unlock, true);
@@ -123,7 +124,7 @@ window.R01 = window.R01 || {};
   }
 
   function start(id, c) {
-    if (active[id]) { active[id].stop(0.05); delete active[id]; }   // 같은 소리는 겹치지 않게 앞의 것을 정리
+    if (active[id]) { active[id].stop(RESTART_FADE); delete active[id]; }   // 같은 소리는 겹치지 않게 앞의 것을 정리
     if (useWA) {
       if (!ctx) return;
       const asked = Date.now();
@@ -131,7 +132,7 @@ window.R01 = window.R01 || {};
       if (!p) return;
       p.then((b) => {
         if (Date.now() - asked > 400) return;                   // 늦게 받은 소리는 버린다 (화면과 어긋나지 않게)
-        if (active[id]) active[id].stop(0.05);
+        if (active[id]) active[id].stop(RESTART_FADE);
         active[id] = startWA(id, c, b);
       }).catch(() => { /* 파일 없음 */ });
     } else {
@@ -152,6 +153,24 @@ window.R01 = window.R01 || {};
     if (c.delay) setTimeout(() => { if (on) start(id, c); }, c.delay);
     else start(id, c);
     return true;
+  };
+  /* 첫 입력 전에도 브라우저가 허락하면 재생해 본다 (플레이 전 안내 타이핑, D86).
+     허락하지 않으면 조용히 넘어간다. still()이 false가 되면(이미 넘겼거나 끝남) 늦게라도 시작하지 않는다 */
+  S.tryPlay = function (id, still) {
+    const c = CFG[id];
+    if (!c || !on) return;
+    if (unlocked) { S.play(id); return; }
+    const asked = Date.now();
+    const go = () => { if ((!still || still()) && Date.now() - asked < 800) { last[id] = Date.now(); start(id, c); } };
+    if (useWA) {
+      try {
+        if (!ctx) buildGraph();
+        decoded(c.file);
+        ctx.resume().then(() => { if (ctx.state === 'running') go(); }).catch(() => {});
+      } catch (e) { /* 소리 없음 */ }
+    } else {
+      if (!still || still()) { const h = startEl(id, c); active[id] = h; h.el.play().catch(() => { if (active[id] === h) delete active[id]; }); }
+    }
   };
   S.stop = function (id, fade) { if (active[id]) { active[id].stop(fade == null ? 0.15 : fade); delete active[id]; } };
   S.playing = (id) => !!active[id];

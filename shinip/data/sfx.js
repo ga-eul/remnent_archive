@@ -12,6 +12,8 @@ R01.SFX_MIX = { master: 0.8, bgm: 0.5, limiter: { threshold: -3, knee: 0, ratio:
 
 /* 게임용 파일 → 원본 파일 (같은 내용의 원본이 여러 개면 모두 적는다) */
 R01.SFX_FILES = {
+  'notice-typing.mp3':       { src: ['0-안내문-타이핑.mp3'], peak: -8.6, rms: -38.4, sec: 8.10 },     // D86, 측정: 브라우저 디코드(같은 방식으로 CSV 값과 일치 확인)
+  'rami-next.mp3':           { src: ['11-래미대화창-대화창넘기기.mp3'], peak: -16.8, rms: -40.4, sec: 1.03 },  // D86
   'hub-click.mp3':           { src: ['1,32.mp3'], peak: -11.8, rms: -41.0, sec: 0.14 },
   'hub-menu.mp3':            { src: ['2-메인허브-메뉴전환.mp3'], peak: -6.0, rms: -24.7, sec: 118.08 },
   'select-beep.mp3':         { src: ['3-입사화면-사원증 이미지.mp3', '8-보안인증-보안키입력.mp3'], peak: -17.0, rms: -36.7, sec: 1.03 },
@@ -34,11 +36,12 @@ R01.SFX_FILES = {
   'analysis-complete.mp3':   { src: ['27-최종추론-분석완료.mp3'], peak: -12.2, rms: -30.2, sec: 0.65 },
   'final-confirm.mp3':       { src: ['28-최종추론-최종선택확인.mp3', '29-엔딩1.mp3'], peak: -17.8, rms: -34.4, sec: 1.03 },
   'ending2.mp3':             { src: ['30-엔딩2.mp3'], peak: -23.4, rms: -36.3, sec: 1.63 },   // 후보 `30-엔딩2(후보).mp3`는 쓰지 않고 원본 폴더에 보존
-  'ending3.mp3':             { src: ['31-엔딩3.mp3'], peak: -19.8, rms: -36.1, sec: 0.74 }
+  'ending3.mp3':             { src: ['31-엔딩3.mp3'], peak: -20.2, rms: -37.1, sec: 9.53 }   // D86 새 파일로 교체 (측정: 브라우저 디코드)
 };
 
-/* 이벤트 번호 → 파일·볼륨. at: 재생 위치 (11·13·15·21번은 없음, 번호 없는 후보 3개는 배치하지 않음) */
+/* 이벤트 번호 → 파일·볼륨. at: 재생 위치 (13·15·21번은 없음, 번호 없는 후보 3개는 배치하지 않음) */
 R01.SFX = {
+  0:  { file: 'notice-typing.mp3', vol: 0.70, gap: 0, at: '플레이 전 안내 글자 타이핑(한 번, 8초). 누르면 즉시 정지, 글이 다 나오면 정지·초기화' },  // D86 8초 연속음이라 0.70
   1:  { file: 'hub-click.mp3', vol: 1.00, gap: 60, at: '메인 허브 버튼 클릭' },
   2:  { file: 'hub-menu.mp3', vol: 0.20, gap: 0, clip: { hold: 3, fade: 1 }, at: '메인 허브 메뉴 전환(↑↓ 이동·마우스로 다른 메뉴에 올림). 118초 원본 중 앞 3초 + 1초 페이드' },
   3:  { file: 'select-beep.mp3', vol: 1.00, gap: 80, at: '입사 화면 사원증 사진 선택' },
@@ -49,6 +52,7 @@ R01.SFX = {
   8:  { file: 'select-beep.mp3', vol: 1.00, gap: 80, at: '보안 교육 자료 가로 답 맞힘(보안키 입력)' },
   9:  { file: 'auth-success.mp3', vol: 1.40, gap: 300, at: '보안코드 인증 성공' },                    // 원본이 작아 +2.9dB 증폭 (피크 -19.2dBFS)
   10: { file: 'fail-beep.mp3', vol: 1.00, gap: 300, at: '보안코드 인증 실패' },
+  11: { file: 'rami-next.mp3', vol: 0.80, gap: 0, at: '래미 대화창을 눌러 다음 대사로 넘기거나 마지막 대사를 닫을 때(첫 대사가 뜰 때는 없음). 앞의 소리는 끊고 처음부터' },  // D86 자주 울리는 소리라 0.80
   12: { file: 'system-connect.mp3', vol: 0.25, gap: 500, at: '[제한 시스템 접속] (1차 수색 시작)' },
   14: { file: 'clue-open.mp3', vol: 0.80, gap: 250, at: '장소 수색에서 자료·보조자료 창 열기' },
   16: { file: 'cctv-play.mp3', vol: 0.40, gap: 300, at: 'CCTV [영상 재생]·[다시 재생]' },

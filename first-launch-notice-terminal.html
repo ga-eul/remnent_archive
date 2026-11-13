@@ -56,6 +56,9 @@
       <p class="disclosure">일러스트는 AI로 생성되었으며, 제작 과정에 AI 도구를 활용했습니다.</p>
     </div>
   </main>
+  <!-- 효과음 (D86): 0 타이핑 -->
+  <script src="shinip/data/sfx.js"></script>
+  <script src="shinip/js/sound.js"></script>
   <script>
     /* 처음 한 번만 보이는 플레이 전 안내 (D81). 허브가 remnant.global.settings.notice_seen이 없으면 이 페이지로 보낸다.
        글이 다 나온 뒤 화면을 누르면(또는 Enter·Space) 본 기록을 남기고 로딩 화면(loading.html, 3초 뒤 허브)으로 간다 (D84) */
@@ -78,6 +81,12 @@
     if (reduced) document.body.classList.add("reduced");
 
     let ready = false;      // 안내 글이 모두 나온 뒤에만 누르면 허브로 간다
+    /* 0 타이핑 효과음 (D86): 글이 찍히기 시작할 때 한 번. 처음 누르는 순간 즉시 멈추고 다시 울리지 않는다.
+       글이 다 나오거나 페이지를 떠날 때도 정지·초기화. 첫 입력 전 재생은 브라우저가 허락할 때만 된다 */
+    const SND = window.R01 && R01.sound;
+    let typingSfx = false;  // 지금 타이핑 소리를 낼 수 있는지 (한 번 끄면 다시 켜지지 않는다)
+    function stopTyping() { typingSfx = false; if (SND) SND.stop('0', 0); }
+    window.addEventListener('pagehide', stopTyping);
     let leaving = false;
     let advance = () => {};
     function markSeen() {   // settings 안에 둔다 (게임이 remnant.global을 저장할 때 settings는 그대로 남는다)
@@ -92,9 +101,10 @@
       if (leaving) return;
       leaving = true;
       markSeen();
+      stopTyping();
       location.replace(LOADING_URL);
     }
-    function press() { if (ready) leave(); else advance(); }
+    function press() { stopTyping(); if (ready) leave(); else advance(); }
     /* 문서 전체에서 받아서, 페이지가 열리자마자 클릭·키보드가 모두 먹는다 */
     document.addEventListener("click", press);
     document.addEventListener("keydown", (event) => {
@@ -142,6 +152,7 @@
       warning.classList.add("warning-pending");
       earphones.classList.add("fade-pending");
       disclosure.classList.add("fade-pending");
+      if (SND) { SND.preload(['0']); typingSfx = true; SND.tryPlay('0', () => typingSfx); }
       await wait(300);
       for (const [index, row] of rows.entries()) {
         if (lines[index] === firstWarningLine) {
@@ -163,6 +174,7 @@
         }
         if (index < rows.length - 1) await wait(230);
       }
+      stopTyping();           // 글자 찍기가 끝났다
       activeGroup = 2;
       if (skipThrough === 1) await wait(230);
       if (skipThrough === 2) notice.classList.add("skip-fade");

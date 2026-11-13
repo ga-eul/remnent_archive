@@ -3,6 +3,8 @@
 window.R01 = window.R01 || {};
 (function (R) {
   const U = (R.ui = {});
+  /* 효과음 모듈(js/sound.js)을 불러오지 못해도 게임이 멈추지 않게 빈 자리를 둔다 (D86) */
+  if (!R.sound) R.sound = { play() { return false; }, stop() {}, playing() { return false; }, preload() {}, tryPlay() {}, isOn() { return false; }, ready() { return false; } };
 
   /* h('div', {class:'x', onClick: fn}, '글자', 자식요소...) */
   U.h = function (tag, props, ...kids) {
@@ -53,7 +55,8 @@ window.R01 = window.R01 || {};
   };
 
   /* 대화창: 줄 목록을 클릭(또는 Enter)으로 넘김. lines: [[말하는 사람, 대사], ...]
-     opts.portrait: 초상 이미지 경로 (래미 등), opts.onLine(i): 줄이 보일 때마다 (기록용) */
+     opts.portrait: 초상 이미지 경로 (래미 등), opts.onLine(i): 줄이 보일 때마다 (기록용)
+     opts.onAdvance(): 플레이어가 눌러 다음 줄로 넘기거나 마지막 줄을 닫을 때마다 (첫 줄이 뜰 때는 아님, 래미 넘기기 효과음 D86) */
   U.dialogue = function (lines, onDone, opts = {}) {
     let i = 0;
     const who = h('div', { class: 'dlg-who' });
@@ -67,6 +70,7 @@ window.R01 = window.R01 || {};
       if (opts.onLine) opts.onLine(i);
     }
     function next() {
+      if (opts.onAdvance) { try { opts.onAdvance(); } catch (e) { /* 효과음 실패는 진행을 막지 않는다 */ } }
       i += 1;
       if (i < lines.length) show(); else { box.remove(); if (onDone) onDone(); }
     }

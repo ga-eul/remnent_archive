@@ -27,7 +27,8 @@ window.R01 = window.R01 || {};
     ui.talking = true;
     dialogue(lines.map((t) => [RA.name, t]), () => { ui.talking = false; if (onDone) onDone(); else R.app.render(); }, {
       portrait: R.ASSETS.ramiBasic,             // 인트라넷의 래미는 기본 표정
-      onLine: (i) => { R.app.state.rami_log.push(lines[i]); R.store.saveCase(R.app.state); }
+      onLine: (i) => { R.app.state.rami_log.push(lines[i]); R.store.saveCase(R.app.state); },
+      onAdvance: () => R.sound.play(11)         // 11 래미 대화창 넘기기 (D86)
     });
   }
 

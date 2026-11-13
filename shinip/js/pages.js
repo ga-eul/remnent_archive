@@ -144,7 +144,8 @@ window.R01 = window.R01 || {};
   P.ramiSay = function (lines, onDone, face) {
     dialogue(lines.map((t) => [R.RAMI.name, t]), onDone, {
       portrait: R.ASSETS[face || 'ramiBasic'],
-      onLine: (i) => { R.app.state.rami_log.push(lines[i]); R.store.saveCase(R.app.state); }
+      onLine: (i) => { R.app.state.rami_log.push(lines[i]); R.store.saveCase(R.app.state); },
+      onAdvance: () => R.sound.play(11)                         // 11 래미 대화창 넘기기 (D86)
     });
   };
   P.ramiEvent = function (key) {

@@ -383,8 +383,8 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   const crypto = require('crypto');
   const SFX = R.SFX, FILES = R.SFX_FILES, MIX = R.SFX_MIX;
   const ids = Object.keys(SFX).map(Number).sort((x, y) => x - y);
-  const want = []; for (let n = 1; n <= 32; n++) if (![11, 13, 15, 21].includes(n)) want.push(n);
-  ok(JSON.stringify(ids) === JSON.stringify(want), 'D83 효과음 28개 (11·13·15·21번 없음)');
+  const want = []; for (let n = 0; n <= 32; n++) if (![13, 15, 21].includes(n)) want.push(n);
+  ok(JSON.stringify(ids) === JSON.stringify(want), 'D83·D86 효과음 30개 (0~32번 중 13·15·21번 없음)');
   const sfxDir = path.join(dir, 'assets', 'sfx');
   const onDisk = fs.readdirSync(sfxDir).filter((f) => f.endsWith('.mp3')).sort();
   ok(JSON.stringify(onDisk) === JSON.stringify(Object.keys(FILES).sort()), 'D83 assets/sfx 파일 = SFX_FILES 목록');
@@ -407,9 +407,7 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   // 원본 폴더가 있으면 사본이 원본과 바이트까지 같은지
   const srcDir = path.join(dir, '..', '효과음_26개+후보');
   if (fs.existsSync(srcDir)) {
-    // 31-엔딩3.mp3는 원본이 새 파일로 바뀌어(2026-11-13) 다음 작업에서 다시 반영한다. 그때까지 비교에서 뺀다
-    const PENDING = ['31-엔딩3.mp3'];
-    ok(Object.entries(FILES).every(([f, m]) => m.src.filter((n) => !PENDING.includes(n)).every((n) => fs.readFileSync(path.join(srcDir, n)).equals(fs.readFileSync(path.join(sfxDir, f))))),
+    ok(Object.entries(FILES).every(([f, m]) => m.src.every((n) => fs.readFileSync(path.join(srcDir, n)).equals(fs.readFileSync(path.join(sfxDir, f))))),
       'D83 게임용 사본 = 원본 (수정 없음)');
   }
   // 재생 모듈·연결
@@ -429,9 +427,15 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
   const wired = new Set([...code.matchAll(/R\.sound\.play\((\d+)\)/g)].map((m) => Number(m[1])));
   if (/R\.sound\.play\(ok \? 9 : 10\)/.test(code)) { wired.add(9); wired.add(10); }
   if (/\{ 1: 29, 2: 30, 3: 31 \}/.test(code)) { wired.add(29); wired.add(30); wired.add(31); }
-  const gameIds = want.filter((n) => ![1, 2, 32].includes(n));
+  const gameIds = want.filter((n) => ![0, 1, 2, 32].includes(n));
   const missing = gameIds.filter((n) => !wired.has(n));
-  ok(missing.length === 0, 'D83 게임 효과음 25개 모두 연결 ' + missing.join(','));
+  ok(missing.length === 0, 'D83·D86 게임 효과음 26개 모두 연결 ' + missing.join(','));
+  // D86: 0 타이핑은 안내 페이지, 11 넘기기는 래미 대화창 두 곳(조사 중·인트라넷)에만
+  const noticeP = path.join(dir, '..', 'first-launch-notice-terminal.html');
+  if (fs.existsSync(noticeP)) { const nt = fs.readFileSync(noticeP, 'utf8'); ok(/SND\.tryPlay\('0'/.test(nt) && /function press\(\) \{ stopTyping\(\);/.test(nt), 'D86 안내 타이핑: 재생, 누르면 즉시 정지'); }
+  ok((code.match(/onAdvance: \(\) => R\.sound\.play\(11\)/g) || []).length === 2, 'D86 래미 대화창 두 곳에만 11번');
+  const ui = fs.readFileSync(path.join(dir, 'js', 'ui.js'), 'utf8');
+  ok(/if \(!R\.sound\) R\.sound = \{/.test(ui), 'D86 효과음 모듈이 없어도 게임 진행 (빈 자리)');
 }
 
 // D85 06-D/E 화면 표시명·문서 제목에 "플레이어" 없음 (게임 화면에는 플레이어라는 말을 쓰지 않는다)
