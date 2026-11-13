@@ -100,7 +100,7 @@ window.R01 = window.R01 || {};
     if (s.opening_step === 'idcard') {
       const picks = R.AVATARS.map((a) => h('button', {
         type: 'button', class: 'avatar-pick' + (pickedAvatar === a.id ? ' on' : ''), 'aria-label': '사진 ' + (a.id + 1),
-        'aria-pressed': String(pickedAvatar === a.id), onClick: () => { pickedAvatar = a.id; R.app.render(); }
+        'aria-pressed': String(pickedAvatar === a.id), onClick: () => { pickedAvatar = a.id; R.sound.play(3); R.app.render(); }
       }, P.avatar(a.id, 64)));
       return win('사원증',
         h('div', { class: 'idcard-make' },
@@ -108,7 +108,7 @@ window.R01 = window.R01 || {};
           h('div', { class: 'idcard-side' },
             h('p', null, '사진 선택'),
             h('div', { class: 'avatar-picks' }, picks),
-            button('발급', () => commit((st) => L.issueIdCard(st, pickedAvatar)),
+            button('발급', () => { R.sound.play(4); commit((st) => L.issueIdCard(st, pickedAvatar)); },
               { primary: true, disabled: pickedAvatar === null }))));
     }
     return null;
@@ -155,6 +155,7 @@ window.R01 = window.R01 || {};
     setTimeout(() => {
       if (key === 'warn') P.glitchBurst();                      // 3차 수색 진입: 대화창과 동시에 노이즈
       P.ramiSay([R.RAMI.events[key]], null, RAMI_FACE[key]);
+      if (key === 'warn') R.sound.play(26);                     // 효과음은 경고 대사가 뜬 직후에 (data/sfx.js delay, D83)
     }, 120);
   };
 
@@ -238,6 +239,7 @@ window.R01 = window.R01 || {};
     let tried = false;                                   // [영상 재생]을 누른 뒤에만 실패 안내를 띄운다
     const start = () => {
       tried = true; fail.hidden = true;
+      R.sound.play(16);
       if (vid.error) vid.load();                          // 한 번 실패한 영상은 다시 불러온 뒤 재생
       img.hidden = true; vid.hidden = false; vid.currentTime = 0;
       if (a.hudOnVideo === false) box.classList.add('playing');   // 영상에 시각이 이미 찍혀 있으면 덧씌운 표시를 숨김
@@ -249,6 +251,7 @@ window.R01 = window.R01 || {};
     const onFail = () => {
       if (!tried || !box.isConnected) return;
       vid.pause(); vid.hidden = true; img.hidden = false;
+      R.sound.stop(17); R.sound.play(18);
       box.classList.remove('playing');
       setClock(a.still[isReduced() ? Math.min(1, a.still.length - 1) : i]);
       play.textContent = '▶ 영상 재생';
@@ -258,7 +261,17 @@ window.R01 = window.R01 || {};
     const fail = h('div', { class: 'cctv-fail', role: 'alert', hidden: true },
       h('p', null, '영상을 불러오지 못했습니다. 다시 재생해 주세요.'), button('다시 재생', start, { small: true }));
     vid.addEventListener('error', onFail);
-    vid.addEventListener('playing', () => { fail.hidden = true; });
+    vid.addEventListener('playing', () => { fail.hidden = true; noiseOn(); });
+    /* 17 영상 노이즈: 재생되는 동안만 반복, 멈춤·끝·창 닫기에서 정지 (D83) */
+    let noiseWatch = null;
+    const noiseOff = () => { clearInterval(noiseWatch); noiseWatch = null; R.sound.stop(17); };
+    const noiseOn = () => {
+      if (!R.sound.playing(17)) R.sound.play(17);
+      clearInterval(noiseWatch);
+      noiseWatch = setInterval(() => { if (!box.isConnected || vid.paused || vid.ended) noiseOff(); }, 250);
+    };
+    vid.addEventListener('pause', noiseOff);
+    vid.addEventListener('ended', noiseOff);
     // vhs: 손상된 복구 영상 (05-B-VHS) — 노이즈 띠·흔들림을 더한다 (연출 줄이기면 멈춤)
     const box = h('figure', { class: 'cctv' + (a.vhs ? ' vhs' : ''), style: 'aspect-ratio:' + a.ratio },
       img, vid,
@@ -404,6 +417,7 @@ window.R01 = window.R01 || {};
       return;
     }
     commit((st) => { L.checkSpot(st, sp.id); L.viewItem(st, it); });
+    R.sound.play(14);
     if (it.note) showNote(it.note);
     else showEvidence(L.clue(it.clue), { part: it.part });
   }
@@ -533,7 +547,11 @@ window.R01 = window.R01 || {};
     }) : [h('p', { class: 'muted rec-empty' }, '아직 진술을 받지 않았습니다.')];
     setTimeout(() => { const box = document.querySelector('.iv-rec'); if (box) box.scrollTop = box.scrollHeight; }, 0);
     const canAsk = viewWho === turn;
-    const qs = canAsk ? d.qa.map((qa, qi) => button(qa.q, () => commit((x) => L.ask(x, turn, qi)),
+    const qs = canAsk ? d.qa.map((qa, qi) => button(qa.q, () => {
+      let ok = false;
+      commit((x) => { ok = L.ask(x, turn, qi); });
+      if (ok) { R.sound.play(19); R.sound.play(20); }       // 질문 선택 → 새 진술 기록 (20은 data/sfx.js delay)
+    },
       { small: true, disabled: asked.includes(qi) })) : [];
     const nextHint = !canAsk && turn && s['interview_' + viewWho + '_done']
       ? h('p', { class: 'iv-next' }, '다음 직원: ', h('strong', null, R.STAFF[turn].name), ' — 왼쪽 목록에서 선택하세요.') : null;
@@ -589,7 +607,7 @@ window.R01 = window.R01 || {};
     const put = (k) => {
       if (slots.includes(k)) return;
       const i = slots[0] === null ? 0 : slots[1] === null ? 1 : 1;
-      slots[i] = k; comboMsg = null; draw();
+      slots[i] = k; comboMsg = null; R.sound.play(22); draw();
     };
     const archCard = (title, meta, onClick, key) => {
       const gray = key && canCombine && triedWith(key);
@@ -614,7 +632,7 @@ window.R01 = window.R01 || {};
         if (!key || slots.includes(key) || !L.has(s, key)) return;
         const other = slots[1 - i];
         if (other && s.tried_pairs.includes(L.pairKey(other, key))) return;
-        slots[i] = key; comboMsg = null; draw();
+        slots[i] = key; comboMsg = null; R.sound.play(22); draw();
       });
       return box;
     };
@@ -626,9 +644,10 @@ window.R01 = window.R01 || {};
       slots = [null, null];
       if (res.result === 'success') {
         comboMsg = { ok: true, text: R.TEXT.newClue, card: R.CONNECTIONS[res.id].card };
+        R.sound.play(24); R.sound.play(25);                      // 조합 성공 → NEW 카드 (25는 data/sfx.js delay)
         if (res.id === 'C01' && s.page === '03') P.ramiEvent('suspect');   // 1차 조사 중 C01 이후
         if (res.id === 'C07') P.ramiEvent('found');                         // C07 성공 시
-      } else comboMsg = { ok: false, text: R.TEXT.wrongPair };
+      } else { comboMsg = { ok: false, text: R.TEXT.wrongPair }; R.sound.play(23); }
       draw();
     };
     function draw() {

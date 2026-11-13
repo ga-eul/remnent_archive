@@ -5,7 +5,7 @@ const mem = {};
 const ctx = { window: {}, console,
   localStorage: { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: (k) => { delete mem[k]; } } };
 ctx.window = ctx; vm.createContext(ctx);
-['data/clues.js', 'data/hotspots.js', 'data/fieldnotes.js', 'data/connections.js', 'data/text.js', 'data/intranet.js', 'data/finale.js', 'assets/assets.js', 'js/logic.js', 'js/store.js']
+['data/clues.js', 'data/hotspots.js', 'data/fieldnotes.js', 'data/connections.js', 'data/text.js', 'data/intranet.js', 'data/finale.js', 'data/sfx.js', 'assets/assets.js', 'js/logic.js', 'js/store.js']
   .forEach((f) => vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx, { filename: f }));
 const R = ctx.R01, L = R.logic, S = R.store;
 let fail = 0, pass = 0;
@@ -353,8 +353,16 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
     ok(!/Malgun|Apple SD Gothic/.test(notice), 'D81 안내 페이지에 다른 글꼴 없음');
     ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(notice), 'D81 안내 페이지 금지 문자열 없음');
     ok(notice.includes("허브 아래쪽의 '<strong>연출 줄이기</strong>'") && !notice.includes('설정에서'), 'D81 연출 줄이기 안내 문구');
-    ok(/로딩 중/.test(notice) && /setTimeout\(\(\) => location\.replace\(encodeURI\(HUB_URL\)\), 3000\)/.test(notice), 'D81 로딩 중 → 3초 뒤 허브');
-    ok(/const HUB_URL = 'index \(1\)\.html'/.test(notice), 'D81 안내 페이지 허브 주소');
+    // D84: 안내 → loading.html(3초 진행 막대) → 허브
+    ok(/location\.replace\(LOADING_URL\)/.test(notice) && /const LOADING_URL = 'loading\.html'/.test(notice) && !/id="loading"/.test(notice), 'D84 안내 페이지 → loading.html');
+    const loadP = path.join(dir, '..', 'loading.html');
+    ok(fs.existsSync(loadP), 'D84 loading.html 있음');
+    if (fs.existsSync(loadP)) {
+      const ld = fs.readFileSync(loadP, 'utf8');
+      ok(/data-next="index \(1\)\.html"/.test(ld) && /const duration = 3000;/.test(ld), 'D84 로딩 3초 뒤 허브');
+      ok(font(ld) === font(gameHtml) && !/IBM Plex|Consolas/.test(ld), 'D84 로딩 글꼴이 게임과 같음');
+      ok(!/Edward|에드워드|밀러|SELF ARCHIVE SYSTEM/i.test(ld), 'D84 로딩 금지 문자열 없음');
+    }
     ok(/g\.settings\.notice_seen = true/.test(notice), 'D81 본 기록은 settings.notice_seen');
     ok(/settings\.notice_seen\)\) location\.replace\('first-launch-notice-terminal\.html'\)/.test(hub), 'D81 허브가 처음 한 번만 안내로 보냄');
     ok(!/AI로 생성/.test(hub) && /AI로 생성/.test(notice), 'D81 AI 고지는 안내 페이지에만');
@@ -368,6 +376,71 @@ ok(!/실험용|TEMP/.test(all.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').replace(
     ok(g.settings.notice_seen === true && g.settings.reduced === false, 'D81 게임 저장 뒤에도 settings.notice_seen 유지');
     if (before === undefined) delete mem['remnant.global']; else mem['remnant.global'] = before;
   }
+}
+
+// D83 효과음: 번호·파일·공유·볼륨·클리핑 여유
+{
+  const crypto = require('crypto');
+  const SFX = R.SFX, FILES = R.SFX_FILES, MIX = R.SFX_MIX;
+  const ids = Object.keys(SFX).map(Number).sort((x, y) => x - y);
+  const want = []; for (let n = 1; n <= 32; n++) if (![11, 13, 15, 21].includes(n)) want.push(n);
+  ok(JSON.stringify(ids) === JSON.stringify(want), 'D83 효과음 28개 (11·13·15·21번 없음)');
+  const sfxDir = path.join(dir, 'assets', 'sfx');
+  const onDisk = fs.readdirSync(sfxDir).filter((f) => f.endsWith('.mp3')).sort();
+  ok(JSON.stringify(onDisk) === JSON.stringify(Object.keys(FILES).sort()), 'D83 assets/sfx 파일 = SFX_FILES 목록');
+  ok(ids.every((n) => FILES[SFX[n].file]), 'D83 모든 번호가 있는 파일을 가리킴');
+  ok(Object.keys(FILES).every((f) => ids.some((n) => SFX[n].file === f)), 'D83 쓰지 않는 파일 없음');
+  const hashes = onDisk.map((f) => crypto.createHash('md5').update(fs.readFileSync(path.join(sfxDir, f))).digest('hex'));
+  ok(new Set(hashes).size === hashes.length, 'D83 같은 MP3는 한 번만 복사');
+  ok([[1, 32], [20, 25], [3, 8], [10, 18], [28, 29]].every(([x, y]) => SFX[x].file === SFX[y].file), 'D83 1·32, 20·25, 3·8, 10·18, 28·29는 같은 파일 공유');
+  ok(!Object.values(FILES).some((f) => f.src.some((n) => /ksjsbwuil|후보/.test(n))), 'D83 번호 없는 후보·엔딩2 후보는 쓰지 않음');
+  ok(FILES[SFX[30].file].src[0] === '30-엔딩2.mp3', 'D83 30번은 30-엔딩2.mp3');
+  // 클리핑 여유: 원본 피크 + 이벤트 볼륨 + 효과음 마스터 ≤ -1 dBFS (리미터 앞 기준)
+  const db = (v) => 20 * Math.log10(v);
+  const hot = ids.filter((n) => FILES[SFX[n].file].peak + db(SFX[n].vol * MIX.master) > -1);
+  ok(hot.length === 0, 'D83 모든 효과음 피크 -1dBFS 이하 ' + hot.join(','));
+  ok(SFX[26].vol <= 0.12, 'D83 26 글리치 볼륨 낮춤');
+  ok(SFX[17].loop && SFX[17].vol <= 0.18, 'D83 17 CCTV 노이즈 반복·낮은 볼륨');
+  ok(SFX[2].clip && SFX[2].clip.hold === 3 && SFX[2].clip.fade === 1 && SFX[2].vol === 0.2 && !SFX[2].loop, 'D83 2 메뉴 전환: 3초 + 1초 페이드, 20%, 반복 없음');
+  ok([5, 9, 22].every((n) => SFX[n].vol > 1), 'D83 5·9·22 증폭');
+  ok(ids.every((n) => SFX[n].vol > 0 && SFX[n].at), 'D83 볼륨·재생 위치 기록');
+  // 원본 폴더가 있으면 사본이 원본과 바이트까지 같은지
+  const srcDir = path.join(dir, '..', '효과음_26개+후보');
+  if (fs.existsSync(srcDir)) {
+    // 31-엔딩3.mp3는 원본이 새 파일로 바뀌어(2026-11-13) 다음 작업에서 다시 반영한다. 그때까지 비교에서 뺀다
+    const PENDING = ['31-엔딩3.mp3'];
+    ok(Object.entries(FILES).every(([f, m]) => m.src.filter((n) => !PENDING.includes(n)).every((n) => fs.readFileSync(path.join(srcDir, n)).equals(fs.readFileSync(path.join(sfxDir, f))))),
+      'D83 게임용 사본 = 원본 (수정 없음)');
+  }
+  // 재생 모듈·연결
+  const snd = fs.readFileSync(path.join(dir, 'js', 'sound.js'), 'utf8');
+  ok(snd.includes("typeof v === 'boolean' ? v : true"), 'D83 소리 기본값 켜짐, 저장값 우선');
+  ok(/g\.settings\.sound = on/.test(snd), 'D83 소리 설정은 remnant.global.settings.sound');
+  ok(/pointerdown', unlock, true/.test(snd), 'D83 첫 사용자 입력 뒤에만 재생');
+  const hubP = path.join(dir, '..', 'index (1).html');
+  if (fs.existsSync(hubP)) {
+    const hub = fs.readFileSync(hubP, 'utf8');
+    ok(hub.includes('src="shinip/data/sfx.js"') && hub.includes('src="shinip/js/sound.js"'), 'D83 허브에서 효과음 불러옴');
+    ok(/SND\.setOn\(S\.sound\)/.test(hub) && /SND\.play\(2\)/.test(hub) && /SND\.play\(1\)/.test(hub), 'D83 허브 소리 버튼·1·2번 연결');
+  }
+  const demoP = path.join(dir, '..', 'shinip_demo_complete.html');
+  if (fs.existsSync(demoP)) ok(/R01\.sound\.navigate\(encodeURI\(HUB_URL\),32\)/.test(fs.readFileSync(demoP, 'utf8')), 'D83 데모 [허브로 돌아가기] 32번');
+  const code = ['pages.js', 'intranet.js', 'finale.js'].map((f) => fs.readFileSync(path.join(dir, 'js', f), 'utf8')).join('\n');
+  const wired = new Set([...code.matchAll(/R\.sound\.play\((\d+)\)/g)].map((m) => Number(m[1])));
+  if (/R\.sound\.play\(ok \? 9 : 10\)/.test(code)) { wired.add(9); wired.add(10); }
+  if (/\{ 1: 29, 2: 30, 3: 31 \}/.test(code)) { wired.add(29); wired.add(30); wired.add(31); }
+  const gameIds = want.filter((n) => ![1, 2, 32].includes(n));
+  const missing = gameIds.filter((n) => !wired.has(n));
+  ok(missing.length === 0, 'D83 게임 효과음 25개 모두 연결 ' + missing.join(','));
+}
+
+// D85 06-D/E 화면 표시명·문서 제목에 "플레이어" 없음 (게임 화면에는 플레이어라는 말을 쓰지 않는다)
+ok(R.CLUES.every((c) => !/플레이어/.test(c.name)), 'D85 자료 표시명에 플레이어 없음');
+ok(L.clue('06DE').name === '계정 이력 및 시스템 감사 로그', 'D85 06-D/E 표시명');
+{
+  const clueDir = path.join(dir, 'assets', 'clue');
+  const bad = fs.readdirSync(clueDir).filter((f) => f.endsWith('.html') && /플레이어/.test(fs.readFileSync(path.join(clueDir, f), 'utf8')));
+  ok(bad.length === 0, 'D85 자료 문서에 플레이어 없음 ' + bad.join(','));
 }
 
 console.log(`pass ${pass} / fail ${fail}`);

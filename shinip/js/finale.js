@@ -21,12 +21,14 @@ window.R01 = window.R01 || {};
 
   /* ---------- 신원 확인 (9절 3~5단계) ---------- */
   let scanDone = false;
+  let scanSfx = false;     // 27 분석 완료음은 한 번만 (화면을 다시 그려도 반복하지 않게)
   function scanView(s) {
     const box = h('div', { class: 'scan-lines' });
     const act = h('div', { class: 'row end' });
     const wrap = h('section', { class: 'fin' },
       h('p', { class: 'step mono' }, F.scan.label), h('h2', null, '최종 추론'), box, act);
     setTimeout(() => reveal(box, F.scan.lines.map((t) => h('p', { class: 'mono' }, '> ' + t)), 700, () => {
+      if (!scanSfx && box.isConnected) { scanSfx = true; R.sound.play(27); }
       act.append(s.identity_revealed
         ? button('계속', () => { scanDone = true; R.app.render(); }, { primary: true })
         : button(F.scan.toResult, () => commit((st) => { if (L.resolveEnding1(st)) R.store.recordEnding(1, st.investigation_grade); }), { primary: true }));
@@ -60,7 +62,7 @@ window.R01 = window.R01 || {};
     };
     const toChoice = () => modal({   // D29: 상태와 관계없이 항상 같은 확인 창
       lines: [T.toFinalConfirm],
-      buttons: [{ label: T.toFinalConfirmCancel }, { label: T.toFinalConfirmOk, primary: true, onClick: () => commit((st) => L.finishC13(st)) }]
+      buttons: [{ label: T.toFinalConfirmCancel }, { label: T.toFinalConfirmOk, primary: true, onClick: () => { R.sound.play(28); commit((st) => L.finishC13(st)); } }]
     });
     return h('section', { class: 'fin' },
       h('p', { class: 'step mono' }, 'FINAL INFERENCE'),
@@ -149,7 +151,7 @@ window.R01 = window.R01 || {};
   let endPhase = 'seq';
   let endFor = null;
   P.ending = function (s) {
-    if (endFor !== s.ending_id) { endFor = s.ending_id; endPhase = 'seq'; }
+    if (endFor !== s.ending_id) { endFor = s.ending_id; endPhase = 'seq'; R.sound.play({ 1: 29, 2: 30, 3: 31 }[s.ending_id]); }   // 엔딩 연출 시작음 (D83)
     const E = R.ENDING_TEXT[s.ending_id];
     if (endPhase === 'seq') {
       const box = h('div', { class: 'seq' });

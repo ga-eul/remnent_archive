@@ -80,7 +80,9 @@ remnant-intro/
 허브는 저장 칸 `remnant.global`의 CASE 상태(status)만 읽습니다. 게임 폴더(`shinip/`)는 `index.html`과 같은 위치에 둡니다.
 저장소 안에서는 인트로 파일 이름이 `index (1).html`이라, 게임의 [허브로 돌아가기]도 이 이름을 가리킵니다. 배포할 때 이름을 `index.html`로 바꾸면 `shinip/js/main.js`의 `HUB_URL`도 `'../index.html'`로 바꿉니다.
 엔딩을 마친 뒤 엔딩 수집의 [허브로 돌아가기]는 데모 종료 페이지 `shinip_demo_complete.html`(인트로와 같은 위치)을 거쳐 허브로 돌아옵니다. 이 페이지의 `HUB_URL`(`'index (1).html'`)도 배포할 때 `'index.html'`로 바꿉니다.
-게임을 처음 연 한 번만 허브 앞에 플레이 전 안내 `first-launch-notice-terminal.html`(인트로와 같은 위치)이 나옵니다. 화면을 누르면 ‘로딩 중’ 3초 뒤 허브로 가고, 본 기록은 `remnant.global`의 `settings.notice_seen`에 남습니다. 이 페이지의 `HUB_URL`도 배포할 때 `'index.html'`로 바꿉니다. 즉 인트로 이름을 바꾸면 허브 주소를 고칠 곳은 `shinip/js/main.js`·`shinip_demo_complete.html`·`first-launch-notice-terminal.html` 세 군데입니다.
+게임을 처음 연 한 번만 허브 앞에 플레이 전 안내 `first-launch-notice-terminal.html`(인트로와 같은 위치)이 나옵니다. 화면을 누르면 로딩 화면 `loading.html`(인트로와 같은 위치, 3초)을 거쳐 허브로 가고, 본 기록은 `remnant.global`의 `settings.notice_seen`에 남습니다. 로딩 화면의 `data-next`도 배포할 때 `index.html`로 바꿉니다. 즉 인트로 이름을 바꾸면 허브 주소를 고칠 곳은 `shinip/js/main.js`·`shinip_demo_complete.html`·`loading.html` 세 군데입니다.
+
+효과음은 `shinip/assets/sfx/`(게임용 사본)와 `shinip/data/sfx.js`(번호·파일·볼륨 설정), `shinip/js/sound.js`(재생)에 있습니다. 하단 "소리 켜짐/꺼짐"은 `remnant.global`의 `settings.sound`에 저장되어 게임에도 적용되고, 처음 방문하면 켜짐입니다. 브라우저 정책상 첫 클릭 뒤부터 소리가 납니다.
 
 ## GitHub Pages로 올리기
 

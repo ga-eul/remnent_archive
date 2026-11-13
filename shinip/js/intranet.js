@@ -36,7 +36,7 @@ window.R01 = window.R01 || {};
     if (ui.talking) return;
     if (!s.intranet_intro_done) {
       ui.talking = true;
-      setTimeout(() => ramiSay([fill(RA.firstAppear, s), ...RA.intro, RA.findMe], () => commit((st) => L.finishIntro(st))), 50);
+      setTimeout(() => ramiSay([fill(RA.firstAppear, s), ...RA.intro, RA.findMe], () => { commit((st) => L.finishIntro(st)); R.sound.play(6); }), 50);   // 6: RA-H 메시지 알림
     } else if (s.security_code_correct && !s.briefing_done) {
       ui.talking = true;
       setTimeout(() => ramiSay(RA.briefing.map((t) => fill(t, s)), () => commit((st) => L.finishBriefing(st))), 50);
@@ -55,7 +55,7 @@ window.R01 = window.R01 || {};
       h('div', { class: 'in-logo' }, icon('logo'), h('span', null, 'REMNANT', h('br'), 'ARCHIVE')),
       h('nav', { class: 'in-nav', 'aria-label': '인트라넷 메뉴' }, I.tabs.map(([k, label]) => h('button', {
         type: 'button', class: 'in-tab' + (ui.tab === k ? ' on' : ''), 'aria-current': ui.tab === k ? 'page' : null,
-        onClick: () => { ui.tab = k; R.app.render(); } }, label))),
+        onClick: () => { if (ui.tab !== k) R.sound.play(5); ui.tab = k; R.app.render(); } }, label))),
       h('div', { class: 'in-icons' },
         iconBtn('rami', '래미 AI', 'rami', s.intranet_intro_done && s.predecessor_msg_read && !s.crossword_open),
         iconBtn('mail', '사내 메신저', 'messenger', unread),
@@ -65,7 +65,7 @@ window.R01 = window.R01 || {};
 
   /* ---------- 홈 ---------- */
   function startButton(s) {
-    return s.briefing_done ? button(RA.startSearch, () => commit((st) => L.go(st, '03')), { primary: true }) : null;
+    return s.briefing_done ? button(RA.startSearch, () => { R.sound.play(12); commit((st) => L.go(st, '03')); }, { primary: true }) : null;
   }
   function home(s) {
     const hero = I.hero;
@@ -152,6 +152,7 @@ window.R01 = window.R01 || {};
     const search = h('input', { class: 'msgr-search', placeholder: '대화방 검색', 'aria-label': '대화방 검색', value: ui.search });
     search.addEventListener('input', () => { ui.search = search.value; fillRooms(); });
     const pick = (r) => {
+      if (ui.room !== r.id) R.sound.play(7);
       ui.room = r.id;
       if (r.id === p.id) commit((st) => L.readPredecessor(st)); else R.app.render();
     };
@@ -279,7 +280,9 @@ window.R01 = window.R01 || {};
       const solved = s.crossword_solved.includes(i);
       const input = h('input', { class: 'input mono cw-in', maxlength: String(w.answer.length + 2), 'aria-label': '가로 ' + (i + 1) + ' 답' });
       const check = () => {
-        commit((st) => { L.solveWord(st, i, input.value); });
+        let ok = false;
+        commit((st) => { ok = L.solveWord(st, i, input.value); });
+        if (ok) R.sound.play(8);                             // 8: 보안키(가로 답) 입력
       };
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
       return h('li', { class: solved ? 'done' : '' },
@@ -290,6 +293,7 @@ window.R01 = window.R01 || {};
     const submit = () => {
       let ok = false;
       commit((st) => { ok = L.submitCode(st, code.value); });
+      R.sound.play(ok ? 9 : 10);
       if (!ok) ramiSay([RA.codeWrong]);
     };
     code.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
@@ -314,7 +318,7 @@ window.R01 = window.R01 || {};
         h('p', { class: 'rami-bubble' }, RA.greeting),                       // 첫 등장 뒤 인사 (D37)
         s.crossword_open ? crossword(s) : null);
     // 브리핑 뒤 [제한 시스템 접속]은 질문 칩 옆에 보안 경고 색으로 둔다
-    const access = s.briefing_done ? h('button', { type: 'button', class: 'rami-chip rami-access', onClick: () => commit((st) => L.go(st, '03')) },
+    const access = s.briefing_done ? h('button', { type: 'button', class: 'rami-chip rami-access', onClick: () => { R.sound.play(12); commit((st) => L.go(st, '03')); } },
       h('span', { class: 'rami-access-ico', 'aria-hidden': 'true' }, '!'), RA.startSearch) : null;
     return h('aside', { class: 'rami-card', role: 'dialog', 'aria-label': '래미 AI' },
       h('div', { class: 'rami-peek', style: 'background-image:url(' + R.ASSETS.ramiChat + ')', 'aria-hidden': 'true' }),

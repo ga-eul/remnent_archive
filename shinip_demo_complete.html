@@ -16,12 +16,16 @@
 <section class="terminal" aria-labelledby="replay-title"><div class="section-label">SESSION INFORMATION / REPLAY GUIDE</div><h3 id="replay-title">데모 종료 및 재시작 안내</h3><p>데모 체험을 완료해 주셔서 감사합니다.<br>허브로 돌아간 후, 다음 두 가지 방법으로 다시 플레이하실 수 있습니다.</p><div class="choice"><span class="tag">RESET</span><div><strong>[입사 지원하기]</strong><p>진행 기록만 지우고 처음부터 다시 체험할 수 있습니다. 본 엔딩·등급·설정은 지우지 않습니다.</p></div></div><div class="choice"><span class="tag">RESUME</span><div><strong>[이어서 출근하기]</strong><p>기존 플레이 기록을 유지한 채 최종 추론 이전 단계로 돌아가, 엔딩 수집에서 아직 얻지 못한 엔딩을 획득할 수 있습니다.</p></div></div><div class="notice"><div class="section-label">UPCOMING TRANSMISSION</div><h3>후속 소식 안내</h3><p>아직 공개되지 않은 기록과 새로운 이야기가 여러분을 기다리고 있습니다.<br>정식 출시 및 텀블벅 펀딩 소식은 공식 채널을 통해 안내될 예정입니다.</p></div></section>
 <div class="actions"><button id="hub">허브로 돌아가기</button><button class="secondary" id="news" hidden>후속 소식 확인하기</button></div><footer class="foot">NOTHING IS EVER LOST. · REMNANT ARCHIVE</footer>
 </main>
+<!-- 효과음 (D83): 32 [허브로 돌아가기] -->
+<script src="shinip/data/sfx.js"></script>
+<script src="shinip/js/sound.js"></script>
 <script>
 // 허브(인트로 페이지) 주소. 저장소에서는 `index (1).html`, 배포할 때 'index.html'로 바꾼다 (shinip/js/main.js HUB_URL과 함께)
 const HUB_URL = 'index (1).html';
 // 공식 X 계정 주소. 비어 있으면 [후속 소식 확인하기] 버튼을 숨긴다
 const NEWS_URL = 'https://x.com/remi_r_archive';
-document.getElementById('hub').addEventListener('click',()=>{location.href=encodeURI(HUB_URL)});
+if(window.R01&&R01.sound)R01.sound.preload(['32']);
+document.getElementById('hub').addEventListener('click',()=>{if(window.R01&&R01.sound)R01.sound.navigate(encodeURI(HUB_URL),32);else location.href=encodeURI(HUB_URL)});
 const news=document.getElementById('news');
 if(NEWS_URL){news.hidden=false;news.addEventListener('click',()=>{window.open(NEWS_URL,'_blank','noopener,noreferrer')})}
 </script>

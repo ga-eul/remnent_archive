@@ -22,7 +22,7 @@ R01.CLUES = [
   { id: '05-E', key: '05E', name: '보안 시스템 예외 접근 기록', type: 'doc', place: 'control', search: 2, optional: true },
   { id: '06-A', key: '06A', name: 'HUMAN-04 통합 실험 보고서', type: 'doc', place: 'restricted', search: 3 },
   { id: '06-B', key: '06B', name: '기억 데이터 이전 명령 및 대상자 명단', type: 'doc', place: 'restricted', search: 3 },
-  { id: '06-D/E', key: '06DE', name: '플레이어 계정 이력 및 시스템 감사 로그', type: 'doc', place: 'restricted', search: 3 },
+  { id: '06-D/E', key: '06DE', name: '계정 이력 및 시스템 감사 로그', type: 'doc', place: 'restricted', search: 3 },
   { id: '06-S', key: '06S', name: 'Memory data 연구자료', type: 'doc', place: 'restricted', search: 3, optional: true },
   // 06-G: 화면 표시명은 ‘신원 확인 결과 보고서’ (D72, R-07). 개발자 내부 이름은 ‘사용자 식별 실패 보고서’
   { id: '06-G', key: '06G', name: '신원 확인 결과 보고서', type: 'doc', source: 'system' }

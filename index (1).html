@@ -399,6 +399,9 @@
   document.addEventListener('visibilitychange',()=>sync());
 })();
 </script>
+<!-- 효과음 (D83): 설정 data/sfx.js, 재생 js/sound.js. 소리 켜짐/꺼짐은 remnant.global.settings.sound -->
+<script src="shinip/data/sfx.js"></script>
+<script src="shinip/js/sound.js"></script>
 <script>
 /* ===== 설정 ===== */
 const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 안내 문구만). [입사 지원하기]·[이어서 출근하기] → shinip/, [보존 기록] → shinip/의 엔딩 수집
@@ -421,8 +424,10 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   }
   const S = {
     reduced: savedReduced() ?? (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
-    sound:false
+    sound: !!(window.R01 && R01.sound && R01.sound.isOn())   // 저장값이 없으면 켜짐 (D83)
   };
+  const SND = window.R01 && R01.sound;
+  if (SND) SND.preload(['1', '2']);
 
   /* 배경 이미지: 파일이 있으면 사진, 없으면 SVG 대체 장면 */
   photo.addEventListener('load', ()=> scene.classList.remove('no-photo'));
@@ -533,7 +538,7 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
       body.append(el('span', 'file-case', 'PRESENT · CASE 01'), el('span', 'file-theme', f.theme || '신입사원'),
         el('span', 'file-point', f.point || '—'), el('span', 'file-date', fmtDate(f.at)));
       card.append(pic, body);
-      card.addEventListener('click', () => { if (LIVE_LINKS) location.href = f.href; else toast('시안: ' + f.kind + ' 기록으로 이동합니다'); });
+      card.addEventListener('click', () => { if (LIVE_LINKS) { if (SND) SND.navigate(f.href); else location.href = f.href; } else toast('시안: ' + f.kind + ' 기록으로 이동합니다'); });
       grid.append(card);
     });
     filesEl.classList.add('show');
@@ -544,7 +549,7 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   filesEl.addEventListener('keydown', e => { if (e.key === 'Escape') closeFiles(); });
 
   function go(btn){
-    if (btn.dataset.href && LIVE_LINKS){ location.href = btn.dataset.href; return; }
+    if (btn.dataset.href && LIVE_LINKS){ if (SND) SND.navigate(btn.dataset.href); else location.href = btn.dataset.href; return; }
     toast('시안: ' + btn.dataset.go + ' 화면으로 이동합니다');
   }
   /* 진행 중일 때 [입사 지원하기] → 확인 창 (R-84). 기록 지우기는 CASE가 ?mode=new를 받아 진행 칸만 비운다 */
@@ -565,9 +570,19 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   document.getElementById('menu').addEventListener('keydown', e=>{
     const i = items.indexOf(document.activeElement);
     if (i < 0) return;
-    if (e.key === 'ArrowDown'){ e.preventDefault(); items[(i+1) % items.length].focus(); }
-    if (e.key === 'ArrowUp'){ e.preventDefault(); items[(i-1+items.length) % items.length].focus(); }
+    if (e.key === 'ArrowDown'){ e.preventDefault(); items[(i+1) % items.length].focus(); menuMoved(items[(i+1) % items.length]); }
+    if (e.key === 'ArrowUp'){ e.preventDefault(); items[(i-1+items.length) % items.length].focus(); menuMoved(items[(i-1+items.length) % items.length]); }
   });
+  /* 2 메뉴 전환음: ↑↓로 옮기거나 마우스를 다른 메뉴에 올렸을 때. 앞 3초 + 1초 페이드, 겹치면 앞의 것을 정리 (D83) */
+  let curMenu = items[0];
+  function menuMoved(btn){ if (btn === curMenu) return; curMenu = btn; if (SND) SND.play(2); }
+  items.forEach(btn => btn.addEventListener('mouseenter', () => menuMoved(btn)));
+  /* 1 버튼 클릭음: 허브의 모든 버튼 (소리 버튼은 켤 때 따로 울린다) */
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b || b.id === 'sound' || !SND) return;
+    SND.play(1);
+  }, true);
 
   /* 사원 조회 */
   document.getElementById('lookup').addEventListener('submit', e=>{
@@ -583,11 +598,15 @@ const LIVE_LINKS  = true;   // 메뉴를 실제 페이지로 연결 (false면 �
   });
 
   /* 하단 토글 */
-  document.getElementById('sound').addEventListener('click', e=>{
+  /* 소리 켜짐/꺼짐: remnant.global.settings.sound에 저장해 게임 전체가 따른다 (D83) */
+  const soundBtn = document.getElementById('sound');
+  function showSound(){ soundBtn.setAttribute('aria-pressed', String(S.sound)); soundBtn.textContent = S.sound ? '소리 켜짐' : '소리 꺼짐'; }
+  soundBtn.addEventListener('click', ()=>{
     S.sound = !S.sound;
-    e.currentTarget.setAttribute('aria-pressed', String(S.sound));
-    e.currentTarget.textContent = S.sound ? '소리 켜짐' : '소리 꺼짐';
+    if (SND) { SND.setOn(S.sound); if (S.sound) SND.play(1); }
+    showSound();
   });
+  showSound();
   document.getElementById('motion').addEventListener('click', ()=>{ S.reduced = !S.reduced; saveReduced(S.reduced); apply(); });
 
   apply();

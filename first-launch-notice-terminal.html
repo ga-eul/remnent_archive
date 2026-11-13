@@ -32,13 +32,8 @@
     .fade-pending { visibility: hidden; opacity: 0; }
     .notice.skip-fade .earphones, .notice.skip-fade .disclosure { transition: none; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .loading { color: #b0d5bc; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: clamp(16px, 1.6vw, 24px); letter-spacing: .12em; outline: none; }
-    .loading p { margin: 0; }
-    .dots::after { content: "..."; display: inline-block; width: 0; overflow: hidden; vertical-align: bottom; animation: dots 1.2s steps(4, end) infinite; }
-    @keyframes dots { to { width: 1.6em; } }
     .reduced .earphones, .reduced .disclosure { transition: none; }
-    .reduced .dots::after { animation: none; width: auto; }
-    @media (prefers-reduced-motion: reduce) { .earphones, .disclosure { transition: none; } .dots::after { animation: none; width: auto; } }
+    @media (prefers-reduced-motion: reduce) { .earphones, .disclosure { transition: none; } }
   </style>
 </head>
 <body>
@@ -61,15 +56,12 @@
       <p class="disclosure">일러스트는 AI로 생성되었으며, 제작 과정에 AI 도구를 활용했습니다.</p>
     </div>
   </main>
-  <div class="loading" id="loading" role="status" aria-live="polite" tabindex="-1" hidden><p>로딩 중<span class="dots" aria-hidden="true"></span></p></div>
   <script>
     /* 처음 한 번만 보이는 플레이 전 안내 (D81). 허브가 remnant.global.settings.notice_seen이 없으면 이 페이지로 보낸다.
-       글이 다 나온 뒤 화면을 누르면(또는 Enter·Space) ‘로딩 중’ 화면 → 3초 뒤 허브. 허브로 갈 때 본 기록을 남긴다.
-       허브 주소: 저장소에서는 `index (1).html`, 배포할 때 'index.html'로 바꾼다 (shinip/js/main.js·shinip_demo_complete.html과 함께) */
-    const HUB_URL = 'index (1).html';
+       글이 다 나온 뒤 화면을 누르면(또는 Enter·Space) 본 기록을 남기고 로딩 화면(loading.html, 3초 뒤 허브)으로 간다 (D84) */
+    const LOADING_URL = 'loading.html';
     const GLOBAL_KEY = 'remnant.global';
     const notice = document.querySelector(".notice");
-    const loading = document.querySelector("#loading");
     const lines = [...notice.querySelectorAll("[data-type]")];
     const warning = document.querySelector(".warning");
     const firstWarningLine = warning.querySelector("[data-type]");
@@ -100,10 +92,7 @@
       if (leaving) return;
       leaving = true;
       markSeen();
-      notice.hidden = true;
-      loading.hidden = false;
-      loading.focus({ preventScroll: true });
-      setTimeout(() => location.replace(encodeURI(HUB_URL)), 3000);
+      location.replace(LOADING_URL);
     }
     function press() { if (ready) leave(); else advance(); }
     /* 문서 전체에서 받아서, 페이지가 열리자마자 클릭·키보드가 모두 먹는다 */
